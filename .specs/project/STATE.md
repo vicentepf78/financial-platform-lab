@@ -1,7 +1,7 @@
 # State
 
 **Last Updated:** 2026-06-15
-**Current Work:** Spec-driven concluído — pronto para POC (Sprint 1 Execute)
+**Current Work:** Sprint 1 Execute — `create-customer` concluída; próxima feature: `create-account`
 
 ---
 
@@ -49,7 +49,7 @@
 **Decision:** 30 features especificadas em `.specs/features/` — Sprint 1 com spec+design+tasks (54 tarefas); Sprints 2-7 com spec.md.
 **Reason:** Fechar fase Specify/Design/Tasks do tlc-spec-driven antes de iniciar desenvolvimento.
 **Trade-off:** Design/tasks de Sprints 2-7 serão detalhados incrementalmente antes de cada sprint.
-**Impact:** Próximo passo é Execute da feature `create-customer` (T1 em tasks.md).
+**Impact:** Execute iniciado; `create-customer` concluída (T1–T11, gate full verde).
 
 ---
 
@@ -75,6 +75,7 @@ _(Nenhum blocker ativo.)_
 | —   | ADRs iniciais (7 decisões)               | 2026-06-15 | —      | ✅ Done |
 | —   | Features Sprint 1 (8 specs, 54 tasks)    | 2026-06-15 | —      | ✅ Done |
 | —   | Features Sprints 2-7 (22 specs)          | 2026-06-15 | —      | ✅ Done |
+| —   | Execute `create-customer` (T1–T11)     | 2026-06-15 | —      | ✅ Done |
 
 ---
 
@@ -94,7 +95,8 @@ _(Nenhum blocker ativo.)_
 - [x] Especificar features Sprint 1 (spec + design + tasks)
 - [x] Especificar features Sprints 2-7 (spec.md)
 - [ ] Configurar Docker Compose com PostgreSQL, Kafka e Kafka UI
-- [ ] Executar Sprint 1 — começar por `create-customer` T1
+- [x] Executar Sprint 1 — `create-customer` (T1–T11)
+- [ ] Executar Sprint 1 — `create-account`
 
 ---
 
@@ -109,7 +111,7 @@ _(Nenhum blocker ativo.)_
 | Specify Sprints 2-7 | ✅ | 22 features |
 | Design Sprint 1 | ✅ | 7 design.md |
 | Tasks Sprint 1 | ✅ | 7 tasks.md |
-| **Execute (POC)** | ⏳ | Próximo passo |
+| **Execute (POC)** | ⏳ | `create-customer` ✅; próxima: `create-account` |
 
 ---
 

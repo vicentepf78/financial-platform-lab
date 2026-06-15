@@ -1,7 +1,7 @@
 # Create Customer — Design
 
 **Spec:** `.specs/features/create-customer/spec.md`
-**Status:** Draft
+**Status:** Approved
 
 ---
 

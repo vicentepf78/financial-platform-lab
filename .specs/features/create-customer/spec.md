@@ -3,6 +3,7 @@
 **Módulo:** `customer-module`
 **Endpoint:** `POST /api/v1/customers`
 **Sprint:** 1 — Core Banking
+**Status:** Done
 
 ---
 
@@ -12,11 +13,11 @@ A plataforma financeira precisa de um cadastro confiável de clientes (pessoa f�
 
 ## Goals
 
-- [ ] Permitir cadastro de cliente PF (CPF) ou PJ (CNPJ) via API REST
-- [ ] Validar documento usando value objects do shared-kernel (`Cpf`, `Cnpj`)
-- [ ] Garantir unicidade de documento no banco (rejeitar duplicatas)
-- [ ] Persistir cliente com identificador UUID e metadados de auditoria
-- [ ] Retornar envelope `{ data, metadata }` conforme convenção REST do projeto
+- [x] Permitir cadastro de cliente PF (CPF) ou PJ (CNPJ) via API REST
+- [x] Validar documento usando value objects do shared-kernel (`Cpf`, `Cnpj`)
+- [x] Garantir unicidade de documento no banco (rejeitar duplicatas)
+- [x] Persistir cliente com identificador UUID e metadados de auditoria
+- [x] Retornar envelope `{ data, metadata }` conforme convenção REST do projeto
 
 ## Out of Scope
 
@@ -98,23 +99,23 @@ A plataforma financeira precisa de um cadastro confiável de clientes (pessoa f�
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| CUST-01 | P1: POST cadastro válido | Design | Pending |
-| CUST-02 | P1: Validação Cpf/Cnpj VO | Design | Pending |
-| CUST-03 | P1: Resposta 201 envelope | Design | Pending |
-| CUST-04 | P1: Auditoria createdAt/By | Design | Pending |
-| CUST-05 | P2: Unicidade documento | Design | Pending |
-| CUST-06 | P2: Resposta 409 Conflict | Design | Pending |
-| CUST-07 | P3: Modelo extensível | Design | Pending |
-| CUST-08 | Edge: consistência tipo/doc | Design | Pending |
+| CUST-01 | P1: POST cadastro válido | Execute | Done |
+| CUST-02 | P1: Validação Cpf/Cnpj VO | Execute | Done |
+| CUST-03 | P1: Resposta 201 envelope | Execute | Done |
+| CUST-04 | P1: Auditoria createdAt/By | Execute | Done |
+| CUST-05 | P2: Unicidade documento | Execute | Done |
+| CUST-06 | P2: Resposta 409 Conflict | Execute | Done |
+| CUST-07 | P3: Modelo extensível | Execute | Done |
+| CUST-08 | Edge: consistência tipo/doc | Execute | Done |
 
-**Coverage:** 8 total, 0 mapped to tasks, 8 pending
+**Coverage:** 8 total, 8 mapped to tasks (T1–T11), 8 done
 
 ---
 
 ## Success Criteria
 
-- [ ] `POST /api/v1/customers` funcional com testes unitários (use case) e integração (controller + DB)
-- [ ] Documento inválido nunca persiste
-- [ ] Documento duplicado retorna 409 determinístico
-- [ ] Nenhuma regra de negócio em controller ou repository
-- [ ] Gate `mvn verify -Pintegration` passa para feature
+- [x] `POST /api/v1/customers` funcional com testes unitários (use case) e integração (controller + DB)
+- [x] Documento inválido nunca persiste
+- [x] Documento duplicado retorna 409 determinístico
+- [x] Nenhuma regra de negócio em controller ou repository
+- [x] Gate `mvn verify -Pintegration` passa para feature

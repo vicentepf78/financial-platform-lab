@@ -48,9 +48,9 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Tabela `customers` com PK UUID, campos name, type, document, email, audit
-- [ ] Constraint UNIQUE em `document`
-- [ ] Migration idempotente e versionada
+- [x] Tabela `customers` com PK UUID, campos name, type, document, email, audit
+- [x] Constraint UNIQUE em `document`
+- [x] Migration idempotente e versionada
 
 **Tests:** none (schema validado em T10)
 **Gate:** build
@@ -67,11 +67,11 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Factory valida consistência type/document
-- [ ] CPF inválido lança exceção de domínio
-- [ ] Sem dependência Spring/JPA
-- [ ] Gate check passes: `mvn test -pl customer-module`
-- [ ] Test count: ≥4 testes unitários passam
+- [x] Factory valida consistência type/document
+- [x] CPF inválido lança exceção de domínio
+- [x] Sem dependência Spring/JPA
+- [x] Gate check passes: `mvn test -pl customer-module`
+- [x] Test count: ≥4 testes unitários passam
 
 **Tests:** unit
 **Gate:** quick
@@ -88,10 +88,10 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Factory gera Identifier e timestamps
-- [ ] Sem dependência Spring/JPA
-- [ ] Gate check passes: `mvn test -pl customer-module`
-- [ ] Test count: ≥3 testes passam
+- [x] Factory gera Identifier e timestamps
+- [x] Sem dependência Spring/JPA
+- [x] Gate check passes: `mvn test -pl customer-module`
+- [x] Test count: ≥3 testes passam
 
 **Tests:** unit
 **Gate:** quick
@@ -107,8 +107,8 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Port define `existsByDocument`, `save`, `findById`
-- [ ] Exceção específica para 409 mapping
+- [x] Port define `existsByDocument`, `save`, `findById`
+- [x] Exceção específica para 409 mapping
 
 **Tests:** none
 **Gate:** build
@@ -125,10 +125,10 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Cadastro válido retorna result
-- [ ] Duplicata lança `DuplicateDocumentException`
-- [ ] Gate check passes: `mvn test -pl customer-module`
-- [ ] Test count: ≥5 testes passam
+- [x] Cadastro válido retorna result
+- [x] Duplicata lança `DuplicateDocumentException`
+- [x] Gate check passes: `mvn test -pl customer-module`
+- [x] Test count: ≥5 testes passam
 
 **Tests:** unit
 **Gate:** quick
@@ -145,10 +145,10 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Mapper domain ↔ entity sem regras de negócio
-- [ ] `existsByDocument` consulta índice UNIQUE
-- [ ] Gate check passes: `mvn verify -Pintegration -pl customer-module`
-- [ ] Test count: ≥2 testes integração repositório passam
+- [x] Mapper domain ↔ entity sem regras de negócio
+- [x] `existsByDocument` consulta índice UNIQUE
+- [x] Gate check passes: `mvn verify -Pintegration -pl customer-module`
+- [x] Test count: ≥2 testes integração repositório passam
 
 **Tests:** integration
 **Gate:** full
@@ -164,8 +164,8 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Bean Validation em Request (not blank, email)
-- [ ] Response mapeia envelope data/metadata
+- [x] Bean Validation em Request (not blank, email)
+- [x] Response mapeia envelope data/metadata
 
 **Tests:** none
 **Gate:** build
@@ -182,11 +182,11 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] 201 em cadastro válido
-- [ ] 400 documento inválido / tipo inconsistente
-- [ ] 409 documento duplicado
-- [ ] Gate check passes: `mvn verify -Pintegration -pl customer-module`
-- [ ] Test count: ≥4 testes controller passam
+- [x] 201 em cadastro válido
+- [x] 400 documento inválido / tipo inconsistente
+- [x] 409 documento duplicado
+- [x] Gate check passes: `mvn verify -Pintegration -pl customer-module`
+- [x] Test count: ≥4 testes controller passam
 
 **Tests:** integration
 **Gate:** full
@@ -203,8 +203,8 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Application context carrega beans do módulo
-- [ ] Endpoint registrado em `/api/v1/customers`
+- [x] Application context carrega beans do módulo
+- [x] Endpoint registrado em `/api/v1/customers`
 
 **Tests:** none (coberto por T8)
 **Gate:** build
@@ -220,10 +220,10 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Testcontainers PostgreSQL sobe migration
-- [ ] UNIQUE constraint verificada
-- [ ] Gate check passes: `mvn verify -Pintegration`
-- [ ] Test count: ≥1 teste passa
+- [x] Testcontainers PostgreSQL sobe migration
+- [x] UNIQUE constraint verificada
+- [x] Gate check passes: `mvn verify -Pintegration`
+- [x] Test count: ≥1 teste passa
 
 **Tests:** integration
 **Gate:** full
@@ -238,11 +238,13 @@ T9 → T11          (smoke E2E manual)
 
 **Done when**:
 
-- [ ] Fluxo POST válido + POST duplicado documentado
-- [ ] Todos requisitos CUST-* rastreados
+- [x] Fluxo POST válido + POST duplicado documentado
+- [x] Todos requisitos CUST-* rastreados
 
 **Tests:** none
 **Gate:** full
+
+**Verified:** 2026-06-15 — `mvn verify -Pintegration -pl customer-module,application` passou; fluxos 201/400/409 cobertos por `CreateCustomerControllerIntegrationTest`.
 
 **Verify:**
 
@@ -252,4 +254,4 @@ curl -X POST http://localhost:8080/api/v1/customers \
   -d '{"name":"Maria","type":"INDIVIDUAL","document":"529.982.247-25","email":"m@ex.com"}'
 ```
 
-Esperado: HTTP 201 com `data.id` UUID.
+Esperado: HTTP 201 com `data.id` UUID; segundo POST com mesmo documento → HTTP 409.
