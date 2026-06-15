@@ -1,0 +1,2 @@
+com.financialplatform.account.infrastructure.AccountModuleConfig
+com.financialplatform.account.adapters.messaging.AccountMessagingConfig

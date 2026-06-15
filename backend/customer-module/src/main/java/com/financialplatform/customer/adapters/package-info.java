@@ -1,0 +1,1 @@
+/** customer-module adapters layer */
