@@ -31,6 +31,22 @@ class CreateCustomerControllerIntegrationTest extends AbstractCustomerIntegratio
     }
 
     @Test
+    void shouldReturn401WhenCreateCustomerCalledWithoutToken() throws Exception {
+        mockMvc.perform(post("/api/v1/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Maria Silva",
+                                  "type": "INDIVIDUAL",
+                                  "document": "%s",
+                                  "email": "maria@example.com"
+                                }
+                                """.formatted(VALID_CPF)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Authentication required"));
+    }
+
+    @Test
     void shouldReturn201WhenCustomerIsValid() throws Exception {
         mockMvc.perform(post("/api/v1/customers")
                         .with(bearerToken(operatorToken))
