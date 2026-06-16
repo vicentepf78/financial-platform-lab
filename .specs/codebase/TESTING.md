@@ -1,6 +1,6 @@
 # Testing Infrastructure
 
-**Status:** Parcialmente implementado — `customer-module` e `account-module` com testes unitários e integração (referência em `INDEX.md`). Demais módulos conforme roadmap.
+**Status:** Parcialmente implementado — `customer-module`, `account-module` e `application` (jwt-auth) com testes unitários e integração (referência em `INDEX.md`). Demais módulos conforme roadmap.
 
 ## Test Frameworks
 
@@ -70,6 +70,7 @@ class CreateAccountUseCaseTest {
 | Cadastro de cliente | Sprint 1 | ✅ `create-customer` |
 | Consulta de clientes | Sprint 1 | ✅ `query-customers` |
 | Abertura de conta | Sprint 1 | ✅ `create-account` |
+| Login JWT + API autenticada | Sprint 1 | ✅ `jwt-auth` |
 | Transferência | Sprint 1-2 | Planejado |
 | PIX | Sprint 4 |
 | Cobrança | Sprint 3 |
@@ -147,3 +148,17 @@ Nenhuma feature é considerada completa sem testes nas camadas exigidas pela mat
 | Query adapter | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module` |
 | Controller | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersControllerIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module` |
 | App wiring | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module,application` |
+
+## Feature: jwt-auth
+
+**Module:** `application` · **Requirements:** AUTH-01–AUTH-12
+
+| Layer | Test file | Gate |
+| ----- | --------- | ---- |
+| JWT service | `backend/application/src/test/java/.../infrastructure/security/JwtServiceTest.java` | Quick: `mvn test -pl application` |
+| Login use case | `backend/application/src/test/java/.../features/auth/LoginUseCaseTest.java` | Quick: `mvn test -pl application` |
+| Problem details | `backend/application/src/test/java/.../infrastructure/security/SecurityProblemDetailsHandlerTest.java` | Quick: `mvn test -pl application` |
+| Login controller | `backend/application/src/test/java/.../features/auth/LoginControllerIntegrationTest.java` | Full: `mvn verify -Pintegration -pl application` |
+| JWT filter | `backend/application/src/test/java/.../features/auth/JwtAuthenticationFilterIntegrationTest.java` | Full: `mvn verify -Pintegration -pl application` |
+| App wiring (E2E smoke) | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` | Full: `mvn verify -Pintegration` |
+| IT helper | `backend/application/src/test/java/com/financialplatform/support/JwtTestSupport.java` | Usado por customer/account ITs |

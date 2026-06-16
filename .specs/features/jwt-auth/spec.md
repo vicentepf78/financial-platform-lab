@@ -3,7 +3,7 @@
 **Módulo:** `application` (cross-cutting security)
 **Endpoints:** `POST /api/v1/auth/login` (emissão); demais `/api/v1/**` protegidos por JWT
 **Sprint:** 1 — Core Banking (fundação de segurança)
-**Status:** Draft
+**Status:** Done
 **ADR:** [ADR-0005](../../../adr/0005-spring-security-authentication.md)
 
 ---
@@ -16,12 +16,12 @@ Sem JWT stateless e Problem Details padronizados para 401/403, o frontend não c
 
 ## Goals
 
-- [ ] Emitir access token JWT via `POST /api/v1/auth/login` com credenciais válidas
-- [ ] Validar JWT em requisições subsequentes via header `Authorization: Bearer <token>`
-- [ ] Proteger endpoints `/api/v1/**` por padrão, com exceções explícitas (login, webhook MP, health)
-- [ ] Retornar erros 401/403 no formato Problem Details (RFC 9457)
-- [ ] Suportar roles mínimas v1: `OPERATOR`, `ADMIN`
-- [ ] Permitir rollout gradual via flag `security.jwt.enabled` (permitAll → proteção ativa)
+- [x] Emitir access token JWT via `POST /api/v1/auth/login` com credenciais válidas
+- [x] Validar JWT em requisições subsequentes via header `Authorization: Bearer <token>`
+- [x] Proteger endpoints `/api/v1/**` por padrão, com exceções explícitas (login, webhook MP, health)
+- [x] Retornar erros 401/403 no formato Problem Details (RFC 9457)
+- [x] Suportar roles mínimas v1: `OPERATOR`, `ADMIN`
+- [x] Permitir rollout gradual via flag `security.jwt.enabled` (permitAll → proteção ativa)
 
 ## Out of Scope
 
@@ -126,28 +126,28 @@ Sem JWT stateless e Problem Details padronizados para 401/403, o frontend não c
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| AUTH-01 | P1: Login 200 + envelope com accessToken | Execute | Draft |
-| AUTH-02 | P1: Login 401 credenciais inválidas | Execute | Draft |
-| AUTH-03 | P1: JWT claims sub, roles, exp, iat | Execute | Draft |
-| AUTH-04 | P2: Validação Bearer token em rotas protegidas | Execute | Draft |
-| AUTH-05 | P2: 401 token expirado / inválido / ausente | Execute | Draft |
-| AUTH-06 | P3: Proteger `/api/v1/**` por padrão | Execute | Draft |
-| AUTH-07 | P3: Exceções permitAll (login, webhook, health) | Execute | Draft |
-| AUTH-08 | P3: Flag `security.jwt.enabled` para rollout | Execute | Draft |
-| AUTH-09 | P4: 401 Problem Details | Execute | Draft |
-| AUTH-10 | P4: 403 Problem Details | Execute | Draft |
-| AUTH-11 | P1/P3: Roles OPERATOR e ADMIN (InMemory v1) | Execute | Draft |
-| AUTH-12 | P2: Authorities derivadas de claim `roles` no SecurityContext | Execute | Draft |
+| AUTH-01 | P1: Login 200 + envelope com accessToken | Execute | Done |
+| AUTH-02 | P1: Login 401 credenciais inválidas | Execute | Done |
+| AUTH-03 | P1: JWT claims sub, roles, exp, iat | Execute | Done |
+| AUTH-04 | P2: Validação Bearer token em rotas protegidas | Execute | Done |
+| AUTH-05 | P2: 401 token expirado / inválido / ausente | Execute | Done |
+| AUTH-06 | P3: Proteger `/api/v1/**` por padrão | Execute | Done |
+| AUTH-07 | P3: Exceções permitAll (login, webhook, health) | Execute | Done |
+| AUTH-08 | P3: Flag `security.jwt.enabled` para rollout | Execute | Done |
+| AUTH-09 | P4: 401 Problem Details | Execute | Done |
+| AUTH-10 | P4: 403 Problem Details | Execute | Done |
+| AUTH-11 | P1/P3: Roles OPERATOR e ADMIN (InMemory v1) | Execute | Done |
+| AUTH-12 | P2: Authorities derivadas de claim `roles` no SecurityContext | Execute | Done |
 
-**Coverage:** 12 total, 12 mapped to tasks (T1–T13), 0 done
+**Coverage:** 12 total, 12 mapped to tasks (T1–T13), 12 done
 
 ---
 
 ## Success Criteria
 
-- [ ] `POST /api/v1/auth/login` funcional com testes unitários (JwtService, LoginUseCase) e integração (controller)
-- [ ] Com `security.jwt.enabled=true`, ITs existentes passam usando `JwtTestSupport`
-- [ ] 401/403 retornam Problem Details conforme RFC 9457
-- [ ] Nenhuma regra de negócio de domínio financeiro em filtros ou SecurityConfig
-- [ ] Gate `mvn verify -Pintegration` passa para application, customer-module e account-module
-- [ ] ADR-0005 referenciado e decisões refletidas em design.md
+- [x] `POST /api/v1/auth/login` funcional com testes unitários (JwtService, LoginUseCase) e integração (controller)
+- [x] Com `security.jwt.enabled=true`, ITs existentes passam usando `JwtTestSupport`
+- [x] 401/403 retornam Problem Details conforme RFC 9457
+- [x] Nenhuma regra de negócio de domínio financeiro em filtros ou SecurityConfig
+- [x] Gate `mvn verify -Pintegration` passa para application, customer-module e account-module
+- [x] ADR-0005 referenciado e decisões refletidas em design.md

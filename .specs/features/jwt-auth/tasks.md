@@ -3,7 +3,7 @@
 **Design:** `.specs/features/jwt-auth/design.md`
 **Reference:** `.specs/codebase/INDEX.md` (controller + IT patterns)
 **ADR:** [ADR-0005](../../../adr/0005-spring-security-authentication.md)
-**Status:** Draft
+**Status:** Done
 
 **Total tasks:** 13
 
@@ -56,8 +56,8 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Dependências resolvem sem conflito
-- [ ] `mvn compile -pl application` passa
+- [x] Dependências resolvem sem conflito
+- [x] `mvn compile -pl application` passa
 
 **Tests:** none | **Gate:** build
 
@@ -73,9 +73,9 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Bean `SecurityFilterChain` carrega com flag desligada
-- [ ] Propriedades `security.jwt.*` bindam corretamente
-- [ ] Gate: `mvn test -pl application`
+- [x] Bean `SecurityFilterChain` carrega com flag desligada
+- [x] Propriedades `security.jwt.*` bindam corretamente
+- [x] Gate: `mvn test -pl application`
 
 **Tests:** unit (context smoke) | **Gate:** quick
 
@@ -91,10 +91,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] 401 e 403 retornam `application/problem+json`
-- [ ] `type`, `title`, `status`, `detail`, `instance` presentes
-- [ ] Gate: `mvn test -pl application`
-- [ ] Test count: ≥2 passam
+- [x] 401 e 403 retornam `application/problem+json`
+- [x] `type`, `title`, `status`, `detail`, `instance` presentes
+- [x] Gate: `mvn test -pl application`
+- [x] Test count: ≥2 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -109,11 +109,11 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Token contém `sub`, `roles`, `iat`, `exp`
-- [ ] `operator` e `admin` carregam com roles corretas
-- [ ] Token expirado rejeitado
-- [ ] Gate: `mvn test -pl application`
-- [ ] Test count: ≥4 passam
+- [x] Token contém `sub`, `roles`, `iat`, `exp`
+- [x] `operator` e `admin` carregam com roles corretas
+- [x] Token expirado rejeitado
+- [x] Gate: `mvn test -pl application`
+- [x] Test count: ≥4 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -129,10 +129,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Happy path retorna `LoginResult` com token
-- [ ] Credenciais inválidas lançam exceção mapeável a 401
-- [ ] Gate: `mvn test -pl application`
-- [ ] Test count: ≥3 passam
+- [x] Happy path retorna `LoginResult` com token
+- [x] Credenciais inválidas lançam exceção mapeável a 401
+- [x] Gate: `mvn test -pl application`
+- [x] Test count: ≥3 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -148,10 +148,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] 200 com `{ data: { accessToken, tokenType, expiresIn }, metadata: {} }`
-- [ ] 401 credenciais inválidas; 400 body inválido
-- [ ] Gate: `mvn verify -Pintegration -pl application`
-- [ ] Test count: ≥3 passam
+- [x] 200 com `{ data: { accessToken, tokenType, expiresIn }, metadata: {} }`
+- [x] 401 credenciais inválidas; 400 body inválido
+- [x] Gate: `mvn verify -Pintegration -pl application`
+- [x] Test count: ≥3 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -166,10 +166,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Rotas protegidas exigem JWT quando flag=true
-- [ ] Exceções permitAll funcionam (login, health, webhook path)
-- [ ] Gate: `mvn verify -Pintegration -pl application`
-- [ ] Test count: ≥4 passam
+- [x] Rotas protegidas exigem JWT quando flag=true
+- [x] Exceções permitAll funcionam (login, health, webhook path)
+- [x] Gate: `mvn verify -Pintegration -pl application`
+- [x] Test count: ≥4 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -185,9 +185,9 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `obtainOperatorToken(MockMvc)` funcional
-- [ ] `bearerToken(String)` RequestPostProcessor disponível
-- [ ] Documentado em comentário Javadoc para módulos consumidores
+- [x] `obtainOperatorToken(MockMvc)` funcional
+- [x] `bearerToken(String)` RequestPostProcessor disponível
+- [x] Documentado em comentário Javadoc para módulos consumidores
 
 **Tests:** none (usado por T9–T12) | **Gate:** build
 
@@ -202,10 +202,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `security.jwt.enabled=true` via `@DynamicPropertySource`
-- [ ] Todos os requests HTTP incluem Bearer token
-- [ ] Gate: `mvn verify -Pintegration -pl customer-module`
-- [ ] Test count: suite existente verde
+- [x] `security.jwt.enabled=true` via `@DynamicPropertySource`
+- [x] Todos os requests HTTP incluem Bearer token
+- [x] Gate: `mvn verify -Pintegration -pl customer-module`
+- [x] Test count: suite existente verde
 
 **Tests:** integration | **Gate:** full
 
@@ -220,9 +220,9 @@ T12 → T13
 
 **Done when**:
 
-- [ ] POST `/api/v1/customers` com token retorna 201
-- [ ] POST sem token retorna 401 (quando flag=true)
-- [ ] Gate: `mvn verify -Pintegration -pl customer-module`
+- [x] POST `/api/v1/customers` com token retorna 201
+- [x] POST sem token retorna 401 (quando flag=true)
+- [x] Gate: `mvn verify -Pintegration -pl customer-module`
 
 **Tests:** integration | **Gate:** full
 
@@ -237,8 +237,8 @@ T12 → T13
 
 **Done when**:
 
-- [ ] POST `/api/v1/accounts` autenticado
-- [ ] Gate: `mvn verify -Pintegration -pl account-module`
+- [x] POST `/api/v1/accounts` autenticado
+- [x] Gate: `mvn verify -Pintegration -pl account-module`
 
 **Tests:** integration | **Gate:** full
 
@@ -253,8 +253,8 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Fluxo login → GET customers → POST account passa
-- [ ] Gate: `mvn verify -Pintegration`
+- [x] Fluxo login → GET customers → POST account passa
+- [x] Gate: `mvn verify -Pintegration`
 
 **Tests:** integration | **Gate:** full
 
@@ -269,9 +269,9 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Variáveis `JWT_*` e `SECURITY_JWT_ENABLED` documentadas
-- [ ] Feature Close Checklist (`.rules/workflow.md`) completo
-- [ ] spec.md Success Criteria marcados
-- [ ] Gate: `mvn verify -Pintegration`
+- [x] Variáveis `JWT_*` e `SECURITY_JWT_ENABLED` documentadas
+- [x] Feature Close Checklist (`.rules/workflow.md`) completo
+- [x] spec.md Success Criteria marcados
+- [x] Gate: `mvn verify -Pintegration`
 
 **Tests:** none | **Gate:** full

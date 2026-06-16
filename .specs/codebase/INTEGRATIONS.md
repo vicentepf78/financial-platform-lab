@@ -116,9 +116,9 @@ Ver [`.env.example`](../../.env.example)
 
 **Service:** Spring Security 6 + JWT (HMAC-SHA256)
 **Purpose:** Autenticação stateless da API REST para SPA React
-**Phase:** Sprint 1 — feature [jwt-auth](../features/jwt-auth/spec.md)
+**Phase:** Sprint 1 — feature [jwt-auth](../features/jwt-auth/spec.md) ✅ DONE
 **ADR:** [ADR-0005](../../adr/0005-spring-security-authentication.md)
-**Implementation (planejada):** `backend/application/infrastructure/security/`, `backend/application/features/auth/`
+**Implementation:** `backend/application/src/main/java/com/financialplatform/infrastructure/security/`, `backend/application/src/main/java/com/financialplatform/features/auth/`
 
 ### Fluxo
 

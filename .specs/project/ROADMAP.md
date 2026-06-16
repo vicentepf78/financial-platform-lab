@@ -1,7 +1,7 @@
 # Roadmap
 
 **Current Milestone:** Sprint 1 — Core Banking
-**Status:** Execute in progress — `create-customer` ✅ · `create-account` ✅ · `query-customers` ✅ · `jwt-auth` SPECIFIED · próxima execute: `jwt-auth` → `transfer-money`
+**Status:** Execute in progress — `create-customer` ✅ · `create-account` ✅ · `query-customers` ✅ · `jwt-auth` ✅ · próxima: `transfer-money`
 
 > **Spec-driven:** 30 features em `.specs/features/` · 7 ADRs em `adr/` · Sprint 1 com 54 tarefas atômicas
 
@@ -14,7 +14,7 @@
 
 ### Features
 
-**Segurança (cross-cutting)** - SPECIFIED → [jwt-auth](../features/jwt-auth/spec.md) · ADR [0005](../../adr/0005-spring-security-authentication.md)
+**Segurança (cross-cutting)** - [jwt-auth](../features/jwt-auth/spec.md) ✅ DONE · ADR [0005](../../adr/0005-spring-security-authentication.md)
 
 - Login JWT stateless (`POST /api/v1/auth/login`)
 - Proteção de `/api/v1/**` com exceções (login, webhook MP, health)

@@ -1,7 +1,7 @@
 # Architecture
 
 **Pattern:** Monorepo + Modular Monolith + Hexagonal Architecture + Vertical Slice Architecture + DDD Light
-**Status:** Sprint 1 parcial — `shared-kernel`, `customer-module` e `account-module` com vertical slices implementadas (`create-customer`, `query-customers`, `create-account`). Demais módulos conforme roadmap.
+**Status:** Sprint 1 parcial — `shared-kernel`, `customer-module`, `account-module` e `application` (jwt-auth) com vertical slices implementadas (`create-customer`, `query-customers`, `create-account`, `jwt-auth`). Demais módulos conforme roadmap.
 
 ## High-Level Structure
 
@@ -71,7 +71,14 @@ module/
 **Location:** Dentro de cada módulo, pasta `features/`
 **Purpose:** Isolar funcionalidades completas (controller → use case → test) por slice
 **Implementation:** Cada feature contém Controller, UseCase, Request/Response DTOs e Test na mesma pasta
-**Example:** `account-module/features/createaccount/CreateAccountUseCase.java`; `customer-module/features/querycustomers/QueryCustomersController.java` (GET list + by id)
+**Example:** `account-module/features/createaccount/CreateAccountUseCase.java`; `customer-module/features/querycustomers/QueryCustomersController.java` (GET list + by id); `application/features/auth/LoginController.java` (POST login)
+
+### Stateless JWT Authentication (cross-cutting)
+
+**Location:** `application/infrastructure/security/`, `application/features/auth/`
+**Purpose:** Autenticação stateless para SPA React; proteção de `/api/v1/**` com rollout via `security.jwt.enabled`
+**Implementation:** Spring Security 6 + `JwtAuthenticationFilter` + Problem Details 401/403; usuários v1 in-memory (`operator`, `admin`)
+**ADR:** [ADR-0005](../../adr/0005-spring-security-authentication.md)
 
 ### Event-Driven Architecture
 

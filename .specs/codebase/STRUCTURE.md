@@ -1,7 +1,7 @@
 # Project Structure
 
 **Root:** `/home/vicente/Documentos/financial-platform-lab`
-**Status:** Sprint 1 em execução — backend com `shared-kernel`, `customer-module`, `account-module` e `application` implementados
+**Status:** Sprint 1 em execução — backend com `shared-kernel`, `customer-module`, `account-module` e `application` (jwt-auth) implementados
 
 ## Directory Tree (planejada)
 
@@ -111,8 +111,9 @@ financial-platform-lab/
 
 ### application
 
-**Purpose:** Bootstrap Spring Boot, configuração global, composição de módulos
+**Purpose:** Bootstrap Spring Boot, configuração global, composição de módulos, autenticação JWT cross-cutting
 **Location:** `backend/application/`
+**Key features:** jwt-auth ✅ (`features/auth/`, `infrastructure/security/`)
 
 ## Where Things Live
 

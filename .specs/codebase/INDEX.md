@@ -12,7 +12,7 @@
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
 | `customer-module` | ✅ Implemented | create-customer, query-customers |
 | `account-module` | ✅ Implemented | create-account |
-| `application` | ✅ Partial | Flyway V1–V3, health, module wiring smoke tests |
+| `application` | ✅ Implemented | Flyway V1–V3, health, jwt-auth, module wiring smoke tests |
 
 ---
 
@@ -151,6 +151,63 @@ Use como padrão para novas vertical slices no `account-module` (ex.: `transfer-
 
 - `POST /api/v1/accounts` — envelope `{ data, metadata }`, Problem Details em erros
 - Kafka topic: `account-created`
+
+---
+
+## Reference slice: jwt-auth
+
+Use como padrão para autenticação cross-cutting no módulo `application` (login + filtro JWT + Problem Details 401/403).
+
+| Layer | Path |
+| ----- | ---- |
+| Feature slice (login) | `backend/application/src/main/java/com/financialplatform/features/auth/` |
+| Use case | `.../LoginUseCase.java` |
+| Controller | `.../LoginController.java` |
+| Request/Response | `.../LoginRequest.java`, `LoginResponse.java` |
+| Auth exception handler | `.../AuthExceptionHandler.java` |
+| Module config | `.../AuthModuleConfig.java` |
+| Security config | `backend/application/src/main/java/com/financialplatform/infrastructure/security/SecurityConfig.java` |
+| JWT filter | `.../JwtAuthenticationFilter.java` |
+| JWT service | `.../JwtService.java` |
+| JWT properties | `.../JwtProperties.java` |
+| User details (v1 in-memory) | `.../InMemoryUserDetailsService.java` |
+| Security error handler | `.../SecurityProblemDetailsHandler.java` |
+| App wiring smoke | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` |
+
+### Tests (jwt-auth)
+
+| Type | Path |
+| ---- | ---- |
+| Unit (JWT service) | `backend/application/src/test/java/.../infrastructure/security/JwtServiceTest.java` |
+| Unit (user details) | `backend/application/src/test/java/.../infrastructure/security/InMemoryUserDetailsServiceTest.java` |
+| Unit (security config) | `backend/application/src/test/java/.../infrastructure/security/SecurityConfigTest.java` |
+| Unit (problem details) | `backend/application/src/test/java/.../infrastructure/security/SecurityProblemDetailsHandlerTest.java` |
+| Unit (login use case) | `backend/application/src/test/java/.../features/auth/LoginUseCaseTest.java` |
+| Integration (login) | `backend/application/src/test/java/.../features/auth/LoginControllerIntegrationTest.java` |
+| Integration (JWT filter) | `backend/application/src/test/java/.../features/auth/JwtAuthenticationFilterIntegrationTest.java` |
+| IT helper | `backend/application/src/test/java/com/financialplatform/support/JwtTestSupport.java` |
+| Consumer IT bases | `AbstractCustomerIntegrationTest`, `AbstractAccountWebIntegrationTest` (JWT via `@DynamicPropertySource`) |
+
+### Configuration (jwt-auth)
+
+| Property | Env var | Default |
+| -------- | ------- | ------- |
+| `security.jwt.enabled` | `SECURITY_JWT_ENABLED` | `false` |
+| `security.jwt.secret` | `JWT_SECRET` | `change-me-in-production` |
+| `security.jwt.expiration-seconds` | `JWT_EXPIRATION_SECONDS` | `3600` |
+
+### API (jwt-auth)
+
+- `POST /api/v1/auth/login` — envelope `{ data: { accessToken, tokenType, expiresIn }, metadata: {} }`; 401 Problem Details em credenciais inválidas
+- Rotas protegidas (quando `security.jwt.enabled=true`): `Authorization: Bearer <token>`; exceções `permitAll`: login, `POST /api/v1/webhooks/mercadopago`, `GET /actuator/health`
+
+**Verify (manual):**
+
+```bash
+curl -s -X POST http://localhost:8080/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"operator","password":"operator"}' | jq .
+```
 
 ---
 

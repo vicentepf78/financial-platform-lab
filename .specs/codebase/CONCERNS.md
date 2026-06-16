@@ -1,7 +1,7 @@
 # Codebase Concerns
 
 **Analysis Date:** 2026-06-16
-**Status:** Sprint 1 em execução — `customer-module` (`create-customer`, `query-customers`) e `account-module` (`create-account`) implementados; demais módulos pendentes.
+**Status:** Sprint 1 em execução — `customer-module` (`create-customer`, `query-customers`), `account-module` (`create-account`) e `application` (`jwt-auth`) implementados; demais módulos pendentes.
 
 ## Resolved (Sprint 1)
 
@@ -37,12 +37,12 @@
 - Current mitigation: Regras documentadas em `AGENTS.md` (idempotency obrigatória)
 - Recommendations: Implementar idempotency keys desde a primeira integração; contract tests para webhooks; nunca expor tokens em código
 
-**Autenticação — especificada, pendente implementação:**
+**Autenticação JWT — implementada (Sprint 1):**
 
-- Risk: Backoffice financeiro sem auth adequada expõe operações sensíveis
-- Files: `backend/application/infrastructure/security/`, `features/auth/` — ver `.specs/features/jwt-auth/`
-- Current mitigation: [ADR-0005](../../adr/0005-spring-security-authentication.md) aceito (JWT stateless, Problem Details 401/403); feature `jwt-auth` especificada com design + 13 tasks
-- Recommendations: Executar `jwt-auth` antes de `transfer-money`; migrar ITs com `JwtTestSupport`; não habilitar `security.jwt.enabled=true` em produção sem `JWT_SECRET` forte
+- Status: ✅ `jwt-auth` concluída — login, filtro JWT, Problem Details 401/403, ITs migradas com `JwtTestSupport`
+- Files: `backend/application/.../infrastructure/security/`, `backend/application/.../features/auth/` — ver `.specs/codebase/INDEX.md` → jwt-auth
+- Current mitigation: [ADR-0005](../../adr/0005-spring-security-authentication.md); `security.jwt.enabled=false` por default (rollout); ITs com flag `true`
+- Recommendations: Habilitar `SECURITY_JWT_ENABLED=true` em produção com `JWT_SECRET` forte (≥256 bits); migrar usuários in-memory para persistência antes de deploy real
 
 **Ledger integrity:**
 
@@ -90,6 +90,11 @@
 - Status: `create-customer`, `query-customers` e `create-account` implementados com testes unitários e integração — ver `.specs/codebase/INDEX.md`
 - Padrão: testes co-localizados por task + gate Maven (`.rules/testing.md`)
 - `query-customers`: 2 use-case unit tests, 1 query-adapter integration test, 1 controller integration test; gate full `mvn verify -Pintegration -pl customer-module`
+
+**application (jwt-auth):**
+
+- Status: `jwt-auth` implementado com testes unitários (JwtService, LoginUseCase, SecurityProblemDetailsHandler) e integração (login, JWT filter, ApplicationWiringIntegrationTest)
+- ITs de customer/account migradas com `security.jwt.enabled=true` e Bearer token via `JwtTestSupport`
 
 **Demais módulos:**
 

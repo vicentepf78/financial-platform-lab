@@ -2,7 +2,7 @@
 
 **Spec:** `.specs/features/jwt-auth/spec.md`
 **ADR:** [ADR-0005](../../../adr/0005-spring-security-authentication.md)
-**Status:** Draft
+**Status:** Implemented
 
 ---
 
