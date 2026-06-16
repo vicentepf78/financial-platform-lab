@@ -7,18 +7,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(classes = CustomerModuleTestApplication.class)
-@Testcontainers
 public abstract class AbstractCustomerIntegrationTest {
 
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withDatabaseName("financial_platform")
-            .withUsername("financial")
-            .withPassword("financial");
+    private static final PostgreSQLContainer<?> POSTGRES;
+
+    static {
+        POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
+                .withDatabaseName("financial_platform")
+                .withUsername("financial")
+                .withPassword("financial");
+        POSTGRES.start();
+    }
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

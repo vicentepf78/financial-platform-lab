@@ -4,6 +4,7 @@ import com.financialplatform.customer.adapters.persistence.CustomerPersistenceCo
 import com.financialplatform.customer.features.createcustomer.CreateCustomerUseCase;
 import com.financialplatform.customer.features.querycustomers.GetCustomerByIdUseCase;
 import com.financialplatform.customer.features.querycustomers.QueryCustomersUseCase;
+import com.financialplatform.customer.features.updatecustomer.UpdateCustomerUseCase;
 import com.financialplatform.customer.ports.CustomerQueryPort;
 import com.financialplatform.customer.ports.CustomerRepositoryPort;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -41,5 +42,12 @@ public class CustomerModuleConfig {
     @Bean
     GetCustomerByIdUseCase getCustomerByIdUseCase(CustomerQueryPort customerQueryPort) {
         return new GetCustomerByIdUseCase(customerQueryPort);
+    }
+
+    @Bean
+    UpdateCustomerUseCase updateCustomerUseCase(
+            CustomerRepositoryPort customerRepository,
+            Clock customerModuleClock) {
+        return new UpdateCustomerUseCase(customerRepository, customerModuleClock);
     }
 }
