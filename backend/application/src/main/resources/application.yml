@@ -43,3 +43,9 @@ logging:
   level:
     root: INFO
     com.financialplatform: DEBUG
+
+security:
+  jwt:
+    enabled: false
+    secret: ${JWT_SECRET:change-me-in-production}
+    expiration-seconds: 3600
