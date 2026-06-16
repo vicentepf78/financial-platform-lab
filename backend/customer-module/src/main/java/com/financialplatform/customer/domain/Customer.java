@@ -116,4 +116,47 @@ public final class Customer extends AggregateRoot {
     public String updatedBy() {
         return updatedBy;
     }
+
+    public Customer update(
+            String name,
+            String email,
+            CustomerType type,
+            String documentRaw,
+            String actor,
+            Instant now) {
+        Objects.requireNonNull(actor, "Actor is required");
+        Objects.requireNonNull(now, "Timestamp is required");
+
+        if (type != null) {
+            throw new ImmutableFieldException("type");
+        }
+        if (documentRaw != null) {
+            throw new ImmutableFieldException("document");
+        }
+
+        String newName = this.name;
+        Email newEmail = this.email;
+
+        if (name != null) {
+            if (name.isBlank()) {
+                throw new IllegalArgumentException("Name must not be blank");
+            }
+            newName = name.trim();
+        }
+
+        if (email != null) {
+            newEmail = Email.of(email);
+        }
+
+        return new Customer(
+                id,
+                newName,
+                this.type,
+                this.document,
+                newEmail,
+                createdAt,
+                createdBy,
+                now,
+                actor);
+    }
 }
