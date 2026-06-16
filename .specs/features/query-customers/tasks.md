@@ -40,8 +40,8 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Port define findById e findAll
-- [ ] Records imutáveis sem Spring
+- [x] Port define findById e findAll
+- [x] Records imutáveis sem Spring
 
 **Tests:** none
 **Gate:** build

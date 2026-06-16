@@ -10,7 +10,7 @@
 | Module | Status | Features |
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
-| `customer-module` | ✅ Implemented | create-customer |
+| `customer-module` | ✅ Implemented | create-customer, query-customers (T1) |
 | `account-module` | ✅ Implemented | create-account |
 | `application` | ✅ Partial | Flyway V1–V3, health, module wiring smoke tests |
 
@@ -53,6 +53,20 @@ Use como padrão para novas vertical slices no `customer-module`.
 ### API (create-customer)
 
 - `POST /api/v1/customers` — envelope `{ data, metadata }`, Problem Details em erros
+
+---
+
+## Reference slice: query-customers (foundation)
+
+Use como padrão para a vertical slice de consulta no `customer-module`.
+
+| Layer | Path |
+| ----- | ---- |
+| Query port | `backend/customer-module/src/main/java/.../ports/CustomerQueryPort.java` |
+| Read models | `backend/customer-module/src/main/java/.../application/readmodel/` |
+| CustomerSummary | `.../application/readmodel/CustomerSummary.java` |
+| CustomerFilter | `.../application/readmodel/CustomerFilter.java` |
+| PageResult / PageRequest | `.../application/readmodel/PageResult.java`, `PageRequest.java` |
 
 ---
 
