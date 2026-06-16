@@ -255,3 +255,7 @@ curl -X POST http://localhost:8080/api/v1/customers \
 ```
 
 Esperado: HTTP 201 com `data.id` UUID; segundo POST com mesmo documento → HTTP 409.
+
+---
+
+> **Feature close:** This feature predates the mandatory doc-close task. Before marking Done, run the **Feature Close Checklist** in `.rules/workflow.md` (update `spec.md`, `design.md`, brownfield docs). Template for future features: jwt-auth T13.

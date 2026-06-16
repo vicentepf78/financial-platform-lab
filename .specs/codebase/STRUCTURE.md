@@ -67,7 +67,7 @@ financial-platform-lab/
 
 **Purpose:** Cadastro e gestão de clientes
 **Location:** `backend/customer-module/`
-**Key features:** create-customer ✅, query-customers ✅, update-customer
+**Key features:** create-customer ✅, query-customers ✅, update-customer ✅
 
 ### account-module
 
@@ -120,7 +120,7 @@ financial-platform-lab/
 **Gestão de Clientes:**
 
 - UI: `frontend/src/pages/customers/`
-- Business Logic: `backend/customer-module/features/createcustomer/`, `backend/customer-module/features/querycustomers/`
+- Business Logic: `backend/customer-module/features/createcustomer/`, `backend/customer-module/features/querycustomers/`, `backend/customer-module/features/updatecustomer/`
 - Data Access: `backend/customer-module/adapters/`
 - Configuration: `backend/application/`
 

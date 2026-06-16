@@ -8,7 +8,7 @@
 ## Execution Plan
 
 ```text
-T1 → T2 → T3 → T4 → T5
+T1 → T2 → T3 → T4 → T5 → T6
 ```
 
 ---
@@ -36,7 +36,7 @@ T1 → T2 → T3 → T4 → T5
 ### T2: UpdateCustomerUseCase + testes
 
 **What:** Orquestração load/save
-**Where:** `backend/customer-module/features/update-customer/`
+**Where:** `backend/customer-module/features/updatecustomer/`
 **Depends on:** T1
 **Requirement:** CUST-16, CUST-18
 
@@ -53,7 +53,7 @@ T1 → T2 → T3 → T4 → T5
 ### T3: UpdateCustomerRequest DTO
 
 **What:** Record PATCH com validação
-**Where:** `backend/customer-module/features/update-customer/`
+**Where:** `backend/customer-module/features/updatecustomer/`
 **Depends on:** T1
 **Requirement:** CUST-19, CUST-20
 
@@ -69,7 +69,7 @@ T1 → T2 → T3 → T4 → T5
 ### T4: UpdateCustomerController + testes integração
 
 **What:** PATCH endpoint
-**Where:** `backend/customer-module/features/update-customer/UpdateCustomerController.java`
+**Where:** `backend/customer-module/features/updatecustomer/UpdateCustomerController.java`
 **Depends on:** T2, T3
 **Requirement:** CUST-16 a CUST-20
 
@@ -96,14 +96,35 @@ T1 → T2 → T3 → T4 → T5
 
 **Tests:** none | **Gate:** full
 
-**Total tasks: 5**
+---
+
+### T6: Documentação + feature close
+
+**What:** Run Feature Close Checklist (`.rules/workflow.md`)
+**Where:** `.specs/`, `.specs/codebase/INDEX.md`
+**Depends on:** T5 + code review fixes
+**Requirement:** CUST-16 a CUST-20
+
+**Done when**:
+
+- [x] Feature Close Checklist (`.rules/workflow.md`) completo
+- [x] spec.md Success Criteria marcados; design.md `Status: Implemented`
+- [x] INDEX.md, STATE.md, ROADMAP.md atualizados
+- [x] Gate: `mvn verify -Pintegration -pl customer-module`
+
+**Tests:** none | **Gate:** full
+
+**Total tasks: 6**
 
 ---
 
 ## Smoke Verify
 
+> **JWT required:** obter token via `POST /api/v1/auth/login` (ver `jwt-auth` smoke).
+
 ```bash
 curl -s -X PATCH http://localhost:8080/api/v1/customers/{id} \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
   -d '{"name":"Updated Name"}' | jq .
 ```

@@ -54,7 +54,7 @@ Follow `tlc-spec-driven`: Specify → (Design) → (Tasks) → Execute.
 
 **Execute session:** load `tasks.md` + relevant `.rules/` only — not full spec + design together.
 
-**Feature close:** when all tasks are done, run the **Feature Close Checklist** in `.rules/workflow.md` — update spec, design, tasks, STATE, ROADMAP, and brownfield docs (`INDEX.md`, etc.).
+**Feature close:** on the **final task** or a dedicated **"Documentação + feature close"** task (template: jwt-auth T13), load `.rules/workflow.md` **Feature Close Checklist** and complete every applicable item. A feature is **not** done until the checklist is complete — updating only `tasks.md` is insufficient. Update spec, design, tasks, STATE, ROADMAP, and brownfield docs (`INDEX.md`, etc.).
 
 **Sub-agents:** delegate implementation per task; orchestrator coordinates. See `.rules/workflow.md`.
 

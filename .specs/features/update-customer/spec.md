@@ -3,19 +3,20 @@
 **Módulo:** `customer-module`
 **Endpoint:** `PATCH /api/v1/customers/{id}`
 **Sprint:** 1 — Core Banking
+**Status:** Done
 
 ---
 
 ## Problem Statement
 
-Dados cadastrais de clientes mudam ao longo do tempo (e-mail, telefone, nome social). O sistema precisa permitir atualização parcial controlada sem alterar documento (CPF/CNPJ) — identificador fiscal imutável após cadastro — mantendo trilha de auditoria.
+Dados cadastrais de clientes mudam ao longo do tempo (e-mail, nome). O sistema precisa permitir atualização parcial controlada sem alterar documento (CPF/CNPJ) — identificador fiscal imutável após cadastro — mantendo trilha de auditoria.
 
 ## Goals
 
-- [ ] Atualizar campos mutáveis: `name`, `email`, telefone opcional
-- [ ] Impedir alteração de `document` e `type` via PATCH
-- [ ] Registrar `updatedAt` e `updatedBy` em toda alteração
-- [ ] Retornar cliente atualizado no envelope padrão
+- [x] Atualizar campos mutáveis: `name`, `email`
+- [x] Impedir alteração de `document` e `type` via PATCH
+- [x] Registrar `updatedAt` e `updatedBy` em toda alteração
+- [x] Retornar cliente atualizado no envelope padrão
 
 ## Out of Scope
 
@@ -23,6 +24,7 @@ Dados cadastrais de clientes mudam ao longo do tempo (e-mail, telefone, nome soc
 | ------- | ------ |
 | Alteração de CPF/CNPJ | Regra cadastral — exige novo cadastro/processo manual |
 | Alteração de type PF↔PJ | Incompatível com documento existente |
+| Atualização de telefone | Sprint 2+ — Customer aggregate has no phone field yet |
 | Exclusão/inativação | Não previsto S1 |
 | Histórico de versões | audit-module futuro |
 | Validação de e-mail via link | Fora escopo v1 |
@@ -91,18 +93,18 @@ Dados cadastrais de clientes mudam ao longo do tempo (e-mail, telefone, nome soc
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| CUST-16 | P1: PATCH campos mutáveis | Design | Pending |
-| CUST-17 | P1: Auditoria update | Design | Pending |
-| CUST-18 | P1: 404 not found | Design | Pending |
-| CUST-19 | P2: Bloqueio document/type | Design | Pending |
-| CUST-20 | P3: Semântica parcial | Design | Pending |
+| CUST-16 | P1: PATCH campos mutáveis | Execute | Done |
+| CUST-17 | P1: Auditoria update | Execute | Done |
+| CUST-18 | P1: 404 not found | Execute | Done |
+| CUST-19 | P2: Bloqueio document/type | Execute | Done |
+| CUST-20 | P3: Semântica parcial | Execute | Done |
 
-**Coverage:** 5 total, 0 mapped, 5 pending
+**Coverage:** 5 total, 5 mapped, 0 pending
 
 ---
 
 ## Success Criteria
 
-- [ ] PATCH funcional com testes unitários e integração
-- [ ] Documento permanece imutável após cadastro
-- [ ] Regras de mutabilidade no domínio (`Customer.update(...)`)
+- [x] PATCH funcional com testes unitários e integração
+- [x] Documento permanece imutável após cadastro
+- [x] Regras de mutabilidade no domínio (`Customer.update(...)`)

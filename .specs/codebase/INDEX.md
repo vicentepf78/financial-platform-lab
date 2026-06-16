@@ -10,7 +10,7 @@
 | Module | Status | Features |
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
-| `customer-module` | ✅ Implemented | create-customer, query-customers |
+| `customer-module` | ✅ Implemented | create-customer, query-customers, update-customer |
 | `account-module` | ✅ Implemented | create-account |
 | `application` | ✅ Implemented | Flyway V1–V3, health, jwt-auth, module wiring smoke tests |
 
@@ -99,6 +99,57 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 ```bash
 curl -s http://localhost:8080/api/v1/customers | jq .
 curl -s http://localhost:8080/api/v1/customers/{id} | jq .
+```
+
+---
+
+## Reference slice: update-customer
+
+Use como padrão para a vertical slice de atualização parcial no `customer-module`.
+
+| Layer | Path |
+| ----- | ---- |
+| Feature slice | `backend/customer-module/src/main/java/.../features/updatecustomer/` |
+| Use case | `.../UpdateCustomerUseCase.java` |
+| Controller | `.../UpdateCustomerController.java` |
+| Request/Response | `.../UpdateCustomerRequest.java`, `UpdateCustomerResponse.java` |
+| Command / result | `.../UpdateCustomerCommand.java`, `UpdateCustomerResult.java` |
+| Domain exceptions | `backend/customer-module/src/main/java/.../domain/NoFieldsToUpdateException.java`, `ImmutableFieldException.java` |
+| Shared domain exception | `backend/customer-module/src/main/java/.../domain/CustomerNotFoundException.java` |
+| Repository port | `backend/customer-module/src/main/java/.../ports/CustomerRepositoryPort.java` |
+| Domain aggregate | `backend/customer-module/src/main/java/.../domain/Customer.java` (`updateProfile`) |
+| Module config | `backend/customer-module/src/main/java/.../infrastructure/CustomerModuleConfig.java` |
+| Exception handler | `backend/customer-module/src/main/java/.../infrastructure/CustomerExceptionHandler.java` |
+
+### Tests (update-customer)
+
+| Type | Path |
+| ---- | ---- |
+| Unit (domain) | `backend/customer-module/src/test/java/.../domain/CustomerUpdateTest.java` |
+| Unit (use case) | `backend/customer-module/src/test/java/.../features/updatecustomer/UpdateCustomerUseCaseTest.java` |
+| Integration (controller) | `backend/customer-module/src/test/java/.../features/updatecustomer/UpdateCustomerControllerIntegrationTest.java` |
+| IT base class | `backend/customer-module/src/test/java/.../support/AbstractCustomerIntegrationTest.java` |
+| Test application | `backend/customer-module/src/test/java/.../support/CustomerModuleTestApplication.java` |
+
+### API (update-customer)
+
+- `PATCH /api/v1/customers/{id}` — atualização parcial de `name` e/ou `email`; envelope `{ data, metadata }`, Problem Details em erros
+- 400 quando body vazio (`NoFieldsToUpdateException`), `document`/`type` enviados (`ImmutableFieldException`) ou validação falha
+- 404 quando cliente não existe (`CustomerNotFoundException`)
+- Requer `Authorization: Bearer <token>` quando `security.jwt.enabled=true` (ver slice `jwt-auth`)
+
+**Verify (manual):**
+
+```bash
+# Obter token (quando JWT habilitado)
+TOKEN=$(curl -s -X POST http://localhost:8080/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"operator","password":"operator"}' | jq -r '.data.accessToken')
+
+curl -s -X PATCH http://localhost:8080/api/v1/customers/{id} \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Maria Santos","email":"maria.santos@example.com"}' | jq .
 ```
 
 ---

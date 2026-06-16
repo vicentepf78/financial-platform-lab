@@ -69,6 +69,7 @@ class CreateAccountUseCaseTest {
 |-------|--------|
 | Cadastro de cliente | Sprint 1 | ✅ `create-customer` |
 | Consulta de clientes | Sprint 1 | ✅ `query-customers` |
+| Atualização de cliente | Sprint 1 | ✅ `update-customer` |
 | Abertura de conta | Sprint 1 | ✅ `create-account` |
 | Login JWT + API autenticada | Sprint 1 | ✅ `jwt-auth` |
 | Transferência | Sprint 1-2 | Planejado |
@@ -148,6 +149,16 @@ Nenhuma feature é considerada completa sem testes nas camadas exigidas pela mat
 | Query adapter | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module` |
 | Controller | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersControllerIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module` |
 | App wiring | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module,application` |
+
+## Feature: update-customer
+
+**Module:** `customer-module` · **Requirements:** CUST-16–CUST-20
+
+| Layer | Test file | Gate |
+| ----- | --------- | ---- |
+| Domain (update rules) | `backend/customer-module/src/test/java/.../domain/CustomerUpdateTest.java` | Quick: `mvn test -pl customer-module` |
+| Use case | `backend/customer-module/src/test/java/.../features/updatecustomer/UpdateCustomerUseCaseTest.java` | Quick: `mvn test -pl customer-module` |
+| Controller | `backend/customer-module/src/test/java/.../features/updatecustomer/UpdateCustomerControllerIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module` |
 
 ## Feature: jwt-auth
 

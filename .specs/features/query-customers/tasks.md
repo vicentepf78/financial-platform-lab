@@ -199,3 +199,7 @@ Esperado: HTTP 200 com envelope `{ data, metadata }`; listagem vazia retorna `da
 | T3 | Use case | unit | unit | ✅ |
 | T4 | Use case | unit | unit | ✅ |
 | T6 | Controller | integration | integration | ✅ |
+
+---
+
+> **Feature close:** This feature predates the mandatory doc-close task. Before marking Done, run the **Feature Close Checklist** in `.rules/workflow.md` (update `spec.md`, `design.md`, brownfield docs). Template for future features: jwt-auth T13.

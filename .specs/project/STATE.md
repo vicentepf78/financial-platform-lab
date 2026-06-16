@@ -1,7 +1,7 @@
 # State
 
 **Last Updated:** 2026-06-16
-**Current Work:** Sprint 1 Execute — `jwt-auth` concluída; próxima: `transfer-money`
+**Current Work:** Sprint 1 Execute — `update-customer` concluída (T1–T6); próxima: `transfer-money`
 
 ---
 
@@ -64,6 +64,7 @@ _(Nenhum blocker ativo.)_
 - Subagents paralelos aceleram criação de ADRs e specs em massa sem perder coerência com PROJECT.md e AGENTS.md.
 - Sprint 1 `transfer-money` é a feature crítica — depende de `LedgerPort` (stub S1, implementação real Sprint 2).
 - Fechar feature exige atualizar **todos** os artefatos do Feature Close Checklist (`.rules/workflow.md`) — não apenas `tasks.md` e `STATE.md`; `INDEX.md` é crítico para agentes seguintes.
+- Toda feature Execute deve incluir tarefa final **Documentação + feature close** (ex.: jwt-auth T13, update-customer T6) — omiti-la atrasa ROADMAP/STATE/INDEX mesmo com código pronto.
 
 ---
 
@@ -80,6 +81,7 @@ _(Nenhum blocker ativo.)_
 | —   | Execute `create-account` (T1–T10)      | 2026-06-15 | —      | ✅ Done |
 | —   | Execute `query-customers` (T1–T7)    | 2026-06-15 | —      | ✅ Done |
 | —   | Execute `jwt-auth` (T1–T13)          | 2026-06-16 | —      | ✅ Done |
+| —   | Execute `update-customer` (T1–T6)  | 2026-06-16 | —      | ✅ Done |
 
 ---
 
@@ -104,6 +106,7 @@ _(Nenhum blocker ativo.)_
 - [x] Executar Sprint 1 — `query-customers` (T1–T7)
 - [x] Especificar Sprint 1 — `jwt-auth` (spec + design + tasks, T1–T13)
 - [x] Executar Sprint 1 — `jwt-auth` (T1–T13)
+- [x] Executar Sprint 1 — `update-customer` (T1–T6)
 - [ ] Executar Sprint 1 — `transfer-money`
 
 ---
@@ -119,7 +122,7 @@ _(Nenhum blocker ativo.)_
 | Specify Sprints 2-7 | ✅ | 22 features |
 | Design Sprint 1 | ✅ | 7 design.md |
 | Tasks Sprint 1 | ✅ | 7 tasks.md |
-| **Execute (POC)** | ⏳ | `create-customer` ✅; `create-account` ✅; `query-customers` ✅; `jwt-auth` ✅; próxima: `transfer-money` |
+| **Execute (POC)** | ⏳ | `create-customer` ✅; `query-customers` ✅; `update-customer` ✅; `create-account` ✅; `jwt-auth` ✅; próxima: `transfer-money` |
 
 ---
 

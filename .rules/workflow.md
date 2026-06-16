@@ -37,6 +37,10 @@ When the last task of a feature is complete, update **all** applicable artifacts
 
 **Rule:** Updating only `tasks.md` and `STATE.md` is insufficient. The feature is not closed until INDEX.md reflects the implementation — future agents depend on it to avoid re-exploration.
 
+**Execute rule:** Every feature `tasks.md` MUST include a final task **"Documentação + feature close"** (see jwt-auth T13).
+
+**Execute session:** When running the final task, agents MUST load this checklist — do not skip `spec.md` / `design.md` updates.
+
 ## Context loading (agents)
 
 **Always:** `AGENTS.md` + task-specific `.rules/` files as needed.
