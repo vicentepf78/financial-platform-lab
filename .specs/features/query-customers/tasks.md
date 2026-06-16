@@ -95,10 +95,10 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Defaults page=0 size=20 max=100
-- [ ] Metadata preenchida corretamente
-- [ ] Gate check passes: `mvn test -pl customer-module`
-- [ ] Test count: ≥4 testes passam
+- [x] Defaults page=0 size=20 max=100
+- [x] Metadata preenchida corretamente
+- [x] Gate check passes: `mvn test -pl customer-module`
+- [x] Test count: ≥4 testes passam
 
 **Tests:** unit
 **Gate:** quick
