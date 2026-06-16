@@ -111,6 +111,24 @@ class JpaCustomerQueryAdapterIntegrationTest extends AbstractCustomerIntegration
     }
 
     @Test
+    void shouldReturnCustomersOrderedByCreatedAtDescending() {
+        Instant oldest = FIXED_INSTANT.minusSeconds(200);
+        Instant middle = FIXED_INSTANT.minusSeconds(100);
+        Instant newest = FIXED_INSTANT;
+
+        saveCustomer("Oldest", CustomerType.INDIVIDUAL, "529.982.247-25", "oldest@example.com", oldest);
+        saveCustomer("Newest", CustomerType.INDIVIDUAL, "390.533.447-05", "newest@example.com", newest);
+        saveCustomer("Middle", CustomerType.INDIVIDUAL, "231.002.999-81", "middle@example.com", middle);
+
+        PageResult<CustomerSummary> result = customerQueryPort.findAll(emptyFilter(), new PageRequest(0, 10));
+
+        assertThat(result.content()).extracting(CustomerSummary::name)
+                .containsExactly("Newest", "Middle", "Oldest");
+        assertThat(result.content()).extracting(CustomerSummary::createdAt)
+                .containsExactly(newest, middle, oldest);
+    }
+
+    @Test
     void shouldFindCustomerByIdWhenCustomerExists() {
         Customer customer = saveCustomer(
                 "Ana Costa",
@@ -122,7 +140,11 @@ class JpaCustomerQueryAdapterIntegrationTest extends AbstractCustomerIntegration
     }
 
     private Customer saveCustomer(String name, CustomerType type, String document, String email) {
-        Customer customer = Customer.create(name, type, document, email, "system", FIXED_INSTANT);
+        return saveCustomer(name, type, document, email, FIXED_INSTANT);
+    }
+
+    private Customer saveCustomer(String name, CustomerType type, String document, String email, Instant createdAt) {
+        Customer customer = Customer.create(name, type, document, email, "system", createdAt);
         return customerRepository.save(customer);
     }
 

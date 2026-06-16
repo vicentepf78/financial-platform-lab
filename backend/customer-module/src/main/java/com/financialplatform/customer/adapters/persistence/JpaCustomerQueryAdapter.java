@@ -8,6 +8,7 @@ import com.financialplatform.customer.domain.Customer;
 import com.financialplatform.customer.ports.CustomerQueryPort;
 import com.financialplatform.sharedkernel.domain.Identifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -30,7 +31,10 @@ public class JpaCustomerQueryAdapter implements CustomerQueryPort {
     public PageResult<CustomerSummary> findAll(CustomerFilter filter, PageRequest page) {
         Specification<CustomerEntity> specification = CustomerQuerySpecifications.fromFilter(filter);
         org.springframework.data.domain.PageRequest springPage =
-                org.springframework.data.domain.PageRequest.of(page.page(), page.size());
+                org.springframework.data.domain.PageRequest.of(
+                        page.page(),
+                        page.size(),
+                        Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<CustomerEntity> result = jpaRepository.findAll(specification, springPage);
 
