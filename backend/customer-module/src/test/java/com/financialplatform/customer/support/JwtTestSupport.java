@@ -19,8 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public final class JwtTestSupport {
 
     private static final String LOGIN_PATH = "/api/v1/auth/login";
-    private static final String OPERATOR_USERNAME = "admin";
-    private static final String OPERATOR_PASSWORD = "admin";
+    private static final String OPERATOR_USERNAME = "operator";
+    private static final String OPERATOR_PASSWORD = "operator";
 
     private JwtTestSupport() {
     }

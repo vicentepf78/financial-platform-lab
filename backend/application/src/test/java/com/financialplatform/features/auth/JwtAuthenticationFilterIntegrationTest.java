@@ -2,6 +2,8 @@ package com.financialplatform.features.auth;
 
 import com.financialplatform.FinancialPlatformApplication;
 import com.jayway.jsonpath.JsonPath;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,6 +19,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 class JwtAuthenticationFilterIntegrationTest {
+
+    private static final String INTEGRATION_JWT_SECRET = "integration-test-jwt-secret-key-32chars";
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
@@ -50,7 +59,7 @@ class JwtAuthenticationFilterIntegrationTest {
         registry.add("spring.flyway.locations", () -> "classpath:db/migration");
         registry.add("spring.kafka.bootstrap-servers", KAFKA::getBootstrapServers);
         registry.add("security.jwt.enabled", () -> "true");
-        registry.add("security.jwt.secret", () -> "integration-test-jwt-secret-key-32chars");
+        registry.add("security.jwt.secret", () -> INTEGRATION_JWT_SECRET);
         registry.add("security.jwt.expiration-seconds", () -> "3600");
     }
 
@@ -58,6 +67,7 @@ class JwtAuthenticationFilterIntegrationTest {
     void shouldReturn401WhenProtectedRouteCalledWithoutToken() throws Exception {
         mockMvc.perform(get("/api/v1/customers"))
                 .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.type").value("https://api.financial-platform.lab/problems/invalid-token"))
                 .andExpect(jsonPath("$.title").value("Authentication required"));
     }
 
@@ -105,6 +115,30 @@ class JwtAuthenticationFilterIntegrationTest {
     void shouldReturn401WhenBearerTokenIsInvalid() throws Exception {
         mockMvc.perform(get("/api/v1/customers").header("Authorization", "Bearer not-a-valid-jwt"))
                 .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Invalid token"));
+    }
+
+    @Test
+    void shouldReturn401WhenBearerTokenIsExpired() throws Exception {
+        String expiredToken = Jwts.builder()
+                .subject("operator")
+                .claim("roles", List.of("OPERATOR"))
+                .issuedAt(Date.from(Instant.now().minusSeconds(7200)))
+                .expiration(Date.from(Instant.now().minusSeconds(3600)))
+                .signWith(Keys.hmacShaKeyFor(INTEGRATION_JWT_SECRET.getBytes(StandardCharsets.UTF_8)))
+                .compact();
+
+        mockMvc.perform(get("/api/v1/customers").header("Authorization", "Bearer " + expiredToken))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.type").value("https://api.financial-platform.lab/problems/token-expired"))
+                .andExpect(jsonPath("$.title").value("Token expired"));
+    }
+
+    @Test
+    void shouldReturn401WhenAuthorizationUsesBasicScheme() throws Exception {
+        mockMvc.perform(get("/api/v1/customers").header("Authorization", "Basic dXNlcjpwYXNz"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.type").value("https://api.financial-platform.lab/problems/invalid-token"))
                 .andExpect(jsonPath("$.title").value("Invalid token"));
     }
 

@@ -52,6 +52,12 @@ class SecurityConfigTest {
         assertThat(jwtProperties.isEnabled()).isFalse();
         assertThat(jwtProperties.getSecret()).isEqualTo("test-secret");
         assertThat(jwtProperties.getExpirationSeconds()).isEqualTo(7200);
+        assertThat(jwtProperties.getUsers()).containsKeys("operator", "admin");
+        assertThat(jwtProperties.getUsers().get("operator").getPassword()).isEqualTo("operator");
+        assertThat(jwtProperties.getUsers().get("operator").getRoles()).containsExactly("OPERATOR");
+        assertThat(jwtProperties.getUsers().get("admin").getPassword()).isEqualTo("admin");
+        assertThat(jwtProperties.getUsers().get("admin").getRoles())
+                .containsExactlyInAnyOrder("ADMIN", "OPERATOR");
     }
 
     @SpringBootApplication

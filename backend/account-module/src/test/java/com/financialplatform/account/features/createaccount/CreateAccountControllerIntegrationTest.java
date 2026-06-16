@@ -44,6 +44,7 @@ class CreateAccountControllerIntegrationTest extends AbstractAccountWebIntegrati
                                 }
                                 """.formatted(customerId.value())))
                 .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.type").value("https://api.financial-platform.lab/problems/invalid-token"))
                 .andExpect(jsonPath("$.title").value("Authentication required"));
     }
 

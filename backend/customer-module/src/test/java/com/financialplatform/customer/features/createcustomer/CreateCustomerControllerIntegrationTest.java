@@ -43,6 +43,7 @@ class CreateCustomerControllerIntegrationTest extends AbstractCustomerIntegratio
                                 }
                                 """.formatted(VALID_CPF)))
                 .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.type").value("https://api.financial-platform.lab/problems/invalid-token"))
                 .andExpect(jsonPath("$.title").value("Authentication required"));
     }
 

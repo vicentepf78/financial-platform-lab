@@ -1,6 +1,7 @@
 package com.financialplatform.infrastructure.security;
 
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,9 +55,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        String token = extractBearerToken(request);
-        if (token == null) {
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorization == null || authorization.isBlank()) {
             filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (!authorization.startsWith(BEARER_PREFIX)) {
+            rejectInvalidToken(request, response, "Authorization header must use Bearer scheme");
+            return;
+        }
+
+        String token = authorization.substring(BEARER_PREFIX.length()).trim();
+        if (token.isEmpty()) {
+            rejectInvalidToken(request, response, "Bearer token must not be empty");
             return;
         }
 
@@ -65,19 +77,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(toAuthentication(claims));
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
-            SecurityContextHolder.clearContext();
-            authenticationEntryPoint.commence(
-                    request, response, new BadCredentialsException("Invalid token", ex));
+            rejectInvalidToken(request, response, ex);
         }
     }
 
-    private static String extractBearerToken(HttpServletRequest request) {
-        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
-            return null;
-        }
-        String token = authorization.substring(BEARER_PREFIX.length()).trim();
-        return token.isEmpty() ? null : token;
+    private void rejectInvalidToken(
+            HttpServletRequest request, HttpServletResponse response, String detail) throws IOException, ServletException {
+        rejectInvalidToken(request, response, new MalformedJwtException(detail));
+    }
+
+    private void rejectInvalidToken(
+            HttpServletRequest request, HttpServletResponse response, JwtException cause)
+            throws IOException, ServletException {
+        SecurityContextHolder.clearContext();
+        authenticationEntryPoint.commence(
+                request, response, new BadCredentialsException("Invalid token", cause));
     }
 
     private static UsernamePasswordAuthenticationToken toAuthentication(JwtClaims claims) {

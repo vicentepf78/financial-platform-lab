@@ -49,3 +49,10 @@ security:
     enabled: false
     secret: ${JWT_SECRET:change-me-in-production}
     expiration-seconds: 3600
+    users:
+      operator:
+        password: ${JWT_OPERATOR_PASSWORD:operator}
+        roles: OPERATOR
+      admin:
+        password: ${JWT_ADMIN_PASSWORD:admin}
+        roles: ADMIN,OPERATOR

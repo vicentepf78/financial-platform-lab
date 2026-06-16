@@ -30,7 +30,7 @@ class LoginUseCaseTest {
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
         useCase = new LoginUseCase(
-                new InMemoryUserDetailsService(),
+                new InMemoryUserDetailsService(jwtProperties),
                 passwordEncoder,
                 jwtService,
                 jwtProperties);

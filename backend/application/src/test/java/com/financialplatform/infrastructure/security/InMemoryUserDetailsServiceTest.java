@@ -15,7 +15,7 @@ class InMemoryUserDetailsServiceTest {
 
     @BeforeEach
     void setUp() {
-        userDetailsService = new InMemoryUserDetailsService();
+        userDetailsService = new InMemoryUserDetailsService(new JwtProperties());
     }
 
     @Test

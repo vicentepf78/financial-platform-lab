@@ -69,14 +69,14 @@ public class SecurityProblemDetailsHandler implements AuthenticationEntryPoint, 
                     "Invalid token",
                     defaultDetail(jwtException, "Access token is invalid"));
         }
-        if (authException instanceof BadCredentialsException) {
+        if (authException instanceof BadCredentialsException badCredentials) {
             return new UnauthorizedProblem(
-                    "invalid-credentials",
-                    "Invalid credentials",
-                    defaultDetail(authException, "Invalid credentials"));
+                    "invalid-token",
+                    "Invalid token",
+                    defaultDetail(badCredentials, "Access token is invalid"));
         }
         return new UnauthorizedProblem(
-                "invalid-credentials",
+                "invalid-token",
                 "Authentication required",
                 defaultDetail(authException, "Authentication is required to access this resource"));
     }

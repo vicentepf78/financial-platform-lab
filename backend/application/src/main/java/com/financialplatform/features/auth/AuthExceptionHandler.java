@@ -1,5 +1,6 @@
 package com.financialplatform.features.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,13 @@ public class AuthExceptionHandler {
     private static final String PROBLEMS_BASE_URI = "https://api.financial-platform.lab/problems/";
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ProblemDetail> handleInvalidCredentials(InvalidCredentialsException ex) {
+    public ResponseEntity<ProblemDetail> handleInvalidCredentials(
+            InvalidCredentialsException ex,
+            HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
         problem.setType(URI.create(PROBLEMS_BASE_URI + "invalid-credentials"));
         problem.setTitle("Invalid credentials");
+        problem.setInstance(URI.create(request.getRequestURI()));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
     }
 
@@ -30,8 +34,8 @@ public class AuthExceptionHandler {
                 .orElse("Validation failed");
 
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
+        problem.setType(URI.create(PROBLEMS_BASE_URI + "validation-error"));
         problem.setTitle("Validation failed");
-        problem.setProperty("type", "validation-error");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
     }
 }

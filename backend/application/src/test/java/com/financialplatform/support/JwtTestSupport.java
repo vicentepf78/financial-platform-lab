@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Test helpers for obtaining JWT access tokens and attaching them to MockMvc requests.
  *
  * <p>{@code obtainOperatorToken} calls {@code POST /api/v1/auth/login} with the seeded
- * operator credentials ({@code admin}/{@code admin}) and returns the {@code accessToken}
+ * operator credentials ({@code operator}/{@code operator}) and returns the {@code accessToken}
  * from the API envelope ({@code $.data.accessToken}).
  *
  * <p>{@code bearerToken} returns a {@link RequestPostProcessor} that sets
@@ -40,8 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public final class JwtTestSupport {
 
     private static final String LOGIN_PATH = "/api/v1/auth/login";
-    private static final String OPERATOR_USERNAME = "admin";
-    private static final String OPERATOR_PASSWORD = "admin";
+    private static final String OPERATOR_USERNAME = "operator";
+    private static final String OPERATOR_PASSWORD = "operator";
 
     private JwtTestSupport() {
     }

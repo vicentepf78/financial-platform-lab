@@ -77,7 +77,9 @@ class LoginControllerIntegrationTest {
                                 }
                                 """))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.detail").value("Invalid credentials"));
+                .andExpect(jsonPath("$.type").value("https://api.financial-platform.lab/problems/invalid-credentials"))
+                .andExpect(jsonPath("$.detail").value("Invalid credentials"))
+                .andExpect(jsonPath("$.instance").value("/api/v1/auth/login"));
     }
 
     @Test
