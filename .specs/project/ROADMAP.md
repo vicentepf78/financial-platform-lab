@@ -1,7 +1,7 @@
 # Roadmap
 
 **Current Milestone:** Sprint 1 — Core Banking
-**Status:** Execute in progress — `create-customer` ✅ · `create-account` ✅ · `query-customers` ✅ · próxima: `transfer-money`
+**Status:** Execute in progress — `create-customer` ✅ · `create-account` ✅ · `query-customers` ✅ · `jwt-auth` SPECIFIED · próxima execute: `jwt-auth` → `transfer-money`
 
 > **Spec-driven:** 30 features em `.specs/features/` · 7 ADRs em `adr/` · Sprint 1 com 54 tarefas atômicas
 
@@ -13,6 +13,13 @@
 **Target:** Cliente criado, conta aberta e transferência executada com rastreabilidade
 
 ### Features
+
+**Segurança (cross-cutting)** - SPECIFIED → [jwt-auth](../features/jwt-auth/spec.md) · ADR [0005](../../adr/0005-spring-security-authentication.md)
+
+- Login JWT stateless (`POST /api/v1/auth/login`)
+- Proteção de `/api/v1/**` com exceções (login, webhook MP, health)
+- Roles `OPERATOR` / `ADMIN`; Problem Details 401/403
+- **Pré-requisito** para `transfer-money` e demais mutações autenticadas
 
 **Gestão de Clientes** - [create-customer](../features/create-customer/spec.md) ✅ DONE · [query-customers](../features/query-customers/spec.md) ✅ DONE · SPECIFIED → [update-customer](../features/update-customer/spec.md)
 

@@ -112,13 +112,54 @@ Ver [`.env.example`](../../.env.example)
 **Configuration:** `OTEL_EXPORTER_OTLP_ENDPOINT`
 **Metrics obrigatórias:** throughput, latência, erros, retries
 
+## Authentication (Spring Security + JWT)
+
+**Service:** Spring Security 6 + JWT (HMAC-SHA256)
+**Purpose:** Autenticação stateless da API REST para SPA React
+**Phase:** Sprint 1 — feature [jwt-auth](../features/jwt-auth/spec.md)
+**ADR:** [ADR-0005](../../adr/0005-spring-security-authentication.md)
+**Implementation (planejada):** `backend/application/infrastructure/security/`, `backend/application/features/auth/`
+
+### Fluxo
+
+1. `POST /api/v1/auth/login` → `{ data: { accessToken, tokenType, expiresIn } }`
+2. Requisições subsequentes: `Authorization: Bearer <token>`
+3. Claims JWT: `sub` (username), `roles`, `exp`, `iat`
+
+### Rotas públicas (v1)
+
+| Rota | Motivo |
+| ---- | ------ |
+| `POST /api/v1/auth/login` | Emissão de token |
+| `POST /api/v1/webhooks/mercadopago` | HMAC (não JWT) — Sprint 3 |
+| `GET /actuator/health` | Liveness probe |
+
+### Roles v1
+
+| Role | Uso |
+| ---- | --- |
+| `OPERATOR` | Operações diárias do backoffice |
+| `ADMIN` | Inclui `OPERATOR`; administração |
+
+### Configuration
+
+| Variável | Componente |
+| -------- | ---------- |
+| `SECURITY_JWT_ENABLED` | Backend — ativa proteção (`false` em rollout) |
+| `JWT_SECRET` | Backend — chave de assinatura (≥256 bits) |
+| `JWT_EXPIRATION_SECONDS` | Backend — TTL do access token (default 3600) |
+| `JWT_OPERATOR_PASSWORD` | Backend — senha usuário `operator` (v1 in-memory) |
+| `JWT_ADMIN_PASSWORD` | Backend — senha usuário `admin` (v1 in-memory) |
+
+**Fora do escopo v1:** refresh token, OAuth2/OIDC, blacklist/revogação, persistência de usuários.
+
 ## API Integrations (Internal)
 
 ### REST API (Backoffice → Backend)
 
 **Purpose:** Operações do backoffice financeiro
 **Location:** `backend/*/features/*/*Controller.java`
-**Authentication:** Spring Security (JWT ou session — a definir no ADR de segurança)
+**Authentication:** JWT Bearer (Spring Security) — [jwt-auth spec](../features/jwt-auth/spec.md)
 **Response format:**
 
 ```json

@@ -37,12 +37,12 @@
 - Current mitigation: Regras documentadas em `AGENTS.md` (idempotency obrigatória)
 - Recommendations: Implementar idempotency keys desde a primeira integração; contract tests para webhooks; nunca expor tokens em código
 
-**Autenticação não definida:**
+**Autenticação — especificada, pendente implementação:**
 
 - Risk: Backoffice financeiro sem auth adequada expõe operações sensíveis
-- Files: A definir — `backend/application/` security config
-- Current mitigation: Spring Security planejado; ADR de segurança pendente
-- Recommendations: Definir JWT vs session no ADR; RBAC mínimo (admin, operador, auditor)
+- Files: `backend/application/infrastructure/security/`, `features/auth/` — ver `.specs/features/jwt-auth/`
+- Current mitigation: [ADR-0005](../../adr/0005-spring-security-authentication.md) aceito (JWT stateless, Problem Details 401/403); feature `jwt-auth` especificada com design + 13 tasks
+- Recommendations: Executar `jwt-auth` antes de `transfer-money`; migrar ITs com `JwtTestSupport`; não habilitar `security.jwt.enabled=true` em produção sem `JWT_SECRET` forte
 
 **Ledger integrity:**
 
