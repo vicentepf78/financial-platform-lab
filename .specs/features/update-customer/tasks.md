@@ -1,7 +1,7 @@
 # Update Customer — Tasks
 
 **Design:** `.specs/features/update-customer/design.md`
-**Status:** Draft
+**Status:** Done
 
 ---
 
@@ -24,10 +24,10 @@ T1 → T2 → T3 → T4 → T5
 
 **Done when**:
 
-- [ ] update parcial funciona
-- [ ] document/type imutáveis lançam exceção
-- [ ] Gate: `mvn test -pl customer-module`
-- [ ] Test count: ≥5 passam
+- [x] update parcial funciona
+- [x] document/type imutáveis lançam exceção
+- [x] Gate: `mvn test -pl customer-module`
+- [x] Test count: ≥5 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -42,9 +42,9 @@ T1 → T2 → T3 → T4 → T5
 
 **Done when**:
 
-- [ ] 404 quando não encontrado
-- [ ] Gate: `mvn test -pl customer-module`
-- [ ] Test count: ≥4 passam
+- [x] 404 quando não encontrado
+- [x] Gate: `mvn test -pl customer-module`
+- [x] Test count: ≥4 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -59,8 +59,8 @@ T1 → T2 → T3 → T4 → T5
 
 **Done when**:
 
-- [ ] Campos opcionais Optional/nullable
-- [ ] Validator rejeita document/type
+- [x] Campos opcionais Optional/nullable
+- [x] Validator rejeita document/type
 
 **Tests:** none | **Gate:** build
 
@@ -75,9 +75,9 @@ T1 → T2 → T3 → T4 → T5
 
 **Done when**:
 
-- [ ] 200, 400, 404 cobertos
-- [ ] Gate: `mvn verify -Pintegration -pl customer-module`
-- [ ] Test count: ≥5 passam
+- [x] 200, 400, 404 cobertos
+- [x] Gate: `mvn verify -Pintegration -pl customer-module`
+- [x] Test count: ≥5 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -91,12 +91,22 @@ T1 → T2 → T3 → T4 → T5
 
 **Done when**:
 
-- [ ] PATCH exposto
-- [ ] Smoke curl documentado
+- [x] PATCH exposto
+- [x] Smoke curl documentado
 
 **Tests:** none | **Gate:** full
 
 **Total tasks: 5**
+
+---
+
+## Smoke Verify
+
+```bash
+curl -s -X PATCH http://localhost:8080/api/v1/customers/{id} \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Updated Name"}' | jq .
+```
 
 ---
 
