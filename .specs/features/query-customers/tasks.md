@@ -76,10 +76,10 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Encontrado retorna detail
-- [ ] Não encontrado lança CustomerNotFoundException
-- [ ] Gate check passes: `mvn test -pl customer-module`
-- [ ] Test count: ≥3 testes passam
+- [x] Encontrado retorna detail
+- [x] Não encontrado lança CustomerNotFoundException
+- [x] Gate check passes: `mvn test -pl customer-module`
+- [x] Test count: ≥3 testes passam
 
 **Tests:** unit
 **Gate:** quick

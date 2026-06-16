@@ -10,7 +10,7 @@
 | Module | Status | Features |
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
-| `customer-module` | ✅ Implemented | create-customer, query-customers (T1–T2, T5) |
+| `customer-module` | ✅ Implemented | create-customer, query-customers (T1–T3, T5) |
 | `account-module` | ✅ Implemented | create-account |
 | `application` | ✅ Partial | Flyway V1–V3, health, module wiring smoke tests |
 
@@ -62,6 +62,10 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 
 | Layer | Path |
 | ----- | ---- |
+| Feature slice | `backend/customer-module/src/main/java/.../features/querycustomers/` |
+| Use case | `.../GetCustomerByIdUseCase.java` |
+| Query / result | `.../GetCustomerByIdQuery.java`, `CustomerDetailResult.java` |
+| Domain exception | `backend/customer-module/src/main/java/.../domain/CustomerNotFoundException.java` |
 | Query port | `backend/customer-module/src/main/java/.../ports/CustomerQueryPort.java` |
 | Read models | `backend/customer-module/src/main/java/.../application/readmodel/` |
 | CustomerSummary | `.../application/readmodel/CustomerSummary.java` |
@@ -71,6 +75,7 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 | Query specifications | `.../adapters/persistence/CustomerQuerySpecifications.java` |
 | Summary mapper | `.../adapters/persistence/CustomerSummaryMapper.java` |
 | Integration (query adapter) | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` |
+| Unit (use case) | `backend/customer-module/src/test/java/.../features/querycustomers/GetCustomerByIdUseCaseTest.java` |
 | Query response DTOs | `backend/customer-module/src/main/java/.../features/querycustomers/` (`QueryCustomersResponse`, `GetCustomerByIdResponse`, `PaginationMetadata`) |
 
 ---
