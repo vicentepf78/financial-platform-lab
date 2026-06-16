@@ -28,7 +28,9 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         if (jwtProperties.isEnabled()) {
-            http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+            http.authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/api/v1/auth/login").permitAll()
+                            .anyRequest().authenticated())
                     .exceptionHandling(ex -> ex
                             .authenticationEntryPoint(securityProblemDetailsHandler)
                             .accessDeniedHandler(securityProblemDetailsHandler));
