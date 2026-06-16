@@ -64,8 +64,39 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
     }
 
     @Test
+    void shouldReturn200WithFilteredCustomersWhenTypeFilterIsProvided() throws Exception {
+        createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
+        createCompanyCustomer("Acme Ltda", "11.222.333/0001-81", "contato@acme.com");
+
+        mockMvc.perform(get("/api/v1/customers").param("type", "INDIVIDUAL"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].name").value("Maria Silva"))
+                .andExpect(jsonPath("$.data[0].type").value("INDIVIDUAL"));
+    }
+
+    @Test
+    void shouldReturn200WithFilteredCustomersWhenDocumentFilterIsProvided() throws Exception {
+        createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
+        createCustomer("João Pereira", "390.533.447-05", "joao@example.com");
+
+        mockMvc.perform(get("/api/v1/customers").param("document", VALID_CPF))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].name").value("Maria Silva"))
+                .andExpect(jsonPath("$.data[0].document").value(VALID_CPF));
+    }
+
+    @Test
     void shouldReturn400WhenPageIsNegative() throws Exception {
         mockMvc.perform(get("/api/v1/customers").param("page", "-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").exists());
+    }
+
+    @Test
+    void shouldReturn400WhenSizeIsZero() throws Exception {
+        mockMvc.perform(get("/api/v1/customers").param("size", "0"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").exists());
     }
@@ -103,16 +134,24 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
     }
 
     private String createCustomer(String name, String document, String email) throws Exception {
+        return createCustomerWithType(name, "INDIVIDUAL", document, email);
+    }
+
+    private String createCompanyCustomer(String name, String document, String email) throws Exception {
+        return createCustomerWithType(name, "COMPANY", document, email);
+    }
+
+    private String createCustomerWithType(String name, String type, String document, String email) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/customers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "name": "%s",
-                                  "type": "INDIVIDUAL",
+                                  "type": "%s",
                                   "document": "%s",
                                   "email": "%s"
                                 }
-                                """.formatted(name, document, email)))
+                                """.formatted(name, type, document, email)))
                 .andExpect(status().isCreated())
                 .andReturn();
 
