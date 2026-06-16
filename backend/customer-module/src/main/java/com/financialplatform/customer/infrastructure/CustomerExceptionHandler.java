@@ -3,6 +3,8 @@ package com.financialplatform.customer.infrastructure;
 import com.financialplatform.customer.domain.CustomerNotFoundException;
 import com.financialplatform.customer.domain.CustomerTypeMismatchException;
 import com.financialplatform.customer.domain.DuplicateDocumentException;
+import com.financialplatform.customer.domain.ImmutableFieldException;
+import com.financialplatform.customer.domain.NoFieldsToUpdateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,22 @@ public class CustomerExceptionHandler {
         problem.setTitle("Duplicate document");
         problem.setProperty("type", "duplicate-document");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
+    }
+
+    @ExceptionHandler(NoFieldsToUpdateException.class)
+    public ResponseEntity<ProblemDetail> handleNoFieldsToUpdate(NoFieldsToUpdateException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("No fields to update");
+        problem.setProperty("type", "no-fields-to-update");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
+    }
+
+    @ExceptionHandler(ImmutableFieldException.class)
+    public ResponseEntity<ProblemDetail> handleImmutableField(ImmutableFieldException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("Field cannot be changed");
+        problem.setProperty("type", "immutable-field");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
     }
 
     @ExceptionHandler({CustomerTypeMismatchException.class, IllegalArgumentException.class})

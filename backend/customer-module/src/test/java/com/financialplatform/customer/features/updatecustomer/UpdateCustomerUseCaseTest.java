@@ -3,6 +3,7 @@ package com.financialplatform.customer.features.updatecustomer;
 import com.financialplatform.customer.domain.Customer;
 import com.financialplatform.customer.domain.CustomerNotFoundException;
 import com.financialplatform.customer.domain.CustomerType;
+import com.financialplatform.customer.domain.NoFieldsToUpdateException;
 import com.financialplatform.customer.ports.CustomerRepositoryPort;
 import com.financialplatform.sharedkernel.domain.Identifier;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,6 +113,41 @@ class UpdateCustomerUseCaseTest {
         ArgumentCaptor<Customer> captor = ArgumentCaptor.forClass(Customer.class);
         verify(customerRepository).save(captor.capture());
         assertThat(captor.getValue().updatedBy()).isEqualTo("operator-1");
+    }
+
+    @Test
+    void shouldThrowNoFieldsToUpdateExceptionWhenNameAndEmailAreNull() {
+        Customer customer = existingCustomer();
+
+        assertThatThrownBy(() -> useCase.execute(new UpdateCustomerCommand(
+                customer.id(),
+                null,
+                null,
+                null)))
+                .isInstanceOf(NoFieldsToUpdateException.class)
+                .hasMessage("No fields to update");
+
+        verify(customerRepository, never()).findById(any());
+        verify(customerRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldReturnExistingCustomerWithoutSaveWhenNoBusinessFieldChanges() {
+        Customer customer = existingCustomer();
+        when(customerRepository.findById(customer.id())).thenReturn(Optional.of(customer));
+
+        UpdateCustomerResult result = useCase.execute(new UpdateCustomerCommand(
+                customer.id(),
+                "Maria Silva",
+                "maria@example.com",
+                null));
+
+        assertThat(result.id()).isEqualTo(customer.id().value());
+        assertThat(result.name()).isEqualTo("Maria Silva");
+        assertThat(result.email()).isEqualTo("maria@example.com");
+        assertThat(result.updatedAt()).isEqualTo(CREATED_AT);
+
+        verify(customerRepository, never()).save(any());
     }
 
     @Test

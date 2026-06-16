@@ -110,6 +110,90 @@ class UpdateCustomerControllerIntegrationTest extends AbstractCustomerIntegratio
     }
 
     @Test
+    void shouldReturn400WhenBodyIsEmpty() throws Exception {
+        String customerId = createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
+
+        mockMvc.perform(patch("/api/v1/customers/{id}", customerId)
+                        .with(bearerToken(operatorToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(containsString("No fields to update")));
+    }
+
+    @Test
+    void shouldReturn400WhenNameIsBlank() throws Exception {
+        String customerId = createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
+
+        mockMvc.perform(patch("/api/v1/customers/{id}", customerId)
+                        .with(bearerToken(operatorToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": ""
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").exists());
+
+        mockMvc.perform(patch("/api/v1/customers/{id}", customerId)
+                        .with(bearerToken(operatorToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "   "
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(containsString("blank")));
+    }
+
+    @Test
+    void shouldReturn400WhenCustomerIdIsInvalid() throws Exception {
+        mockMvc.perform(patch("/api/v1/customers/{id}", "not-a-uuid")
+                        .with(bearerToken(operatorToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Maria Santos"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").exists());
+    }
+
+    @Test
+    void shouldReturn401WhenUpdateCustomerCalledWithoutToken() throws Exception {
+        mockMvc.perform(patch("/api/v1/customers/{id}", UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Maria Santos"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.type").value("https://api.financial-platform.lab/problems/invalid-token"))
+                .andExpect(jsonPath("$.title").value("Authentication required"));
+    }
+
+    @Test
+    void shouldReturn200WhenOnlyEmailIsUpdatedPreservingName() throws Exception {
+        String customerId = createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
+
+        mockMvc.perform(patch("/api/v1/customers/{id}", customerId)
+                        .with(bearerToken(operatorToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "maria.santos@example.com"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.name").value("Maria Silva"))
+                .andExpect(jsonPath("$.data.email").value("maria.santos@example.com"));
+    }
+
+    @Test
     void shouldReturn200WhenOnlyNameIsUpdatedPreservingEmail() throws Exception {
         String customerId = createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
 
