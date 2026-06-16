@@ -1,7 +1,7 @@
 # State
 
 **Last Updated:** 2026-06-15
-**Current Work:** Sprint 1 Execute — `create-customer` concluída; próxima feature: `create-account`
+**Current Work:** Sprint 1 Execute — `create-account` concluída; próxima feature: `transfer-money`
 
 ---
 
@@ -76,6 +76,7 @@ _(Nenhum blocker ativo.)_
 | —   | Features Sprint 1 (8 specs, 54 tasks)    | 2026-06-15 | —      | ✅ Done |
 | —   | Features Sprints 2-7 (22 specs)          | 2026-06-15 | —      | ✅ Done |
 | —   | Execute `create-customer` (T1–T11)     | 2026-06-15 | —      | ✅ Done |
+| —   | Execute `create-account` (T1–T10)      | 2026-06-15 | —      | ✅ Done |
 
 ---
 
@@ -96,7 +97,8 @@ _(Nenhum blocker ativo.)_
 - [x] Especificar features Sprints 2-7 (spec.md)
 - [ ] Configurar Docker Compose com PostgreSQL, Kafka e Kafka UI
 - [x] Executar Sprint 1 — `create-customer` (T1–T11)
-- [ ] Executar Sprint 1 — `create-account`
+- [x] Executar Sprint 1 — `create-account` (T1–T10)
+- [ ] Executar Sprint 1 — `transfer-money`
 
 ---
 
@@ -111,7 +113,7 @@ _(Nenhum blocker ativo.)_
 | Specify Sprints 2-7 | ✅ | 22 features |
 | Design Sprint 1 | ✅ | 7 design.md |
 | Tasks Sprint 1 | ✅ | 7 tasks.md |
-| **Execute (POC)** | ⏳ | `create-customer` ✅; próxima: `create-account` |
+| **Execute (POC)** | ⏳ | `create-customer` ✅; `create-account` ✅; próxima: `transfer-money` |
 
 ---
 

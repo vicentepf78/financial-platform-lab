@@ -120,4 +120,46 @@ class CreateAccountUseCaseTest {
         verify(accountRepository, never()).save(any());
         verify(eventPublisher, never()).publish(any());
     }
+
+    @Test
+    void shouldThrowNullPointerExceptionWhenCommandIsNull() {
+        assertThatThrownBy(() -> useCase.execute(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Command is required");
+
+        verify(customerLookup, never()).exists(any());
+        verify(ledgerPort, never()).initializeAccount(any());
+        verify(accountRepository, never()).save(any());
+        verify(eventPublisher, never()).publish(any());
+    }
+
+    @Test
+    void shouldUseDefaultActorWhenActorIsBlank() {
+        when(customerLookup.exists(Identifier.of(CUSTOMER_ID))).thenReturn(true);
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute(new CreateAccountCommand(CUSTOMER_ID, "   "));
+
+        ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
+        verify(accountRepository).save(accountCaptor.capture());
+        assertThat(accountCaptor.getValue().createdBy()).isEqualTo("system");
+    }
+
+    @Test
+    void shouldPublishAccountCreatedWithExpectedFields() {
+        when(customerLookup.exists(Identifier.of(CUSTOMER_ID))).thenReturn(true);
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute(new CreateAccountCommand(CUSTOMER_ID, null));
+
+        ArgumentCaptor<DomainEvent> eventCaptor = ArgumentCaptor.forClass(DomainEvent.class);
+        verify(eventPublisher).publish(eventCaptor.capture());
+
+        AccountCreated event = (AccountCreated) eventCaptor.getValue();
+        assertThat(event.customerId().value()).isEqualTo(CUSTOMER_ID);
+        assertThat(event.status()).isEqualTo(AccountStatus.ACTIVE);
+        assertThat(event.createdBy()).isEqualTo("system");
+        assertThat(event.occurredAt()).isEqualTo(FIXED_TIME);
+        assertThat(event.eventType()).isEqualTo("AccountCreated");
+    }
 }

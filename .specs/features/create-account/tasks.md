@@ -2,7 +2,7 @@
 
 **Design:** `.specs/features/create-account/design.md`
 **Reference:** `.specs/codebase/INDEX.md` (create-customer slice)
-**Status:** Draft
+**Status:** Done
 
 **Total tasks:** 10
 
@@ -52,8 +52,8 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] Tabela `accounts` com PK UUID, FK `customer_id`, sem coluna balance
-- [ ] Migration versionada e idempotente
+- [x] Tabela `accounts` com PK UUID, FK `customer_id`, sem coluna balance
+- [x] Migration versionada e idempotente
 
 **Tests:** none | **Gate:** build
 
@@ -69,10 +69,10 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] Account.open registra AccountCreated
-- [ ] Sem dependência Spring/JPA
-- [ ] Gate: `mvn test -pl account-module`
-- [ ] Test count: ≥4 passam
+- [x] Account.open registra AccountCreated
+- [x] Sem dependência Spring/JPA
+- [x] Gate: `mvn test -pl account-module`
+- [x] Test count: ≥4 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -88,9 +88,9 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] save/findById
-- [ ] Gate: `mvn verify -Pintegration -pl account-module`
-- [ ] Test count: ≥2 passam
+- [x] save/findById
+- [x] Gate: `mvn verify -Pintegration -pl account-module`
+- [x] Test count: ≥2 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -105,10 +105,10 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] initializeAccount idempotente
-- [ ] getBalanceProjection retorna zero
-- [ ] Gate: `mvn test -pl account-module`
-- [ ] Test count: ≥2 passam
+- [x] initializeAccount idempotente
+- [x] getBalanceProjection retorna zero
+- [x] Gate: `mvn test -pl account-module`
+- [x] Test count: ≥2 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -124,9 +124,9 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] exists() delega ao customer-module
-- [ ] Gate: `mvn test -pl account-module`
-- [ ] Test count: ≥2 passam
+- [x] exists() delega ao customer-module
+- [x] Gate: `mvn test -pl account-module`
+- [x] Test count: ≥2 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -141,9 +141,9 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] JSON serialization
-- [ ] Gate: `mvn verify -Pintegration -pl account-module`
-- [ ] Test count: ≥2 passam
+- [x] JSON serialization
+- [x] Gate: `mvn verify -Pintegration -pl account-module`
+- [x] Test count: ≥2 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -171,9 +171,9 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] Happy path + customer not found + ledger failure
-- [ ] Gate: `mvn test -pl account-module`
-- [ ] Test count: ≥6 passam
+- [x] Happy path + customer not found + ledger failure
+- [x] Gate: `mvn test -pl account-module`
+- [x] Test count: ≥6 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -189,9 +189,9 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] 201, 404, 400
-- [ ] Gate: `mvn verify -Pintegration -pl account-module`
-- [ ] Test count: ≥4 passam
+- [x] 201, 404, 400
+- [x] Gate: `mvn verify -Pintegration -pl account-module`
+- [x] Test count: ≥4 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -207,8 +207,8 @@ T5, T6, T7, T3 → T8 → T9 → T10
 
 **Done when**:
 
-- [ ] Application context carrega beans do módulo
-- [ ] Endpoint registrado em `/api/v1/accounts`
-- [ ] Gate: `mvn verify -Pintegration`
+- [x] Application context carrega beans do módulo
+- [x] Endpoint registrado em `/api/v1/accounts`
+- [x] Gate: `mvn verify -Pintegration`
 
 **Tests:** none (coberto por T9) | **Gate:** full
