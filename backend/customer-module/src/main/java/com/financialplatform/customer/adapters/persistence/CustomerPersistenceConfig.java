@@ -1,5 +1,6 @@
 package com.financialplatform.customer.adapters.persistence;
 
+import com.financialplatform.customer.ports.CustomerQueryPort;
 import com.financialplatform.customer.ports.CustomerRepositoryPort;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -17,5 +18,10 @@ public class CustomerPersistenceConfig {
     @Bean
     CustomerRepositoryPort customerRepository(CustomerJpaRepository customerJpaRepository) {
         return new JpaCustomerRepository(customerJpaRepository);
+    }
+
+    @Bean
+    CustomerQueryPort customerQueryPort(CustomerJpaRepository customerJpaRepository) {
+        return new JpaCustomerQueryAdapter(customerJpaRepository);
     }
 }

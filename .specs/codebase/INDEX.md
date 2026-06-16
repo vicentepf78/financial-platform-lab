@@ -10,7 +10,7 @@
 | Module | Status | Features |
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
-| `customer-module` | ✅ Implemented | create-customer, query-customers (T1) |
+| `customer-module` | ✅ Implemented | create-customer, query-customers (T1–T2) |
 | `account-module` | ✅ Implemented | create-account |
 | `application` | ✅ Partial | Flyway V1–V3, health, module wiring smoke tests |
 
@@ -67,6 +67,10 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 | CustomerSummary | `.../application/readmodel/CustomerSummary.java` |
 | CustomerFilter | `.../application/readmodel/CustomerFilter.java` |
 | PageResult / PageRequest | `.../application/readmodel/PageResult.java`, `PageRequest.java` |
+| Query adapter | `backend/customer-module/src/main/java/.../adapters/persistence/JpaCustomerQueryAdapter.java` |
+| Query specifications | `.../adapters/persistence/CustomerQuerySpecifications.java` |
+| Summary mapper | `.../adapters/persistence/CustomerSummaryMapper.java` |
+| Integration (query adapter) | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` |
 
 ---
 

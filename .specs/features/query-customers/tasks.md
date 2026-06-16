@@ -57,10 +57,10 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Filtros AND aplicados
-- [ ] Documento normalizado na query
-- [ ] Gate check passes: `mvn verify -Pintegration -pl customer-module`
-- [ ] Test count: ≥4 testes repositório passam
+- [x] Filtros AND aplicados
+- [x] Documento normalizado na query
+- [x] Gate check passes: `mvn verify -Pintegration -pl customer-module`
+- [x] Test count: ≥4 testes repositório passam
 
 **Tests:** integration
 **Gate:** full
