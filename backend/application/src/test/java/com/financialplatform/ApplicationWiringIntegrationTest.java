@@ -25,6 +25,8 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.financialplatform.support.JwtTestSupport.bearerToken;
+import static com.financialplatform.support.JwtTestSupport.obtainOperatorToken;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -77,6 +79,7 @@ class ApplicationWiringIntegrationTest {
         registry.add("spring.flyway.enabled", () -> "true");
         registry.add("spring.flyway.locations", () -> "classpath:db/migration");
         registry.add("spring.kafka.bootstrap-servers", KAFKA::getBootstrapServers);
+        registry.add("security.jwt.enabled", () -> "true");
     }
 
     @BeforeEach
@@ -101,15 +104,16 @@ class ApplicationWiringIntegrationTest {
     @Test
     void shouldRegisterQueryCustomersEndpoints() throws Exception {
         UUID customerId = seedCustomer();
+        String token = obtainOperatorToken(mockMvc);
 
-        mockMvc.perform(get("/api/v1/customers"))
+        mockMvc.perform(get("/api/v1/customers").with(bearerToken(token)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[0].id").value(customerId.toString()))
                 .andExpect(jsonPath("$.metadata.page").value(0))
                 .andExpect(jsonPath("$.metadata.totalElements").value(1));
 
-        mockMvc.perform(get("/api/v1/customers/{id}", customerId))
+        mockMvc.perform(get("/api/v1/customers/{id}", customerId).with(bearerToken(token)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(customerId.toString()))
                 .andExpect(jsonPath("$.data.name").value("Maria Silva"))
@@ -119,8 +123,10 @@ class ApplicationWiringIntegrationTest {
     @Test
     void shouldRegisterCreateAccountEndpoint() throws Exception {
         UUID customerId = seedCustomer();
+        String token = obtainOperatorToken(mockMvc);
 
         mockMvc.perform(post("/api/v1/accounts")
+                        .with(bearerToken(token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -132,6 +138,31 @@ class ApplicationWiringIntegrationTest {
                 .andExpect(jsonPath("$.data.customerId").value(customerId.toString()))
                 .andExpect(jsonPath("$.data.status").value("ACTIVE"))
                 .andExpect(jsonPath("$.metadata").exists());
+    }
+
+    @Test
+    void shouldExecuteAuthenticatedFlowFromLoginThroughCustomersToAccountCreation() throws Exception {
+        UUID customerId = seedCustomer();
+
+        String token = obtainOperatorToken(mockMvc);
+
+        mockMvc.perform(get("/api/v1/customers").with(bearerToken(token)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].id").value(customerId.toString()));
+
+        mockMvc.perform(post("/api/v1/accounts")
+                        .with(bearerToken(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "customerId": "%s"
+                                }
+                                """.formatted(customerId)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.id").value(notNullValue()))
+                .andExpect(jsonPath("$.data.customerId").value(customerId.toString()))
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"));
     }
 
     private UUID seedCustomer() {
