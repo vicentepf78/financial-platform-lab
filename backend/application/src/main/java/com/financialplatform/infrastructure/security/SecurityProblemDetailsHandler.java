@@ -56,19 +56,6 @@ public class SecurityProblemDetailsHandler implements AuthenticationEntryPoint, 
     }
 
     private UnauthorizedProblem resolveUnauthorizedProblem(AuthenticationException authException) {
-        if (authException instanceof BadCredentialsException badCredentials
-                && badCredentials.getCause() instanceof ExpiredJwtException expiredJwt) {
-            return new UnauthorizedProblem(
-                    "token-expired",
-                    "Token expired",
-                    defaultDetail(expiredJwt, "Access token has expired"));
-        }
-        if (authException instanceof BadCredentialsException) {
-            return new UnauthorizedProblem(
-                    "invalid-credentials",
-                    "Invalid credentials",
-                    defaultDetail(authException, "Invalid credentials"));
-        }
         Throwable cause = authException.getCause();
         if (cause instanceof ExpiredJwtException expiredJwt) {
             return new UnauthorizedProblem(
@@ -81,6 +68,12 @@ public class SecurityProblemDetailsHandler implements AuthenticationEntryPoint, 
                     "invalid-token",
                     "Invalid token",
                     defaultDetail(jwtException, "Access token is invalid"));
+        }
+        if (authException instanceof BadCredentialsException) {
+            return new UnauthorizedProblem(
+                    "invalid-credentials",
+                    "Invalid credentials",
+                    defaultDetail(authException, "Invalid credentials"));
         }
         return new UnauthorizedProblem(
                 "invalid-credentials",
