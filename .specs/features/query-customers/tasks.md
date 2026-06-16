@@ -114,7 +114,7 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Envelope data/metadata conforme CONVENTIONS
+- [x] Envelope data/metadata conforme CONVENTIONS
 
 **Tests:** none
 **Gate:** build
