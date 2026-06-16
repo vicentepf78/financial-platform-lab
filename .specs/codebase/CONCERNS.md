@@ -1,31 +1,32 @@
 # Codebase Concerns
 
 **Analysis Date:** 2026-06-15
-**Status:** Repositório em fase pré-implementação — concerns focam em riscos de início e gaps documentais.
+**Status:** Sprint 1 em execução — `customer-module` e `account-module` implementados; demais módulos pendentes.
 
-## Pre-Implementation Gaps
+## Resolved (Sprint 1)
 
-**Scaffold ausente:**
+**Scaffold criado:**
 
-- Issue: Nenhum diretório `backend/`, `frontend/`, `infra/` existe; impossível executar ou testar qualquer feature
-- Files: Raiz do repositório — apenas `PROJECT.md`, `AGENTS.md`, `.specs/`
-- Why: Projeto iniciado com documentação de visão antes do código
-- Impact: Bloqueia qualquer sprint; brownfield mapping documenta estado planejado, não detectado
-- Fix approach: Criar scaffold Maven multi-módulo + React + Docker Compose como primeira tarefa de implementação
+- Status: ✅ `backend/`, `frontend/`, `infra/`, `adr/`, `docs/` presentes
+- Impact: Sprint 1 Execute em andamento
 
-**Manifests de dependência ausentes:**
+**Manifests de dependência:**
 
-- Issue: Sem `pom.xml`, `package.json` ou `docker-compose.yml` para validar versões reais
-- Files: N/A
-- Impact: STACK.md e TESTING.md baseiam-se em documentação, não em dependências detectadas
-- Fix approach: Gerar manifests no scaffold e atualizar STACK.md com versões reais
+- Status: ✅ `backend/pom.xml`, módulos Maven, Flyway V1–V3
+- Impact: Gates Maven funcionais com Testcontainers
 
-**ADRs não criados:**
+**ADRs iniciais:**
 
-- Issue: `PROJECT.md` exige ADRs para arquitetura, banco, mensageria, observabilidade e segurança; pasta `adr/` não existe
-- Files: `adr/` (ausente)
-- Impact: Decisões arquiteturais não formalizadas; risco de inconsistência entre agentes de IA
-- Fix approach: Criar ADR-001 a ADR-005 antes da Sprint 1
+- Status: ✅ `adr/0001`–`0007`
+- Impact: Decisões arquiteturais formalizadas
+
+## Remaining Gaps
+
+**Docker Compose não configurado:**
+
+- Issue: `infra/docker-compose/` pendente — desenvolvedores dependem de Testcontainers
+- Impact: Onboarding local mais lento; observabilidade local indisponível
+- Fix approach: Configurar PostgreSQL + Kafka + Kafka UI conforme STATE.md todos
 
 ## Security Considerations
 
@@ -84,15 +85,15 @@
 
 ## Test Coverage Gaps
 
-**customer-module (referência):**
+**customer-module e account-module (referência):**
 
-- Status: create-customer implementado com testes unitários e integração — ver `.specs/codebase/INDEX.md`
+- Status: `create-customer` e `create-account` implementados com testes unitários e integração — ver `.specs/codebase/INDEX.md`
 - Padrão: testes co-localizados por task + gate Maven (`.rules/testing.md`)
 
 **Demais módulos:**
 
-- Issue: cobertura ainda baixa fora de customer-module; meta de 80% unitários não verificável globalmente
-- Fix approach: replicar slice de referência em `create-account` e features seguintes
+- Issue: cobertura ainda baixa fora de customer/account; meta de 80% unitários não verificável globalmente
+- Fix approach: replicar slice de referência em `transfer-money` e features seguintes
 
 **Testcontainers dependency:**
 

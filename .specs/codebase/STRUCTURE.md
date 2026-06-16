@@ -1,7 +1,7 @@
 # Project Structure
 
 **Root:** `/home/vicente/Documentos/financial-platform-lab`
-**Status:** Pré-implementação — apenas documentação presente (`PROJECT.md`, `AGENTS.md`, `.specs/`)
+**Status:** Sprint 1 em execução — backend com `shared-kernel`, `customer-module`, `account-module` e `application` implementados
 
 ## Directory Tree (planejada)
 
@@ -45,9 +45,14 @@ financial-platform-lab/
 
 ```text
 financial-platform-lab/
-├── .specs/          ✅ criado
-├── AGENTS.md        ✅ existe
-└── PROJECT.md       ✅ existe
+├── .specs/          ✅ specs, roadmap, brownfield index
+├── backend/         ✅ shared-kernel, customer-module, account-module, application
+├── adr/             ✅ ADRs 0001–0007
+├── docs/            ✅ integrações Mercado Pago
+├── frontend/        ⏳ scaffold
+├── infra/           ⏳ Docker Compose pendente
+├── AGENTS.md        ✅
+└── PROJECT.md       ✅
 ```
 
 ## Module Organization
@@ -62,13 +67,13 @@ financial-platform-lab/
 
 **Purpose:** Cadastro e gestão de clientes
 **Location:** `backend/customer-module/`
-**Key features:** create-customer, get-customer, update-customer
+**Key features:** create-customer ✅, get-customer, update-customer
 
 ### account-module
 
 **Purpose:** Contas bancárias e transferências
 **Location:** `backend/account-module/`
-**Key features:** create-account, close-account, transfer-money, get-balance, get-statement
+**Key features:** create-account ✅, close-account, transfer-money, get-balance, get-statement
 
 ### ledger-module
 
@@ -114,9 +119,17 @@ financial-platform-lab/
 **Gestão de Clientes:**
 
 - UI: `frontend/src/pages/customers/`
-- Business Logic: `backend/customer-module/features/`
+- Business Logic: `backend/customer-module/features/createcustomer/`
 - Data Access: `backend/customer-module/adapters/`
 - Configuration: `backend/application/`
+
+**Gestão de Contas:**
+
+- UI: `frontend/src/pages/accounts/` _(planejado)_
+- Business Logic: `backend/account-module/features/createaccount/`
+- Cross-module ports: `CustomerLookupPort`, `LedgerPort`, `EventPublisherPort`
+- Data Access: `backend/account-module/adapters/persistence/`
+- Events: Kafka topic `account-created`
 
 **Transferências:**
 

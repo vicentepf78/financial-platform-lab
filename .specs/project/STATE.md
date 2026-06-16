@@ -49,7 +49,7 @@
 **Decision:** 30 features especificadas em `.specs/features/` — Sprint 1 com spec+design+tasks (54 tarefas); Sprints 2-7 com spec.md.
 **Reason:** Fechar fase Specify/Design/Tasks do tlc-spec-driven antes de iniciar desenvolvimento.
 **Trade-off:** Design/tasks de Sprints 2-7 serão detalhados incrementalmente antes de cada sprint.
-**Impact:** Execute iniciado; `create-customer` concluída (T1–T11, gate full verde).
+**Impact:** Execute em andamento; `create-customer` e `create-account` concluídas (gates full verdes).
 
 ---
 
@@ -63,6 +63,7 @@ _(Nenhum blocker ativo.)_
 
 - Subagents paralelos aceleram criação de ADRs e specs em massa sem perder coerência com PROJECT.md e AGENTS.md.
 - Sprint 1 `transfer-money` é a feature crítica — depende de `LedgerPort` (stub S1, implementação real Sprint 2).
+- Fechar feature exige atualizar **todos** os artefatos do Feature Close Checklist (`.rules/workflow.md`) — não apenas `tasks.md` e `STATE.md`; `INDEX.md` é crítico para agentes seguintes.
 
 ---
 

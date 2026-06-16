@@ -1,7 +1,7 @@
 # Create Account — Design
 
 **Spec:** `.specs/features/create-account/spec.md`
-**Status:** Draft
+**Status:** Implemented
 
 ---
 

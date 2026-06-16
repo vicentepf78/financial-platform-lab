@@ -16,7 +16,26 @@ Follow `tlc-spec-driven` for feature lifecycle: Specify → (Design) → (Tasks)
 6. Read relevant ADRs
 7. Implement per task (code + tests co-located)
 8. Run gate check
-9. Update documentation
+9. Update documentation — **mandatory Feature Close Checklist** (below)
+
+## Feature Close Checklist (mandatory)
+
+When the last task of a feature is complete, update **all** applicable artifacts before considering the feature done:
+
+| # | Artifact | What to update |
+| - | -------- | -------------- |
+| 1 | `features/{feature}/spec.md` | `Status: Done`; Goals `[x]`; Requirements → `Done`; Success Criteria `[x]` |
+| 2 | `features/{feature}/design.md` | `Status: Implemented` |
+| 3 | `features/{feature}/tasks.md` | `Status: Done`; all `Done when` checkboxes `[x]` |
+| 4 | `.specs/project/STATE.md` | Current Work, Todos, Quick Tasks, Execute checklist |
+| 5 | `.specs/project/ROADMAP.md` | Feature marked ✅ DONE in current sprint |
+| 6 | `.specs/codebase/INDEX.md` | Module status, reference slice paths, tests, migrations, API |
+| 7 | `.specs/codebase/ARCHITECTURE.md` | Status, examples, domain events table (if applicable) |
+| 8 | `.specs/codebase/CONCERNS.md` | Remove resolved blockers; update test coverage notes |
+| 9 | `.specs/codebase/TESTING.md` | E2E flows table, coverage status (if applicable) |
+| 10 | `.specs/codebase/STRUCTURE.md` | Module status, directory tree (if new module or major layout change) |
+
+**Rule:** Updating only `tasks.md` and `STATE.md` is insufficient. The feature is not closed until INDEX.md reflects the implementation — future agents depend on it to avoid re-exploration.
 
 ## Context loading (agents)
 

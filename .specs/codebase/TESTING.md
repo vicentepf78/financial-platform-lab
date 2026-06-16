@@ -1,6 +1,6 @@
 # Testing Infrastructure
 
-**Status:** Parcialmente implementado — `customer-module` com testes unitários e integração (referência em `INDEX.md`). Demais módulos conforme roadmap.
+**Status:** Parcialmente implementado — `customer-module` e `account-module` com testes unitários e integração (referência em `INDEX.md`). Demais módulos conforme roadmap.
 
 ## Test Frameworks
 
@@ -67,8 +67,9 @@ class CreateAccountUseCaseTest {
 
 | Fluxo | Sprint |
 |-------|--------|
-| Cadastro de cliente | Sprint 1 |
-| Transferência | Sprint 1-2 |
+| Cadastro de cliente | Sprint 1 | ✅ `create-customer` |
+| Abertura de conta | Sprint 1 | ✅ `create-account` |
+| Transferência | Sprint 1-2 | Planejado |
 | PIX | Sprint 4 |
 | Cobrança | Sprint 3 |
 
@@ -86,7 +87,7 @@ class CreateAccountUseCaseTest {
 
 ## Coverage Targets
 
-**Current:** N/A — sem código
+**Current:** `customer-module` e `account-module` com cobertura por vertical slice
 **Goals:** 80% mínimo em testes unitários (domain + use cases)
 **Enforcement:** A configurar no CI (GitHub Actions)
 
@@ -118,9 +119,9 @@ class CreateAccountUseCaseTest {
 
 | Gate Level | When to Use | Command |
 | ---------- | ----------- | ------- |
-| Quick | Após tasks com unit tests only | `mvn test` |
-| Full | Após tasks com integration tests | `mvn verify -Pintegration` |
-| Build | Após conclusão de sprint/fase | `mvn verify -Pintegration && npx playwright test` |
+| Quick | Após tasks com unit tests only | `mvn test -pl {module}` |
+| Full | Após tasks com integration tests | `mvn verify -Pintegration -pl {module}` |
+| Build | Após conclusão de sprint/fase | `mvn verify -Pintegration` |
 
 ## Test Co-location Workflow
 

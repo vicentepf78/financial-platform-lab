@@ -11,14 +11,14 @@
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
 | `customer-module` | ✅ Implemented | create-customer |
-| `account-module` | ⏳ Scaffold only | create-account (spec ready) |
-| `application` | ✅ Partial | Flyway V1 init, V2 customers, health, smoke tests |
+| `account-module` | ✅ Implemented | create-account |
+| `application` | ✅ Partial | Flyway V1–V3, health, module wiring smoke tests |
 
 ---
 
 ## Reference slice: create-customer
 
-Use como padrão para novas vertical slices (ex.: create-account).
+Use como padrão para novas vertical slices no `customer-module`.
 
 | Layer | Path |
 | ----- | ---- |
@@ -32,7 +32,7 @@ Use como padrão para novas vertical slices (ex.: create-account).
 | Module config | `backend/customer-module/src/main/java/.../infrastructure/CustomerModuleConfig.java` |
 | Exception handler | `backend/customer-module/src/main/java/.../infrastructure/CustomerExceptionHandler.java` |
 
-### Tests (reference)
+### Tests (create-customer)
 
 | Type | Path |
 | ---- | ---- |
@@ -43,16 +43,67 @@ Use como padrão para novas vertical slices (ex.: create-account).
 | IT base class | `backend/customer-module/src/test/java/.../support/AbstractCustomerIntegrationTest.java` |
 | Test application | `backend/customer-module/src/test/java/.../support/CustomerModuleTestApplication.java` |
 
-### Migrations
+### Migrations (create-customer)
 
 | Version | Path |
 | ------- | ---- |
 | V2 customers | `backend/application/src/main/resources/db/migration/V2__customers.sql` |
 | Test copy | `backend/customer-module/src/test/resources/db/migration/` |
 
-### API
+### API (create-customer)
 
 - `POST /api/v1/customers` — envelope `{ data, metadata }`, Problem Details em erros
+
+---
+
+## Reference slice: create-account
+
+Use como padrão para novas vertical slices no `account-module` (ex.: `transfer-money`).
+
+| Layer | Path |
+| ----- | ---- |
+| Feature slice | `backend/account-module/src/main/java/com/financialplatform/account/features/createaccount/` |
+| Use case | `.../CreateAccountUseCase.java` |
+| Controller | `.../CreateAccountController.java` |
+| Request/Response | `.../CreateAccountRequest.java`, `CreateAccountResponse.java` |
+| Domain aggregate | `backend/account-module/src/main/java/.../domain/Account.java` |
+| Domain event | `backend/account-module/src/main/java/.../domain/AccountCreated.java` |
+| Repository port | `backend/account-module/src/main/java/.../ports/AccountRepositoryPort.java` |
+| Cross-module ports | `CustomerLookupPort`, `LedgerPort`, `EventPublisherPort` |
+| JPA adapter | `backend/account-module/src/main/java/.../adapters/persistence/` |
+| Customer adapter | `backend/account-module/src/main/java/.../adapters/customer/InProcessCustomerLookupAdapter.java` |
+| Ledger stub | `backend/account-module/src/main/java/.../adapters/ledger/LedgerStubAdapter.java` |
+| Kafka adapter | `backend/account-module/src/main/java/.../adapters/messaging/KafkaEventPublisherAdapter.java` |
+| Module config | `backend/account-module/src/main/java/.../infrastructure/AccountModuleConfig.java` |
+| Exception handler | `backend/account-module/src/main/java/.../infrastructure/AccountExceptionHandler.java` |
+| Auto-config | `backend/account-module/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` |
+
+### Tests (create-account)
+
+| Type | Path |
+| ---- | ---- |
+| Unit (domain) | `backend/account-module/src/test/java/.../domain/AccountTest.java` |
+| Unit (use case) | `backend/account-module/src/test/java/.../features/createaccount/CreateAccountUseCaseTest.java` |
+| Unit (ledger stub) | `backend/account-module/src/test/java/.../adapters/ledger/LedgerStubAdapterTest.java` |
+| Unit (customer lookup) | `backend/account-module/src/test/java/.../adapters/customer/InProcessCustomerLookupAdapterTest.java` |
+| Integration (repository) | `backend/account-module/src/test/java/.../adapters/persistence/JpaAccountRepositoryIntegrationTest.java` |
+| Integration (messaging) | `backend/account-module/src/test/java/.../adapters/messaging/KafkaEventPublisherIntegrationTest.java` |
+| Integration (controller) | `backend/account-module/src/test/java/.../features/createaccount/CreateAccountControllerIntegrationTest.java` |
+| IT base class | `backend/account-module/src/test/java/.../support/AbstractAccountWebIntegrationTest.java` |
+| Test application | `backend/account-module/src/test/java/.../support/AccountModuleTestApplication.java` |
+| App wiring smoke | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` |
+
+### Migrations (create-account)
+
+| Version | Path |
+| ------- | ---- |
+| V3 accounts | `backend/application/src/main/resources/db/migration/V3__accounts.sql` |
+| Test copy | `backend/account-module/src/test/resources/db/migration/` |
+
+### API (create-account)
+
+- `POST /api/v1/accounts` — envelope `{ data, metadata }`, Problem Details em erros
+- Kafka topic: `account-created`
 
 ---
 
@@ -74,9 +125,11 @@ Use como padrão para novas vertical slices (ex.: create-account).
 | Item | Path / command |
 | ---- | -------------- |
 | Gate commands | `.specs/codebase/TESTING.md` → Gate Check Commands |
-| docker-java API 1.44 | `backend/customer-module/src/test/resources/docker-java.properties` |
+| docker-java API 1.44 | `backend/*/src/test/resources/docker-java.properties` |
 | Integration profile | `mvn verify -Pintegration` |
-| Unit only | `mvn test -pl {module}` |
+| Unit only (customer) | `mvn test -pl customer-module` |
+| Unit only (account) | `mvn test -pl account-module` |
+| Integration (account) | `mvn verify -Pintegration -pl account-module` |
 
 ---
 
@@ -86,4 +139,4 @@ When implementing a feature whose `tasks.md` lists **Reuses** pointing here:
 
 1. Read only the listed reference files.
 2. Do not spawn exploration subagents for patterns already indexed above.
-3. For create-account: copy structure from create-customer, adapt domain rules from `create-account/design.md`.
+3. For `transfer-money`: copy structure from `create-account`, adapt domain rules from `transfer-money/design.md`.

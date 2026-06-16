@@ -3,6 +3,7 @@
 **Módulo:** `account-module`
 **Endpoint:** `POST /api/v1/accounts`
 **Sprint:** 1 — Core Banking
+**Status:** Done
 
 ---
 
@@ -12,11 +13,11 @@ Após cadastrar um cliente, a plataforma precisa abrir contas bancárias vincula
 
 ## Goals
 
-- [ ] Criar conta vinculada a `customerId` existente
-- [ ] Status inicial `ACTIVE`
-- [ ] Saldo inicial zero via projeção/ledger (não armazenar balance autoritativo)
-- [ ] Publicar domain event `AccountCreated` após persistência bem-sucedida
-- [ ] Retornar conta criada no envelope REST
+- [x] Criar conta vinculada a `customerId` existente
+- [x] Status inicial `ACTIVE`
+- [x] Saldo inicial zero via projeção/ledger (não armazenar balance autoritativo)
+- [x] Publicar domain event `AccountCreated` após persistência bem-sucedida
+- [x] Retornar conta criada no envelope REST
 
 ## Out of Scope
 
@@ -91,21 +92,21 @@ Após cadastrar um cliente, a plataforma precisa abrir contas bancárias vincula
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| ACCT-01 | P1: POST create ACTIVE | Design | Pending |
-| ACCT-02 | P1: Validar customer exists | Design | Pending |
-| ACCT-03 | P1: Resposta 201 | Design | Pending |
-| ACCT-04 | P2: Event AccountCreated | Design | Pending |
-| ACCT-05 | P2: Payload evento | Design | Pending |
-| ACCT-06 | P3: LedgerPort abertura | Design | Pending |
-| ACCT-07 | P3: Saldo zero projeção | Design | Pending |
+| ACCT-01 | P1: POST create ACTIVE | Execute | Done |
+| ACCT-02 | P1: Validar customer exists | Execute | Done |
+| ACCT-03 | P1: Resposta 201 | Execute | Done |
+| ACCT-04 | P2: Event AccountCreated | Execute | Done |
+| ACCT-05 | P2: Payload evento | Execute | Done |
+| ACCT-06 | P3: LedgerPort abertura | Execute | Done |
+| ACCT-07 | P3: Saldo zero projeção | Execute | Done |
 
-**Coverage:** 7 total, 0 mapped, 7 pending
+**Coverage:** 7 total, 7 mapped to tasks (T1–T10), 7 done
 
 ---
 
 ## Success Criteria
 
-- [ ] Fluxo create customer → create account demonstrável
-- [ ] Evento publicado em Kafka (integration test)
-- [ ] Nenhuma mutação direta de balance
-- [ ] Regras no domain/application apenas
+- [x] Fluxo create customer → create account demonstrável
+- [x] Evento publicado em Kafka (integration test)
+- [x] Nenhuma mutação direta de balance
+- [x] Regras no domain/application apenas

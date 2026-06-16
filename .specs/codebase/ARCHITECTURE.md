@@ -1,7 +1,7 @@
 # Architecture
 
 **Pattern:** Monorepo + Modular Monolith + Hexagonal Architecture + Vertical Slice Architecture + DDD Light
-**Status:** Scaffold implementado — shared-kernel com VOs base; módulos de negócio e features a implementar (specs em `.specs/features/`).
+**Status:** Sprint 1 parcial — `shared-kernel`, `customer-module` e `account-module` com vertical slices implementadas (`create-customer`, `create-account`). Demais módulos conforme roadmap.
 
 ## High-Level Structure
 
@@ -64,14 +64,14 @@ module/
 └── infrastructure/  # Configuração Spring, beans
 ```
 
-**Example:** A definir — primeira vertical slice em `account-module/features/create-account/`
+**Example:** `customer-module` e `account-module` — domain sem Spring; adapters em `adapters/persistence`, `adapters/messaging`
 
 ### Vertical Slice Architecture
 
 **Location:** Dentro de cada módulo, pasta `features/`
 **Purpose:** Isolar funcionalidades completas (controller → use case → test) por slice
 **Implementation:** Cada feature contém Controller, UseCase, Request/Response DTOs e Test na mesma pasta
-**Example:** `account-module/features/create-account/CreateAccountUseCase.java`
+**Example:** `account-module/features/createaccount/CreateAccountUseCase.java`
 
 ### Event-Driven Architecture
 
@@ -81,14 +81,14 @@ module/
 
 **Domain Events planejados:**
 
-| Evento | Módulo origem | Gatilho |
-|--------|---------------|---------|
-| AccountCreated | account | Conta criada |
-| TransferExecuted | account | Transferência concluída |
-| LedgerEntryCreated | ledger | Lançamento registrado |
-| PixSent / PixReceived | pix | PIX enviado/recebido |
-| ChargeCreated / ChargePaid | billing | Cobrança criada/liquidada |
-| ReconciliationExecuted | reconciliation | Conciliação concluída |
+| Evento | Módulo origem | Gatilho | Status |
+|--------|---------------|---------|--------|
+| AccountCreated | account | Conta criada | ✅ Implementado (topic `account-created`) |
+| TransferExecuted | account | Transferência concluída | Planejado |
+| LedgerEntryCreated | ledger | Lançamento registrado | Planejado |
+| PixSent / PixReceived | pix | PIX enviado/recebido | Planejado |
+| ChargeCreated / ChargePaid | billing | Cobrança criada/liquidada | Planejado |
+| ReconciliationExecuted | reconciliation | Conciliação concluída | Planejado |
 
 ### Ledger-First (Double Entry)
 

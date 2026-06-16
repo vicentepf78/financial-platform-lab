@@ -1,7 +1,7 @@
 # Roadmap
 
 **Current Milestone:** Sprint 1 — Core Banking
-**Status:** Execute in progress — `create-customer` done
+**Status:** Execute in progress — `create-customer` ✅ · `create-account` ✅ · próxima: `transfer-money`
 
 > **Spec-driven:** 30 features em `.specs/features/` · 7 ADRs em `adr/` · Sprint 1 com 54 tarefas atômicas
 
@@ -20,7 +20,7 @@
 - Consulta de clientes
 - Atualização cadastral
 
-**Gestão de Contas** - SPECIFIED → [create-account](../features/create-account/spec.md), [close-account](../features/close-account/spec.md), [get-account-balance](../features/get-account-balance/spec.md)
+**Gestão de Contas** - [create-account](../features/create-account/spec.md) ✅ DONE · SPECIFIED → [close-account](../features/close-account/spec.md), [get-account-balance](../features/get-account-balance/spec.md)
 
 - Criação de conta
 - Encerramento de conta
