@@ -14,9 +14,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final JwtProperties jwtProperties;
+    private final SecurityProblemDetailsHandler securityProblemDetailsHandler;
 
-    public SecurityConfig(JwtProperties jwtProperties) {
+    public SecurityConfig(
+            JwtProperties jwtProperties,
+            SecurityProblemDetailsHandler securityProblemDetailsHandler) {
         this.jwtProperties = jwtProperties;
+        this.securityProblemDetailsHandler = securityProblemDetailsHandler;
     }
 
     @Bean
@@ -24,7 +28,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         if (jwtProperties.isEnabled()) {
-            http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+            http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                    .exceptionHandling(ex -> ex
+                            .authenticationEntryPoint(securityProblemDetailsHandler)
+                            .accessDeniedHandler(securityProblemDetailsHandler));
         } else {
             http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         }
