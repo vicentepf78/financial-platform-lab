@@ -2,6 +2,7 @@ package com.financialplatform.account.features.createaccount;
 
 import com.financialplatform.account.support.AbstractAccountWebIntegrationTest;
 import com.financialplatform.sharedkernel.domain.Identifier;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static com.financialplatform.account.support.JwtTestSupport.bearerToken;
+import static com.financialplatform.account.support.JwtTestSupport.obtainOperatorToken;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,11 +25,34 @@ class CreateAccountControllerIntegrationTest extends AbstractAccountWebIntegrati
     @Autowired
     private MockMvc mockMvc;
 
+    private String operatorToken;
+
+    @BeforeEach
+    void authenticate() throws Exception {
+        operatorToken = obtainOperatorToken(mockMvc);
+    }
+
+    @Test
+    void shouldReturn401WhenCreateAccountCalledWithoutToken() throws Exception {
+        Identifier customerId = seedCustomer();
+
+        mockMvc.perform(post("/api/v1/accounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "customerId": "%s"
+                                }
+                                """.formatted(customerId.value())))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.title").value("Authentication required"));
+    }
+
     @Test
     void shouldReturn201WhenCustomerExists() throws Exception {
         Identifier customerId = seedCustomer();
 
         mockMvc.perform(post("/api/v1/accounts")
+                        .with(bearerToken(operatorToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -46,6 +72,7 @@ class CreateAccountControllerIntegrationTest extends AbstractAccountWebIntegrati
         UUID unknownCustomerId = UUID.randomUUID();
 
         mockMvc.perform(post("/api/v1/accounts")
+                        .with(bearerToken(operatorToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -59,6 +86,7 @@ class CreateAccountControllerIntegrationTest extends AbstractAccountWebIntegrati
     @Test
     void shouldReturn400WhenCustomerIdIsMissing() throws Exception {
         mockMvc.perform(post("/api/v1/accounts")
+                        .with(bearerToken(operatorToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
@@ -68,6 +96,7 @@ class CreateAccountControllerIntegrationTest extends AbstractAccountWebIntegrati
     @Test
     void shouldReturn400WhenCustomerIdIsNull() throws Exception {
         mockMvc.perform(post("/api/v1/accounts")
+                        .with(bearerToken(operatorToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

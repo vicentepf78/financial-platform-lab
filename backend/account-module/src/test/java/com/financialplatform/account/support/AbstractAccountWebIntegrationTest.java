@@ -35,7 +35,10 @@ public abstract class AbstractAccountWebIntegrationTest {
         registry.add("spring.datasource.password", POSTGRES::getPassword);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "validate");
         registry.add("spring.flyway.enabled", () -> "true");
-        registry.add("spring.flyway.locations", () -> "classpath:db/migration");
+        registry.add("spring.flyway.locations", () -> "filesystem:src/test/resources/db/migration");
+        registry.add("security.jwt.enabled", () -> "true");
+        registry.add("security.jwt.secret", () -> "integration-test-jwt-secret-key-32chars");
+        registry.add("security.jwt.expiration-seconds", () -> "3600");
     }
 
     @BeforeEach

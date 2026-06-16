@@ -50,6 +50,9 @@ class KafkaEventPublisherIntegrationTest {
     @DynamicPropertySource
     static void configureKafka(DynamicPropertyRegistry registry) {
         registry.add("spring.kafka.bootstrap-servers", KAFKA::getBootstrapServers);
+        registry.add("spring.autoconfigure.exclude", () ->
+                "com.financialplatform.account.infrastructure.AccountModuleConfig,"
+                        + "com.financialplatform.customer.infrastructure.CustomerModuleConfig");
     }
 
     @BeforeEach
