@@ -26,7 +26,7 @@ T4 ─────┼→ T6 [P] ─┼──→ T8
 ### Phase 3: Integration & E2E readiness
 
 ```text
-T11 → T12
+T11 → T12 → T13
 ```
 
 ---
@@ -236,12 +236,30 @@ T11 → T12
 
 ---
 
+### T13: Documentação + feature close
+
+**What:** Run Feature Close Checklist (`.rules/workflow.md`)
+**Where:** `.specs/`, `.specs/codebase/INDEX.md`, `.specs/codebase/ARCHITECTURE.md`
+**Depends on:** T12
+**Requirement:** XFER-01 a XFER-11
+
+**Done when**:
+
+- [ ] Feature Close Checklist (`.rules/workflow.md`) completo
+- [ ] spec.md `Status: Done`; design.md `Status: Implemented`; tasks.md `Status: Done`
+- [ ] INDEX.md, STATE.md, ROADMAP.md, ARCHITECTURE.md atualizados (transfer slice, evento `TransferExecuted`)
+- [ ] Gate: `mvn verify -Pintegration`
+
+**Tests:** none | **Gate:** full
+
+---
+
 ## Parallel Execution Map
 
 ```text
 Phase 1: T1 → T2 → T3 → T4
 Phase 2: T5 [P], T6 [P], T7 [P], T9 [P] após T4; T8 após T5; T10 após T8
-Phase 3: T11 → T12
+Phase 3: T11 → T12 → T13
 ```
 
 ---
@@ -267,6 +285,7 @@ Phase 3: T11 → T12
 | T10 | T6,T8 | T8→T10 | ✅ |
 | T11 | T8,T9,T10 | T10→T11 | ✅ |
 | T12 | T11,T7 | T11→T12 | ✅ |
+| T13 | T12 | T12→T13 | ✅ |
 
 ---
 
@@ -282,7 +301,7 @@ Phase 3: T11 → T12
 | T10 | Controller | integration | integration | ✅ OK |
 | T12 | Full flow | integration | integration | ✅ OK |
 
-**Total tasks: 12**
+**Total tasks: 13**
 
 ---
 

@@ -8,7 +8,7 @@
 ## Execution Plan
 
 ```text
-T1 → T2 → T3 → T4
+T1 → T2 → T3 → T4 → T5
 ```
 
 ---
@@ -75,7 +75,25 @@ T1 → T2 → T3 → T4
 
 **Tests:** none | **Gate:** full
 
-**Total tasks: 4**
+---
+
+### T5: Documentação + feature close
+
+**What:** Run Feature Close Checklist (`.rules/workflow.md`)
+**Where:** `.specs/`, `.specs/codebase/INDEX.md`
+**Depends on:** T4
+**Requirement:** ACCT-13 a ACCT-17
+
+**Done when**:
+
+- [ ] Feature Close Checklist (`.rules/workflow.md`) completo
+- [ ] spec.md `Status: Done`; design.md `Status: Implemented`; tasks.md `Status: Done`
+- [ ] INDEX.md, STATE.md, ROADMAP.md atualizados (get-account-balance slice, endpoint `GET /accounts/{id}/balance`)
+- [ ] Gate: `mvn verify -Pintegration -pl account-module`
+
+**Tests:** none | **Gate:** full
+
+**Total tasks: 5**
 
 ---
 
