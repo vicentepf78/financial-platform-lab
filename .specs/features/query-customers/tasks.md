@@ -1,7 +1,7 @@
 # Query Customers — Tasks
 
 **Design:** `.specs/features/query-customers/design.md`
-**Status:** Draft
+**Status:** Done
 
 ---
 
@@ -148,11 +148,25 @@ T6 → T7
 
 **Done when**:
 
-- [ ] Endpoints expostos na application
-- [ ] Verify curl documentado
+- [x] Endpoints expostos na application
+- [x] Verify curl documentado
 
-**Tests:** none
+**Tests:** none (coberto por `ApplicationWiringIntegrationTest`)
 **Gate:** full
+
+**Verified:** 2026-06-15 — `mvn verify -Pintegration -pl customer-module,application` passou; beans e endpoints GET registrados na application.
+
+**Verify:**
+
+```bash
+# Listagem paginada (requer app rodando: mvn spring-boot:run -pl application)
+curl -s http://localhost:8080/api/v1/customers | jq .
+
+# Detalhe por ID (substitua {id} pelo UUID retornado no POST ou listagem)
+curl -s http://localhost:8080/api/v1/customers/{id} | jq .
+```
+
+Esperado: HTTP 200 com envelope `{ data, metadata }`; listagem vazia retorna `data: []` e `metadata.totalElements: 0`; ID inexistente → HTTP 404 Problem Details.
 
 **Total tasks: 7**
 

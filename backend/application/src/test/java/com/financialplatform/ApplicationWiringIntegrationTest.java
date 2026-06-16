@@ -2,6 +2,9 @@ package com.financialplatform;
 
 import com.financialplatform.account.features.createaccount.CreateAccountController;
 import com.financialplatform.account.features.createaccount.CreateAccountUseCase;
+import com.financialplatform.customer.features.querycustomers.GetCustomerByIdUseCase;
+import com.financialplatform.customer.features.querycustomers.QueryCustomersController;
+import com.financialplatform.customer.features.querycustomers.QueryCustomersUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +57,15 @@ class ApplicationWiringIntegrationTest {
     private CreateAccountController createAccountController;
 
     @Autowired
+    private QueryCustomersUseCase queryCustomersUseCase;
+
+    @Autowired
+    private GetCustomerByIdUseCase getCustomerByIdUseCase;
+
+    @Autowired
+    private QueryCustomersController queryCustomersController;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @DynamicPropertySource
@@ -76,6 +89,31 @@ class ApplicationWiringIntegrationTest {
     void shouldLoadAccountModuleBeans() {
         assertThat(createAccountUseCase).isNotNull();
         assertThat(createAccountController).isNotNull();
+    }
+
+    @Test
+    void shouldLoadCustomerQueryBeans() {
+        assertThat(queryCustomersUseCase).isNotNull();
+        assertThat(getCustomerByIdUseCase).isNotNull();
+        assertThat(queryCustomersController).isNotNull();
+    }
+
+    @Test
+    void shouldRegisterQueryCustomersEndpoints() throws Exception {
+        UUID customerId = seedCustomer();
+
+        mockMvc.perform(get("/api/v1/customers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].id").value(customerId.toString()))
+                .andExpect(jsonPath("$.metadata.page").value(0))
+                .andExpect(jsonPath("$.metadata.totalElements").value(1));
+
+        mockMvc.perform(get("/api/v1/customers/{id}", customerId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(customerId.toString()))
+                .andExpect(jsonPath("$.data.name").value("Maria Silva"))
+                .andExpect(jsonPath("$.metadata").exists());
     }
 
     @Test

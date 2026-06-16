@@ -1,6 +1,8 @@
 package com.financialplatform;
 
 import com.financialplatform.customer.features.createcustomer.CreateCustomerUseCase;
+import com.financialplatform.customer.features.querycustomers.GetCustomerByIdUseCase;
+import com.financialplatform.customer.features.querycustomers.QueryCustomersUseCase;
 import com.financialplatform.customer.infrastructure.CustomerExceptionHandler;
 import com.financialplatform.customer.ports.CustomerRepositoryPort;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,12 @@ class FinancialPlatformApplicationTest {
 
     @MockBean
     private CreateCustomerUseCase createCustomerUseCase;
+
+    @MockBean
+    private QueryCustomersUseCase queryCustomersUseCase;
+
+    @MockBean
+    private GetCustomerByIdUseCase getCustomerByIdUseCase;
 
     @Test
     void shouldLoadApplicationContext() {

@@ -10,7 +10,7 @@
 | Module | Status | Features |
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
-| `customer-module` | ✅ Implemented | create-customer, query-customers (T1–T6) |
+| `customer-module` | ✅ Implemented | create-customer, query-customers |
 | `account-module` | ✅ Implemented | create-account |
 | `application` | ✅ Partial | Flyway V1–V3, health, module wiring smoke tests |
 
@@ -79,11 +79,20 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 | Unit (use case) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersUseCaseTest.java`, `GetCustomerByIdUseCaseTest.java` |
 | Integration (controller) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersControllerIntegrationTest.java` |
 | Query response DTOs | `backend/customer-module/src/main/java/.../features/querycustomers/` (`QueryCustomersResponse`, `GetCustomerByIdResponse`, `PaginationMetadata`) |
+| Module config | `backend/customer-module/src/main/java/.../infrastructure/CustomerModuleConfig.java` |
+| App wiring smoke | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` |
 
 ### API (query-customers)
 
 - `GET /api/v1/customers` — listagem paginada com filtros `page`, `size`, `name`, `type`, `document`; envelope `{ data, metadata }`
 - `GET /api/v1/customers/{id}` — detalhe do cliente; envelope `{ data, metadata }`, 404 se não encontrado
+
+**Verify (manual):**
+
+```bash
+curl -s http://localhost:8080/api/v1/customers | jq .
+curl -s http://localhost:8080/api/v1/customers/{id} | jq .
+```
 
 ---
 
