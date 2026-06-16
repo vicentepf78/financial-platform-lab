@@ -130,10 +130,10 @@ T6 → T7
 
 **Done when**:
 
-- [ ] GET /customers e GET /customers/{id} funcionais
-- [ ] 404, 400, 200 cobertos
-- [ ] Gate check passes: `mvn verify -Pintegration -pl customer-module`
-- [ ] Test count: ≥6 testes passam
+- [x] GET /customers e GET /customers/{id} funcionais
+- [x] 404, 400, 200 cobertos
+- [x] Gate check passes: `mvn verify -Pintegration -pl customer-module`
+- [x] Test count: ≥6 testes passam
 
 **Tests:** integration
 **Gate:** full

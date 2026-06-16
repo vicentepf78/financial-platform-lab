@@ -1,5 +1,6 @@
 package com.financialplatform.customer.infrastructure;
 
+import com.financialplatform.customer.domain.CustomerNotFoundException;
 import com.financialplatform.customer.domain.CustomerTypeMismatchException;
 import com.financialplatform.customer.domain.DuplicateDocumentException;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(basePackages = "com.financialplatform.customer")
 public class CustomerExceptionHandler {
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleCustomerNotFound(CustomerNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Customer not found");
+        problem.setProperty("type", "customer-not-found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem);
+    }
 
     @ExceptionHandler(DuplicateDocumentException.class)
     public ResponseEntity<ProblemDetail> handleDuplicateDocument(DuplicateDocumentException ex) {

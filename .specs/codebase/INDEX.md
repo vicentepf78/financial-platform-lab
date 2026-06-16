@@ -10,7 +10,7 @@
 | Module | Status | Features |
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
-| `customer-module` | ✅ Implemented | create-customer, query-customers (T1–T4, T5) |
+| `customer-module` | ✅ Implemented | create-customer, query-customers (T1–T6) |
 | `account-module` | ✅ Implemented | create-account |
 | `application` | ✅ Partial | Flyway V1–V3, health, module wiring smoke tests |
 
@@ -64,6 +64,7 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 | ----- | ---- |
 | Feature slice | `backend/customer-module/src/main/java/.../features/querycustomers/` |
 | Use cases | `.../QueryCustomersUseCase.java`, `GetCustomerByIdUseCase.java` |
+| Controller | `.../QueryCustomersController.java` |
 | Query / result | `.../QueryCustomersQuery.java`, `QueryCustomersResult.java`, `GetCustomerByIdQuery.java`, `CustomerDetailResult.java` |
 | Domain exception | `backend/customer-module/src/main/java/.../domain/CustomerNotFoundException.java` |
 | Query port | `backend/customer-module/src/main/java/.../ports/CustomerQueryPort.java` |
@@ -76,7 +77,13 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 | Summary mapper | `.../adapters/persistence/CustomerSummaryMapper.java` |
 | Integration (query adapter) | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` |
 | Unit (use case) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersUseCaseTest.java`, `GetCustomerByIdUseCaseTest.java` |
+| Integration (controller) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersControllerIntegrationTest.java` |
 | Query response DTOs | `backend/customer-module/src/main/java/.../features/querycustomers/` (`QueryCustomersResponse`, `GetCustomerByIdResponse`, `PaginationMetadata`) |
+
+### API (query-customers)
+
+- `GET /api/v1/customers` — listagem paginada com filtros `page`, `size`, `name`, `type`, `document`; envelope `{ data, metadata }`
+- `GET /api/v1/customers/{id}` — detalhe do cliente; envelope `{ data, metadata }`, 404 se não encontrado
 
 ---
 
