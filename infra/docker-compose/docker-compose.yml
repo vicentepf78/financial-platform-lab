@@ -17,7 +17,7 @@ services:
       retries: 10
 
   kafka:
-    image: bitnami/kafka:3.8
+    image: bitnamilegacy/kafka:3.9.0
     container_name: fpl-kafka
     ports:
       - "9092:9092"
