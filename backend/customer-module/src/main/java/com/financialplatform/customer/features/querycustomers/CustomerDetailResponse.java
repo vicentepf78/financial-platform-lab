@@ -1,6 +1,5 @@
 package com.financialplatform.customer.features.querycustomers;
 
-import com.financialplatform.customer.domain.Customer;
 import com.financialplatform.customer.domain.CustomerType;
 
 import java.time.Instant;
@@ -15,14 +14,14 @@ public record CustomerDetailResponse(
         Instant createdAt,
         Instant updatedAt) {
 
-    public static CustomerDetailResponse from(Customer customer) {
+    public static CustomerDetailResponse from(CustomerDetailResult result) {
         return new CustomerDetailResponse(
-                customer.id().value(),
-                customer.name(),
-                customer.type(),
-                customer.document().formatted(),
-                customer.email().value(),
-                customer.createdAt(),
-                customer.updatedAt());
+                result.id(),
+                result.name(),
+                result.type(),
+                result.document(),
+                result.email(),
+                result.createdAt(),
+                result.updatedAt());
     }
 }

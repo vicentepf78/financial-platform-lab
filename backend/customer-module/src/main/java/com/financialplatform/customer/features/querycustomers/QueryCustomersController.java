@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,33 +41,20 @@ public class QueryCustomersController {
                 Optional.ofNullable(document));
 
         QueryCustomersResult result = queryCustomersUseCase.execute(query);
-        List<CustomerSummaryResponse> data = result.content().stream()
-                .map(CustomerSummaryResponse::from)
-                .toList();
+        QueryCustomersResponse response = QueryCustomersResponse.from(result);
 
         return ResponseEntity.ok(Map.of(
-                "data", data,
-                "metadata", result.metadata()));
+                "data", response.data(),
+                "metadata", response.metadata()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getCustomerById(@PathVariable String id) {
         CustomerDetailResult result = getCustomerByIdUseCase.execute(new GetCustomerByIdQuery(Identifier.of(id)));
-        CustomerDetailResponse data = toDetailResponse(result);
+        GetCustomerByIdResponse response = GetCustomerByIdResponse.from(result);
 
         return ResponseEntity.ok(Map.of(
-                "data", data,
-                "metadata", Map.of()));
-    }
-
-    private static CustomerDetailResponse toDetailResponse(CustomerDetailResult result) {
-        return new CustomerDetailResponse(
-                result.id(),
-                result.name(),
-                result.type(),
-                result.document(),
-                result.email(),
-                result.createdAt(),
-                result.updatedAt());
+                "data", response.data(),
+                "metadata", response.metadata()));
     }
 }
