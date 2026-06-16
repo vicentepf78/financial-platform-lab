@@ -1,6 +1,7 @@
 package com.financialplatform.customer.features.querycustomers;
 
 import com.financialplatform.customer.support.AbstractCustomerIntegrationTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,6 +11,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.UUID;
 
+import static com.financialplatform.customer.support.JwtTestSupport.bearerToken;
+import static com.financialplatform.customer.support.JwtTestSupport.obtainOperatorToken;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,9 +28,16 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
     @Autowired
     private MockMvc mockMvc;
 
+    private String operatorToken;
+
+    @BeforeEach
+    void authenticate() throws Exception {
+        operatorToken = obtainOperatorToken(mockMvc);
+    }
+
     @Test
     void shouldReturn200WithEmptyListWhenNoCustomersExist() throws Exception {
-        mockMvc.perform(get("/api/v1/customers"))
+        mockMvc.perform(get("/api/v1/customers").with(bearerToken(operatorToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data").isEmpty())
@@ -42,7 +52,7 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
         createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
         createCustomer("João Pereira", "390.533.447-05", "joao@example.com");
 
-        mockMvc.perform(get("/api/v1/customers").param("page", "0").param("size", "1"))
+        mockMvc.perform(get("/api/v1/customers").param("page", "0").param("size", "1").with(bearerToken(operatorToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(1)))
                 .andExpect(jsonPath("$.data[0].name").value(notNullValue()))
@@ -57,7 +67,7 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
         createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
         createCustomer("João Pereira", "390.533.447-05", "joao@example.com");
 
-        mockMvc.perform(get("/api/v1/customers").param("name", "maria"))
+        mockMvc.perform(get("/api/v1/customers").param("name", "maria").with(bearerToken(operatorToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(1)))
                 .andExpect(jsonPath("$.data[0].name").value("Maria Silva"));
@@ -68,7 +78,7 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
         createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
         createCompanyCustomer("Acme Ltda", "11.222.333/0001-81", "contato@acme.com");
 
-        mockMvc.perform(get("/api/v1/customers").param("type", "INDIVIDUAL"))
+        mockMvc.perform(get("/api/v1/customers").param("type", "INDIVIDUAL").with(bearerToken(operatorToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(1)))
                 .andExpect(jsonPath("$.data[0].name").value("Maria Silva"))
@@ -80,7 +90,7 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
         createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
         createCustomer("João Pereira", "390.533.447-05", "joao@example.com");
 
-        mockMvc.perform(get("/api/v1/customers").param("document", VALID_CPF))
+        mockMvc.perform(get("/api/v1/customers").param("document", VALID_CPF).with(bearerToken(operatorToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(1)))
                 .andExpect(jsonPath("$.data[0].name").value("Maria Silva"))
@@ -89,14 +99,14 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
 
     @Test
     void shouldReturn400WhenPageIsNegative() throws Exception {
-        mockMvc.perform(get("/api/v1/customers").param("page", "-1"))
+        mockMvc.perform(get("/api/v1/customers").param("page", "-1").with(bearerToken(operatorToken)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").exists());
     }
 
     @Test
     void shouldReturn400WhenSizeIsZero() throws Exception {
-        mockMvc.perform(get("/api/v1/customers").param("size", "0"))
+        mockMvc.perform(get("/api/v1/customers").param("size", "0").with(bearerToken(operatorToken)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").exists());
     }
@@ -105,7 +115,7 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
     void shouldReturn200WithCustomerDetailWhenCustomerExists() throws Exception {
         String customerId = createCustomer("Maria Silva", VALID_CPF, "maria@example.com");
 
-        mockMvc.perform(get("/api/v1/customers/{id}", customerId))
+        mockMvc.perform(get("/api/v1/customers/{id}", customerId).with(bearerToken(operatorToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(customerId))
                 .andExpect(jsonPath("$.data.name").value("Maria Silva"))
@@ -121,14 +131,14 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
     void shouldReturn404WhenCustomerDoesNotExist() throws Exception {
         UUID missingId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        mockMvc.perform(get("/api/v1/customers/{id}", missingId))
+        mockMvc.perform(get("/api/v1/customers/{id}", missingId).with(bearerToken(operatorToken)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString(missingId.toString())));
     }
 
     @Test
     void shouldReturn400WhenCustomerIdIsInvalid() throws Exception {
-        mockMvc.perform(get("/api/v1/customers/{id}", "not-a-uuid"))
+        mockMvc.perform(get("/api/v1/customers/{id}", "not-a-uuid").with(bearerToken(operatorToken)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").exists());
     }
@@ -143,6 +153,7 @@ class QueryCustomersControllerIntegrationTest extends AbstractCustomerIntegratio
 
     private String createCustomerWithType(String name, String type, String document, String email) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/customers")
+                        .with(bearerToken(operatorToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
