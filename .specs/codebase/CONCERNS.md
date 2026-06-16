@@ -1,7 +1,7 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-06-15
-**Status:** Sprint 1 em execução — `customer-module` e `account-module` implementados; demais módulos pendentes.
+**Analysis Date:** 2026-06-16
+**Status:** Sprint 1 em execução — `customer-module` (`create-customer`, `query-customers`) e `account-module` (`create-account`) implementados; demais módulos pendentes.
 
 ## Resolved (Sprint 1)
 
@@ -87,8 +87,9 @@
 
 **customer-module e account-module (referência):**
 
-- Status: `create-customer` e `create-account` implementados com testes unitários e integração — ver `.specs/codebase/INDEX.md`
+- Status: `create-customer`, `query-customers` e `create-account` implementados com testes unitários e integração — ver `.specs/codebase/INDEX.md`
 - Padrão: testes co-localizados por task + gate Maven (`.rules/testing.md`)
+- `query-customers`: 2 use-case unit tests, 1 query-adapter integration test, 1 controller integration test; gate full `mvn verify -Pintegration -pl customer-module`
 
 **Demais módulos:**
 

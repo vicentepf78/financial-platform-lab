@@ -3,6 +3,7 @@
 **Módulo:** `customer-module`
 **Endpoints:** `GET /api/v1/customers`, `GET /api/v1/customers/{id}`
 **Sprint:** 1 — Core Banking
+**Status:** Done
 
 ---
 
@@ -12,10 +13,10 @@ Operadores e outros módulos (account) precisam localizar clientes cadastrados p
 
 ## Goals
 
-- [ ] Listar clientes com paginação (`page`, `size`)
-- [ ] Filtrar por nome (parcial), tipo (PF/PJ) e documento (parcial ou exato)
-- [ ] Consultar cliente individual por UUID
-- [ ] Retornar envelope `{ data, metadata }` com metadados de paginação
+- [x] Listar clientes com paginação (`page`, `size`)
+- [x] Filtrar por nome (parcial), tipo (PF/PJ) e documento (parcial ou exato)
+- [x] Consultar cliente individual por UUID
+- [x] Retornar envelope `{ data, metadata }` com metadados de paginação
 
 ## Out of Scope
 
@@ -93,21 +94,21 @@ Operadores e outros módulos (account) precisam localizar clientes cadastrados p
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| CUST-09 | P1: GET by id 200 | Design | Pending |
-| CUST-10 | P1: GET by id 404 | Design | Pending |
-| CUST-11 | P2: Paginação | Design | Pending |
-| CUST-12 | P2: Metadata paginação | Design | Pending |
-| CUST-13 | P3: Filtro nome | Design | Pending |
-| CUST-14 | P3: Filtro tipo | Design | Pending |
-| CUST-15 | P3: Filtro documento | Design | Pending |
+| CUST-09 | P1: GET by id 200 | Execute | Done |
+| CUST-10 | P1: GET by id 404 | Execute | Done |
+| CUST-11 | P2: Paginação | Execute | Done |
+| CUST-12 | P2: Metadata paginação | Execute | Done |
+| CUST-13 | P3: Filtro nome | Execute | Done |
+| CUST-14 | P3: Filtro tipo | Execute | Done |
+| CUST-15 | P3: Filtro documento | Execute | Done |
 
-**Coverage:** 7 total, 0 mapped, 7 pending
+**Coverage:** 7 total, 7 mapped to tasks (T1–T7), 7 done
 
 ---
 
 ## Success Criteria
 
-- [ ] Ambos endpoints funcionais com testes integração
-- [ ] Paginação consistente com convenção REST do projeto
-- [ ] Consulta read-only — sem regras de negócio em controller/repository além de query
-- [ ] Performance aceitável com índice em `document` e `name`
+- [x] Ambos endpoints funcionais com testes integração
+- [x] Paginação consistente com convenção REST do projeto
+- [x] Consulta read-only — sem regras de negócio em controller/repository além de query
+- [x] Performance aceitável com índice em `document` e `name`

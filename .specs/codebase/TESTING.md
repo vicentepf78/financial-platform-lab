@@ -68,6 +68,7 @@ class CreateAccountUseCaseTest {
 | Fluxo | Sprint |
 |-------|--------|
 | Cadastro de cliente | Sprint 1 | ✅ `create-customer` |
+| Consulta de clientes | Sprint 1 | ✅ `query-customers` |
 | Abertura de conta | Sprint 1 | ✅ `create-account` |
 | Transferência | Sprint 1-2 | Planejado |
 | PIX | Sprint 4 |
@@ -134,3 +135,15 @@ Alinhado ao `tlc-spec-driven`. Por task em `tasks.md`:
 Não há ritual TDD obrigatório (red/green). O gate é o veredito. Detalhes: `.rules/testing.md`.
 
 Nenhuma feature é considerada completa sem testes nas camadas exigidas pela matriz.
+
+## Feature: query-customers
+
+**Module:** `customer-module` · **Requirements:** CUST-09–CUST-15
+
+| Layer | Test file | Gate |
+| ----- | --------- | ---- |
+| Use case (list) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersUseCaseTest.java` | Quick: `mvn test -pl customer-module` |
+| Use case (by id) | `backend/customer-module/src/test/java/.../features/querycustomers/GetCustomerByIdUseCaseTest.java` | Quick: `mvn test -pl customer-module` |
+| Query adapter | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module` |
+| Controller | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersControllerIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module` |
+| App wiring | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` | Full: `mvn verify -Pintegration -pl customer-module,application` |

@@ -1,7 +1,7 @@
 # Roadmap
 
 **Current Milestone:** Sprint 1 — Core Banking
-**Status:** Execute in progress — `create-customer` ✅ · `create-account` ✅ · próxima: `transfer-money`
+**Status:** Execute in progress — `create-customer` ✅ · `create-account` ✅ · `query-customers` ✅ · próxima: `transfer-money`
 
 > **Spec-driven:** 30 features em `.specs/features/` · 7 ADRs em `adr/` · Sprint 1 com 54 tarefas atômicas
 
@@ -14,7 +14,7 @@
 
 ### Features
 
-**Gestão de Clientes** - [create-customer](../features/create-customer/spec.md) ✅ DONE · SPECIFIED → [query-customers](../features/query-customers/spec.md), [update-customer](../features/update-customer/spec.md)
+**Gestão de Clientes** - [create-customer](../features/create-customer/spec.md) ✅ DONE · [query-customers](../features/query-customers/spec.md) ✅ DONE · SPECIFIED → [update-customer](../features/update-customer/spec.md)
 
 - Cadastro de clientes (CPF/CNPJ)
 - Consulta de clientes

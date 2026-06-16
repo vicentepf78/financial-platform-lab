@@ -1,7 +1,9 @@
 # Query Customers — Design
 
 **Spec:** `.specs/features/query-customers/spec.md`
-**Status:** Draft
+**Status:** Implemented
+
+**Implementation note:** Single `QueryCustomersController` exposes both GET list and GET by id (two methods, one class). The diagram below shows two controller nodes for clarity; there is no separate `GetCustomerByIdController`.
 
 ---
 
@@ -90,10 +92,10 @@ sequenceDiagram
 - **Interfaces:** `CustomerDetailResult execute(GetCustomerByIdQuery query)`
 - **Errors:** `CustomerNotFoundException` → 404
 
-### QueryCustomersController / GetCustomerByIdController
+### QueryCustomersController
 
-- **Purpose:** Adaptadores HTTP (podem ser uma classe com dois métodos)
-- **Location:** `backend/customer-module/features/query-customers/`
+- **Purpose:** Adaptador HTTP único com dois endpoints GET (list + by id)
+- **Location:** `backend/customer-module/features/query-customers/QueryCustomersController.java`
 
 ---
 

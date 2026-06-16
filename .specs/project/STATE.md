@@ -1,6 +1,6 @@
 # State
 
-**Last Updated:** 2026-06-15
+**Last Updated:** 2026-06-16
 **Current Work:** Sprint 1 Execute — `query-customers` concluída; próxima feature: `transfer-money`
 
 ---

@@ -1,7 +1,7 @@
 # Architecture
 
 **Pattern:** Monorepo + Modular Monolith + Hexagonal Architecture + Vertical Slice Architecture + DDD Light
-**Status:** Sprint 1 parcial — `shared-kernel`, `customer-module` e `account-module` com vertical slices implementadas (`create-customer`, `create-account`). Demais módulos conforme roadmap.
+**Status:** Sprint 1 parcial — `shared-kernel`, `customer-module` e `account-module` com vertical slices implementadas (`create-customer`, `query-customers`, `create-account`). Demais módulos conforme roadmap.
 
 ## High-Level Structure
 
@@ -64,14 +64,14 @@ module/
 └── infrastructure/  # Configuração Spring, beans
 ```
 
-**Example:** `customer-module` e `account-module` — domain sem Spring; adapters em `adapters/persistence`, `adapters/messaging`
+**Example:** `customer-module` e `account-module` — domain sem Spring; adapters em `adapters/persistence`, `adapters/messaging`. Consultas read-only via `CustomerQueryPort` em `query-customers`.
 
 ### Vertical Slice Architecture
 
 **Location:** Dentro de cada módulo, pasta `features/`
 **Purpose:** Isolar funcionalidades completas (controller → use case → test) por slice
 **Implementation:** Cada feature contém Controller, UseCase, Request/Response DTOs e Test na mesma pasta
-**Example:** `account-module/features/createaccount/CreateAccountUseCase.java`
+**Example:** `account-module/features/createaccount/CreateAccountUseCase.java`; `customer-module/features/querycustomers/QueryCustomersController.java` (GET list + by id)
 
 ### Event-Driven Architecture
 

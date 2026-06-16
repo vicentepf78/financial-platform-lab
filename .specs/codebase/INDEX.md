@@ -1,6 +1,6 @@
 # Codebase Index
 
-**Updated:** 2026-06-15  
+**Updated:** 2026-06-16  
 **Purpose:** Índice vivo do que está implementado. Agentes devem consultar este arquivo em vez de explorar o repositório quando `tasks.md` aponta padrões existentes.
 
 ---
@@ -56,7 +56,7 @@ Use como padrão para novas vertical slices no `customer-module`.
 
 ---
 
-## Reference slice: query-customers (foundation)
+## Reference slice: query-customers
 
 Use como padrão para a vertical slice de consulta no `customer-module`.
 
@@ -64,7 +64,7 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 | ----- | ---- |
 | Feature slice | `backend/customer-module/src/main/java/.../features/querycustomers/` |
 | Use cases | `.../QueryCustomersUseCase.java`, `GetCustomerByIdUseCase.java` |
-| Controller | `.../QueryCustomersController.java` |
+| Controller | `.../QueryCustomersController.java` (GET list + GET by id) |
 | Query / result | `.../QueryCustomersQuery.java`, `QueryCustomersResult.java`, `GetCustomerByIdQuery.java`, `CustomerDetailResult.java` |
 | Domain exception | `backend/customer-module/src/main/java/.../domain/CustomerNotFoundException.java` |
 | Query port | `backend/customer-module/src/main/java/.../ports/CustomerQueryPort.java` |
@@ -75,12 +75,19 @@ Use como padrão para a vertical slice de consulta no `customer-module`.
 | Query adapter | `backend/customer-module/src/main/java/.../adapters/persistence/JpaCustomerQueryAdapter.java` |
 | Query specifications | `.../adapters/persistence/CustomerQuerySpecifications.java` |
 | Summary mapper | `.../adapters/persistence/CustomerSummaryMapper.java` |
-| Integration (query adapter) | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` |
-| Unit (use case) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersUseCaseTest.java`, `GetCustomerByIdUseCaseTest.java` |
-| Integration (controller) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersControllerIntegrationTest.java` |
 | Query response DTOs | `backend/customer-module/src/main/java/.../features/querycustomers/` (`QueryCustomersResponse`, `GetCustomerByIdResponse`, `PaginationMetadata`) |
 | Module config | `backend/customer-module/src/main/java/.../infrastructure/CustomerModuleConfig.java` |
 | App wiring smoke | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` |
+
+### Tests (query-customers)
+
+| Type | Path |
+| ---- | ---- |
+| Unit (use case) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersUseCaseTest.java`, `GetCustomerByIdUseCaseTest.java` |
+| Integration (query adapter) | `backend/customer-module/src/test/java/.../adapters/persistence/JpaCustomerQueryAdapterIntegrationTest.java` |
+| Integration (controller) | `backend/customer-module/src/test/java/.../features/querycustomers/QueryCustomersControllerIntegrationTest.java` |
+| IT base class | `backend/customer-module/src/test/java/.../support/AbstractCustomerIntegrationTest.java` |
+| Test application | `backend/customer-module/src/test/java/.../support/CustomerModuleTestApplication.java` |
 
 ### API (query-customers)
 
@@ -169,6 +176,7 @@ Use como padrão para novas vertical slices no `account-module` (ex.: `transfer-
 | Integration profile | `mvn verify -Pintegration` |
 | Unit only (customer) | `mvn test -pl customer-module` |
 | Unit only (account) | `mvn test -pl account-module` |
+| Integration (customer) | `mvn verify -Pintegration -pl customer-module` |
 | Integration (account) | `mvn verify -Pintegration -pl account-module` |
 
 ---
