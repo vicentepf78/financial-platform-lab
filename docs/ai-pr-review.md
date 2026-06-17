@@ -101,17 +101,20 @@ Configure em **Settings → Secrets and variables → Actions → Variables**:
 | `AI_REVIEW_CONTEXT_PATHS` | contexto padrão do repo | Lista separada por vírgula de arquivos/globs de contexto |
 | `AI_REVIEW_DIMENSIONS` | `security,requirements,tests,architecture,regression,performance` | Dimensões de review |
 | `AI_REVIEW_COMMENT_MARKER` | `ai-pr-review` | Marcador invisível para evitar duplicações |
-| `AI_REVIEW_MAX_CONTEXT_CHARS` | `30000` | Limite de contexto do repositório enviado ao modelo |
-| `AI_REVIEW_MAX_PATCH_CHARS` | `60000` | Limite de diff enviado ao modelo |
+| `AI_REVIEW_MAX_CONTEXT_CHARS` | `12000` | Limite de contexto do repositório enviado ao modelo |
+| `AI_REVIEW_MAX_PATCH_CHARS` | `20000` | Limite de diff enviado ao modelo |
+| `AI_REVIEW_MAX_REQUEST_TOKENS` | `7500` | Orçamento total estimado por chamada ao modelo (ajuste para limites do provider) |
 | `AI_REVIEW_MAX_COMMENTS` | `40` | Limite de comentários inline por execução |
 
-Quando `AI_REVIEW_CONTEXT_PATHS` não é informado, o script tenta carregar arquivos comuns como `AGENTS.md`, `CONTRIBUTING.md`, `README.md`, `.rules/**/*.md`, `.specs/**/*.md`, `adr/**/*.md` e `docs/**/*.md`.
+Quando `AI_REVIEW_CONTEXT_PATHS` não é informado, o script carrega apenas os arquivos essenciais do projeto (`AGENTS.md`, overlay de review, `.rules/*` principais e `.specs/codebase/*.md`), evitando enviar centenas de specs ao modelo.
 
 Para este projeto, uma configuração explícita recomendada é:
 
 ```text
-AGENTS.md,.rules/**/*.md,.specs/codebase/*.md,adr/**/*.md,docs/**/*.md
+AGENTS.md,.github/prompts/pr-review.overlay.md,.rules/**/*.md,.specs/codebase/*.md
 ```
+
+> **Limite do GitHub Models (`gpt-4o-mini`):** o corpo da requisição é limitado a ~8000 tokens. O script aplica truncamento por orçamento e faz retry automático com payload reduzido em erro 413. O workflow executa a versão do script da branch **base** do PR — mergeie correções no alvo antes de reexecutar a review.
 
 ### Provider externo
 
