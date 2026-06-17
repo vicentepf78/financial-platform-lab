@@ -53,6 +53,8 @@ O script aplica filtros antes de publicar qualquer comentário:
 - Executa a versão do script do `base.sha`, não a versão alterada pelo PR.
 - Lê o diff via API do GitHub; não executa código do PR.
 
+No primeiro PR que instala este workflow, os arquivos de review ainda não existem na branch base. Nesse caso, o job é encerrado sem executar a revisão IA. Após o merge desse PR, os próximos PRs passam a executar normalmente.
+
 ## Como reutilizar em qualquer projeto
 
 Copie estes arquivos para o repositório que receberá a automação:

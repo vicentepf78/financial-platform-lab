@@ -45,12 +45,25 @@ jobs:
         with:
           ref: ${{ steps.pr_base.outputs.sha }}
 
+      - name: Check reviewer files on trusted base
+        id: reviewer_files
+        run: |
+          if [ -f ".github/scripts/ai-pr-review.mjs" ] && [ -f ".github/prompts/pr-review.md" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "AI PR review files are not present on the trusted base revision yet." >> "$GITHUB_STEP_SUMMARY"
+            echo "This is expected for the bootstrap PR that introduces the workflow." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Set up Node.js
+        if: steps.reviewer_files.outputs.available == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Run AI PR review
+        if: steps.reviewer_files.outputs.available == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
