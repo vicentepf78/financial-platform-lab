@@ -16,14 +16,15 @@ final class AccountEntityMapper {
                 account.createdAt(),
                 account.createdBy(),
                 account.createdAt(),
-                account.createdBy());
+                account.createdBy(),
+                account.status().name());
     }
 
     static Account toDomain(AccountEntity entity) {
         return Account.reconstitute(
                 Identifier.of(entity.getId()),
                 Identifier.of(entity.getCustomerId()),
-                AccountStatus.ACTIVE,
+                AccountStatus.valueOf(entity.getStatus()),
                 entity.getCreatedAt(),
                 entity.getCreatedBy());
     }

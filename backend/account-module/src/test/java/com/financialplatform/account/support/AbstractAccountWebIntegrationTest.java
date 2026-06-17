@@ -1,5 +1,9 @@
 package com.financialplatform.account.support;
 
+import com.financialplatform.account.domain.Account;
+import com.financialplatform.account.domain.AccountStatus;
+import com.financialplatform.account.ports.AccountRepositoryPort;
+import com.financialplatform.account.ports.LedgerPort;
 import com.financialplatform.sharedkernel.domain.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,12 @@ public abstract class AbstractAccountWebIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    protected AccountRepositoryPort accountRepository;
+
+    @Autowired
+    protected LedgerPort ledgerPort;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -58,5 +68,21 @@ public abstract class AbstractAccountWebIntegrationTest {
                 Timestamp.from(now),
                 "system");
         return Identifier.of(customerId);
+    }
+
+    protected Account seedAccount(Identifier customerId) {
+        Instant now = Instant.parse("2026-06-15T10:00:00Z");
+        Account account = accountRepository.save(Account.open(customerId, "system", now));
+        ledgerPort.initializeAccount(account.id());
+        return account;
+    }
+
+    protected Account seedClosedAccount(Identifier customerId) {
+        Instant now = Instant.parse("2026-06-15T10:00:00Z");
+        Account account = Account.reconstitute(
+                Identifier.generate(), customerId, AccountStatus.CLOSED, now, "system");
+        account = accountRepository.save(account);
+        ledgerPort.initializeAccount(account.id());
+        return account;
     }
 }

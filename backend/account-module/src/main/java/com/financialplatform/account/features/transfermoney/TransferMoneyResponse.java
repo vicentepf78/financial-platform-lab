@@ -28,4 +28,16 @@ public record TransferMoneyResponse(
                 transfer.correlationId(),
                 transfer.createdAt());
     }
+
+    public static TransferMoneyResponse from(TransferMoneyResult result) {
+        return new TransferMoneyResponse(
+                result.transferId(),
+                result.originAccountId(),
+                result.destinationAccountId(),
+                result.amount(),
+                result.currency(),
+                result.status(),
+                result.correlationId(),
+                result.createdAt());
+    }
 }
