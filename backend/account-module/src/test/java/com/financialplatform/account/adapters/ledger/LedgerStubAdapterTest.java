@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LedgerStubAdapterTest {
 
@@ -35,5 +36,19 @@ class LedgerStubAdapterTest {
         assertThatCode(() -> adapter.initializeAccount(ACCOUNT_ID))
                 .doesNotThrowAnyException();
         assertThat(adapter.getBalanceProjection(ACCOUNT_ID)).isEqualTo(Money.zero());
+    }
+
+    @Test
+    void shouldReturnZeroForUninitializedAccount() {
+        Money balance = adapter.getBalanceProjection(ACCOUNT_ID);
+
+        assertThat(balance).isEqualTo(Money.zero());
+    }
+
+    @Test
+    void shouldRejectNullAccountIdOnGetBalanceProjection() {
+        assertThatThrownBy(() -> adapter.getBalanceProjection(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("AccountId is required");
     }
 }
