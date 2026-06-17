@@ -80,4 +80,10 @@ public class AccountModuleConfig {
                 transferDomainService,
                 accountModuleClock);
     }
+
+    @Bean
+    TransferMoneyTransactionalBoundary transferMoneyTransactionalBoundary(
+            TransferMoneyUseCase transferMoneyUseCase) {
+        return new TransferMoneyTransactionalBoundary(transferMoneyUseCase);
+    }
 }

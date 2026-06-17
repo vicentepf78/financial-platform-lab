@@ -8,16 +8,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.financialplatform.account.infrastructure.TransferMoneyTransactionalBoundary;
+
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/transfers")
 public class TransferMoneyController {
 
-    private final TransferMoneyUseCase transferMoneyUseCase;
+    private final TransferMoneyTransactionalBoundary transferMoneyTransactionalBoundary;
 
-    public TransferMoneyController(TransferMoneyUseCase transferMoneyUseCase) {
-        this.transferMoneyUseCase = transferMoneyUseCase;
+    public TransferMoneyController(TransferMoneyTransactionalBoundary transferMoneyTransactionalBoundary) {
+        this.transferMoneyTransactionalBoundary = transferMoneyTransactionalBoundary;
     }
 
     @PostMapping
@@ -30,7 +32,7 @@ public class TransferMoneyController {
                 request.idempotencyKey(),
                 null);
 
-        TransferMoneyResult result = transferMoneyUseCase.execute(command);
+        TransferMoneyResult result = transferMoneyTransactionalBoundary.execute(command);
         TransferMoneyResponse response = TransferMoneyResponse.from(result);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(

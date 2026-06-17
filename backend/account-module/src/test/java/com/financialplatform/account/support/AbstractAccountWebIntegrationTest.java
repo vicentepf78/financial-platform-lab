@@ -21,7 +21,7 @@ import java.util.UUID;
 public abstract class AbstractAccountWebIntegrationTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    protected JdbcTemplate jdbcTemplate;
 
     @Autowired
     protected AccountRepositoryPort accountRepository;
