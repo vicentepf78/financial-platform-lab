@@ -19,9 +19,16 @@ public class AccountMessagingConfig {
     }
 
     @Bean
+    TransferExecutedJsonSerializer transferExecutedJsonSerializer() {
+        return new TransferExecutedJsonSerializer();
+    }
+
+    @Bean
     EventPublisherPort eventPublisher(
             KafkaTemplate<String, String> kafkaTemplate,
-            AccountCreatedJsonSerializer accountCreatedJsonSerializer) {
-        return new KafkaEventPublisherAdapter(kafkaTemplate, accountCreatedJsonSerializer);
+            AccountCreatedJsonSerializer accountCreatedJsonSerializer,
+            TransferExecutedJsonSerializer transferExecutedJsonSerializer) {
+        return new KafkaEventPublisherAdapter(
+                kafkaTemplate, accountCreatedJsonSerializer, transferExecutedJsonSerializer);
     }
 }
