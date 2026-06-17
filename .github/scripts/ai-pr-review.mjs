@@ -11,8 +11,10 @@ const model = process.env.AI_MODEL || "openai/gpt-4o-mini";
 const promptPath = process.env.AI_REVIEW_PROMPT_PATH || ".github/prompts/pr-review.md";
 const overlayPath = process.env.AI_REVIEW_OVERLAY_PATH || ".github/prompts/pr-review.overlay.md";
 const commentMarker = process.env.AI_REVIEW_COMMENT_MARKER || "ai-pr-review";
-const maxContextChars = Number(process.env.AI_REVIEW_MAX_CONTEXT_CHARS || 30000);
-const maxPatchChars = Number(process.env.AI_REVIEW_MAX_PATCH_CHARS || 60000);
+const maxContextChars = Number(process.env.AI_REVIEW_MAX_CONTEXT_CHARS || 12000);
+const maxPatchChars = Number(process.env.AI_REVIEW_MAX_PATCH_CHARS || 20000);
+const maxRequestTokens = Number(process.env.AI_REVIEW_MAX_REQUEST_TOKENS || 7500);
+const charsPerToken = Number(process.env.AI_REVIEW_CHARS_PER_TOKEN || 3.5);
 const maxComments = Number(process.env.AI_REVIEW_MAX_COMMENTS || 40);
 
 const dimensions = (process.env.AI_REVIEW_DIMENSIONS || "security,requirements,tests,architecture,regression,performance")
@@ -22,14 +24,16 @@ const dimensions = (process.env.AI_REVIEW_DIMENSIONS || "security,requirements,t
 
 const defaultContextPaths = [
   "AGENTS.md",
-  "CONTRIBUTING.md",
-  "README.md",
-  ".github/copilot-instructions.md",
-  ".cursor/rules/**/*.md",
-  ".rules/**/*.md",
-  ".specs/**/*.md",
-  "adr/**/*.md",
-  "docs/**/*.md",
+  ".github/prompts/pr-review.overlay.md",
+  ".rules/architecture.md",
+  ".rules/financial.md",
+  ".rules/testing.md",
+  ".rules/rest.md",
+  ".rules/database.md",
+  ".rules/kafka-events.md",
+  ".specs/codebase/INDEX.md",
+  ".specs/codebase/TESTING.md",
+  ".specs/codebase/CONVENTIONS.md",
 ];
 
 const severityLabels = {
@@ -232,6 +236,103 @@ function extractJson(text) {
   return JSON.parse(fenced ? fenced[1] : trimmed);
 }
 
+function estimateTokens(text) {
+  return Math.ceil(String(text || "").length / charsPerToken);
+}
+
+function estimateMessagesTokens(messages) {
+  return messages.reduce((total, message) => total + estimateTokens(message.content) + 40, 80);
+}
+
+function truncateToTokenBudget(text, maxTokens, suffix) {
+  const content = String(text || "");
+
+  if (maxTokens <= 0) {
+    return "";
+  }
+
+  if (estimateTokens(content) <= maxTokens) {
+    return content;
+  }
+
+  const suffixText = suffix ?? "\n\n[Truncated to fit model token limit.]";
+  const suffixTokens = estimateTokens(suffixText);
+  const bodyBudget = Math.max(0, maxTokens - suffixTokens);
+  let low = 0;
+  let high = content.length;
+
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+
+    if (estimateTokens(content.slice(0, mid)) <= bodyBudget) {
+      low = mid;
+    } else {
+      high = mid - 1;
+    }
+  }
+
+  return `${content.slice(0, low)}${suffixText}`;
+}
+
+function buildPrHeader(pr) {
+  return [
+    `PR #${pr.number}: ${pr.title}`,
+    `Base branch: ${pr.base.ref} (${pr.base.sha})`,
+    `Head branch: ${pr.head.ref} (${pr.head.sha})`,
+    "",
+    "PR body:",
+    pr.body || "(empty)",
+  ].join("\n");
+}
+
+function buildDimensionMessages({ prompt, pr, contextText, patchText, dimension, budgetScale = 1 }) {
+  const scaledMaxTokens = Math.max(1000, Math.floor(maxRequestTokens * budgetScale));
+  const dimensionPrompt = `Run only the "${dimension}" review dimension. Return JSON with findings where type is "${dimension}".`;
+  const prHeader = buildPrHeader(pr);
+
+  const fixedTokens =
+    estimateTokens(prompt) + estimateTokens(dimensionPrompt) + estimateTokens(prHeader) + 120;
+  const contentBudget = Math.max(0, scaledMaxTokens - fixedTokens);
+  const contextBudget = Math.floor(contentBudget * 0.35);
+  const patchBudget = contentBudget - contextBudget;
+
+  const truncatedContext = truncateToTokenBudget(
+    contextText,
+    contextBudget,
+    "\n\n[Repository context truncated to fit model token limit.]"
+  );
+  const truncatedPatch = truncateToTokenBudget(
+    patchText || "(No textual patch available.)",
+    patchBudget,
+    "\n\n[Diff truncated to fit model token limit.]"
+  );
+
+  const userContent = [
+    prHeader,
+    "",
+    "Repository review context:",
+    truncatedContext,
+    "",
+    "Changed files and patches:",
+    truncatedPatch,
+  ].join("\n");
+
+  const messages = [
+    { role: "system", content: prompt },
+    { role: "user", content: userContent },
+    { role: "user", content: dimensionPrompt },
+  ];
+
+  const estimatedTokens = estimateMessagesTokens(messages);
+  if (estimatedTokens > scaledMaxTokens) {
+    console.warn(
+      `Estimated request size (${estimatedTokens} tokens) still exceeds budget (${scaledMaxTokens}) for dimension "${dimension}".`
+    );
+  }
+
+  return messages;
+}
+
 async function callModel(messages) {
   const response = await fetch(`${modelBaseUrl}/chat/completions`, {
     method: "POST",
@@ -260,6 +361,29 @@ async function callModel(messages) {
   }
 
   return extractJson(content);
+}
+
+function isTokenLimitError(error) {
+  const message = String(error?.message || "");
+  return message.includes("413") || message.includes("tokens_limit_reached") || message.includes("too large");
+}
+
+async function callModelForDimension(params, budgetScale = 1) {
+  const messages = buildDimensionMessages({ ...params, budgetScale });
+
+  try {
+    return await callModel(messages);
+  } catch (error) {
+    if (budgetScale > 0.45 && isTokenLimitError(error)) {
+      const reducedScale = budgetScale * 0.6;
+      console.warn(
+        `Token limit reached for dimension "${params.dimension}" at scale ${budgetScale.toFixed(2)}; retrying at ${reducedScale.toFixed(2)}.`
+      );
+      return callModelForDimension(params, reducedScale);
+    }
+
+    throw error;
+  }
 }
 
 function hasNearbyExistingComment(existingComments, path, line) {
@@ -392,36 +516,19 @@ async function main() {
   const patchText = formatChangedFiles(files);
   const addedLinesByFile = new Map(files.map((file) => [file.filename, parseAddedLines(file.patch)]));
 
-  const baseMessages = [
-    { role: "system", content: prompt },
-    {
-      role: "user",
-      content: [
-        `PR #${pr.number}: ${pr.title}`,
-        `Base branch: ${pr.base.ref} (${pr.base.sha})`,
-        `Head branch: ${pr.head.ref} (${pr.head.sha})`,
-        "",
-        "PR body:",
-        pr.body || "(empty)",
-        "",
-        "Repository review context:",
-        contextText,
-        "",
-        "Changed files and patches:",
-        patchText || "(No textual patch available.)",
-      ].join("\n"),
-    },
-  ];
+  console.log(
+    `AI review payload limits: context=${maxContextChars} chars, patch=${maxPatchChars} chars, request=${maxRequestTokens} tokens.`
+  );
 
   const reviews = await Promise.all(
     dimensions.map(async (dimension) => {
-      const result = await callModel([
-        ...baseMessages,
-        {
-          role: "user",
-          content: `Run only the "${dimension}" review dimension. Return JSON with findings where type is "${dimension}".`,
-        },
-      ]);
+      const result = await callModelForDimension({
+        prompt,
+        pr,
+        contextText,
+        patchText,
+        dimension,
+      });
 
       return { dimension, ...result };
     })
