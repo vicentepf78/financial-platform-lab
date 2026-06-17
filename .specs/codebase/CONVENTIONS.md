@@ -93,7 +93,9 @@ features/create-account/
 Spec → Testes → Implementação → Refatoração
 ```
 
-**Git:** Commits atômicos por tarefa; mensagens focadas no "porquê"
+**Git:** Branch por feature a partir da branch alvo; commits atômicos por tarefa; mensagens focadas no "porquê"; merge via PR/MR para a branch de integração acordada.
+
+**AI review:** PRs disparam revisão consultiva por IA no GitHub Actions. Detalhes: `docs/ai-pr-review.md`.
 
 ## REST Conventions
 

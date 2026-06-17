@@ -6,6 +6,7 @@ Documentação complementar do Financial Platform Lab.
 - Regras para IA: [`AGENTS.md`](../AGENTS.md)
 - Spec operacional: [`.specs/project/PROJECT.md`](../.specs/project/PROJECT.md)
 - Roadmap: [`.specs/project/ROADMAP.md`](../.specs/project/ROADMAP.md)
+- Revisão IA em PRs: [`ai-pr-review.md`](ai-pr-review.md)
 
 ## Integrações externas
 
