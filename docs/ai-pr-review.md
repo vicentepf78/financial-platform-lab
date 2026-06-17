@@ -103,7 +103,7 @@ Configure em **Settings → Secrets and variables → Actions → Variables**:
 | `AI_REVIEW_COMMENT_MARKER` | `ai-pr-review` | Marcador invisível para evitar duplicações |
 | `AI_REVIEW_MAX_CONTEXT_CHARS` | `12000` | Limite de contexto do repositório enviado ao modelo |
 | `AI_REVIEW_MAX_PATCH_CHARS` | `20000` | Limite de diff enviado ao modelo |
-| `AI_REVIEW_MAX_REQUEST_TOKENS` | `7500` | Orçamento total estimado por chamada ao modelo (ajuste para limites do provider) |
+| `AI_REVIEW_MAX_REQUEST_TOKENS` | `6000` | Orçamento total estimado por chamada ao modelo (ajuste para limites do provider) |
 | `AI_REVIEW_MAX_COMMENTS` | `40` | Limite de comentários inline por execução |
 
 Quando `AI_REVIEW_CONTEXT_PATHS` não é informado, o script carrega apenas os arquivos essenciais do projeto (`AGENTS.md`, overlay de review, `.rules/*` principais e `.specs/codebase/*.md`), evitando enviar centenas de specs ao modelo.
@@ -114,7 +114,7 @@ Para este projeto, uma configuração explícita recomendada é:
 AGENTS.md,.github/prompts/pr-review.overlay.md,.rules/**/*.md,.specs/codebase/*.md
 ```
 
-> **Limite do GitHub Models (`gpt-4o-mini`):** o corpo da requisição é limitado a ~8000 tokens. O script aplica truncamento por orçamento e faz retry automático com payload reduzido em erro 413. O workflow executa a versão do script da branch **base** do PR — mergeie correções no alvo antes de reexecutar a review.
+> **Limite do GitHub Models (`gpt-4o-mini`):** o corpo da requisição é limitado a ~8000 tokens. O script aplica truncamento por orçamento (com base no JSON serializado), faz shrink automático antes da chamada e retry em erro 413. O workflow faz checkout da **ponta atual** da branch base do PR (via API), não do snapshot congelado do evento — assim um *Re-run* após merge de correções em `main` usa o script atualizado. Para forçar nova execução após merge na base, também pode fazer push na branch do PR ou usar *workflow_dispatch*.
 
 ### Provider externo
 
