@@ -53,6 +53,8 @@ O script aplica filtros antes de publicar qualquer comentário:
 - Executa a versão do script do `base.sha`, não a versão alterada pelo PR.
 - Lê o diff via API do GitHub; não executa código do PR.
 
+No primeiro PR que instala este workflow, os arquivos de review ainda não existem na branch base. Nesse caso, o job é encerrado sem executar a revisão IA. Após o merge desse PR, os próximos PRs passam a executar normalmente.
+
 ## Como reutilizar em qualquer projeto
 
 Copie estes arquivos para o repositório que receberá a automação:
@@ -99,17 +101,20 @@ Configure em **Settings → Secrets and variables → Actions → Variables**:
 | `AI_REVIEW_CONTEXT_PATHS` | contexto padrão do repo | Lista separada por vírgula de arquivos/globs de contexto |
 | `AI_REVIEW_DIMENSIONS` | `security,requirements,tests,architecture,regression,performance` | Dimensões de review |
 | `AI_REVIEW_COMMENT_MARKER` | `ai-pr-review` | Marcador invisível para evitar duplicações |
-| `AI_REVIEW_MAX_CONTEXT_CHARS` | `30000` | Limite de contexto do repositório enviado ao modelo |
-| `AI_REVIEW_MAX_PATCH_CHARS` | `60000` | Limite de diff enviado ao modelo |
+| `AI_REVIEW_MAX_CONTEXT_CHARS` | `12000` | Limite de contexto do repositório enviado ao modelo |
+| `AI_REVIEW_MAX_PATCH_CHARS` | `20000` | Limite de diff enviado ao modelo |
+| `AI_REVIEW_MAX_REQUEST_TOKENS` | `6000` | Orçamento total estimado por chamada ao modelo (ajuste para limites do provider) |
 | `AI_REVIEW_MAX_COMMENTS` | `40` | Limite de comentários inline por execução |
 
-Quando `AI_REVIEW_CONTEXT_PATHS` não é informado, o script tenta carregar arquivos comuns como `AGENTS.md`, `CONTRIBUTING.md`, `README.md`, `.rules/**/*.md`, `.specs/**/*.md`, `adr/**/*.md` e `docs/**/*.md`.
+Quando `AI_REVIEW_CONTEXT_PATHS` não é informado, o script carrega apenas os arquivos essenciais do projeto (`AGENTS.md`, overlay de review, `.rules/*` principais e `.specs/codebase/*.md`), evitando enviar centenas de specs ao modelo.
 
 Para este projeto, uma configuração explícita recomendada é:
 
 ```text
-AGENTS.md,.rules/**/*.md,.specs/codebase/*.md,adr/**/*.md,docs/**/*.md
+AGENTS.md,.github/prompts/pr-review.overlay.md,.rules/**/*.md,.specs/codebase/*.md
 ```
+
+> **Limite do GitHub Models (`gpt-4o-mini`):** o corpo da requisição é limitado a ~8000 tokens. O script aplica truncamento por orçamento (com base no JSON serializado), faz shrink automático antes da chamada e retry em erro 413. O workflow faz checkout da **ponta atual** da branch base do PR (`git/ref/heads/{base.ref}`), não de `pull.base.sha` (que pode ficar defasado quando o PR está behind). Para forçar nova execução, faça push na branch do PR ou use *workflow_dispatch*.
 
 ### Provider externo
 

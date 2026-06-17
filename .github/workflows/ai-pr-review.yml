@@ -33,24 +33,45 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "sha=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
-          else
-            sha="$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}" --jq .base.sha)"
-            echo "sha=${sha}" >> "$GITHUB_OUTPUT"
-          fi
+          base_ref="$(curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" \
+            | jq -r .base.ref)"
+          sha="$(curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/ref/heads/${base_ref}" \
+            | jq -r .object.sha)"
+          echo "Resolved base branch tip: ${base_ref}@${sha}"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
 
       - name: Checkout trusted base revision
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.pr_base.outputs.sha }}
 
+      - name: Check reviewer files on trusted base
+        id: reviewer_files
+        run: |
+          if [ -f ".github/scripts/ai-pr-review.mjs" ] && [ -f ".github/prompts/pr-review.md" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "AI PR review files are not present on the trusted base revision yet." >> "$GITHUB_STEP_SUMMARY"
+            echo "This is expected for the bootstrap PR that introduces the workflow." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Set up Node.js
+        if: steps.reviewer_files.outputs.available == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Run AI PR review
+        if: steps.reviewer_files.outputs.available == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
@@ -62,7 +83,8 @@ jobs:
           AI_REVIEW_CONTEXT_PATHS: ${{ vars.AI_REVIEW_CONTEXT_PATHS || '' }}
           AI_REVIEW_DIMENSIONS: ${{ vars.AI_REVIEW_DIMENSIONS || 'security,requirements,tests,architecture,regression,performance' }}
           AI_REVIEW_COMMENT_MARKER: ${{ vars.AI_REVIEW_COMMENT_MARKER || 'ai-pr-review' }}
-          AI_REVIEW_MAX_CONTEXT_CHARS: ${{ vars.AI_REVIEW_MAX_CONTEXT_CHARS || '30000' }}
-          AI_REVIEW_MAX_PATCH_CHARS: ${{ vars.AI_REVIEW_MAX_PATCH_CHARS || '60000' }}
+          AI_REVIEW_MAX_CONTEXT_CHARS: ${{ vars.AI_REVIEW_MAX_CONTEXT_CHARS || '12000' }}
+          AI_REVIEW_MAX_PATCH_CHARS: ${{ vars.AI_REVIEW_MAX_PATCH_CHARS || '20000' }}
+          AI_REVIEW_MAX_REQUEST_TOKENS: ${{ vars.AI_REVIEW_MAX_REQUEST_TOKENS || '4500' }}
           AI_REVIEW_MAX_COMMENTS: ${{ vars.AI_REVIEW_MAX_COMMENTS || '40' }}
         run: node .github/scripts/ai-pr-review.mjs
