@@ -33,12 +33,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "sha=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
-          else
-            sha="$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}" --jq .base.sha)"
-            echo "sha=${sha}" >> "$GITHUB_OUTPUT"
-          fi
+          sha="$(curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" \
+            | jq -r .base.sha)"
+          echo "Resolved latest base SHA: ${sha}"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
 
       - name: Checkout trusted base revision
         uses: actions/checkout@v4
@@ -77,6 +79,6 @@ jobs:
           AI_REVIEW_COMMENT_MARKER: ${{ vars.AI_REVIEW_COMMENT_MARKER || 'ai-pr-review' }}
           AI_REVIEW_MAX_CONTEXT_CHARS: ${{ vars.AI_REVIEW_MAX_CONTEXT_CHARS || '12000' }}
           AI_REVIEW_MAX_PATCH_CHARS: ${{ vars.AI_REVIEW_MAX_PATCH_CHARS || '20000' }}
-          AI_REVIEW_MAX_REQUEST_TOKENS: ${{ vars.AI_REVIEW_MAX_REQUEST_TOKENS || '7500' }}
+          AI_REVIEW_MAX_REQUEST_TOKENS: ${{ vars.AI_REVIEW_MAX_REQUEST_TOKENS || '6000' }}
           AI_REVIEW_MAX_COMMENTS: ${{ vars.AI_REVIEW_MAX_COMMENTS || '40' }}
         run: node .github/scripts/ai-pr-review.mjs

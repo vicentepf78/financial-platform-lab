@@ -13,8 +13,8 @@ const overlayPath = process.env.AI_REVIEW_OVERLAY_PATH || ".github/prompts/pr-re
 const commentMarker = process.env.AI_REVIEW_COMMENT_MARKER || "ai-pr-review";
 const maxContextChars = Number(process.env.AI_REVIEW_MAX_CONTEXT_CHARS || 12000);
 const maxPatchChars = Number(process.env.AI_REVIEW_MAX_PATCH_CHARS || 20000);
-const maxRequestTokens = Number(process.env.AI_REVIEW_MAX_REQUEST_TOKENS || 7500);
-const charsPerToken = Number(process.env.AI_REVIEW_CHARS_PER_TOKEN || 3.5);
+const maxRequestTokens = Number(process.env.AI_REVIEW_MAX_REQUEST_TOKENS || 6000);
+const charsPerToken = Number(process.env.AI_REVIEW_CHARS_PER_TOKEN || 2.5);
 const maxComments = Number(process.env.AI_REVIEW_MAX_COMMENTS || 40);
 
 const dimensions = (process.env.AI_REVIEW_DIMENSIONS || "security,requirements,tests,architecture,regression,performance")
@@ -240,8 +240,18 @@ function estimateTokens(text) {
   return Math.ceil(String(text || "").length / charsPerToken);
 }
 
-function estimateMessagesTokens(messages) {
-  return messages.reduce((total, message) => total + estimateTokens(message.content) + 40, 80);
+function buildRequestBody(messages) {
+  return {
+    model,
+    messages,
+    temperature: 0.1,
+    response_format: { type: "json_object" },
+  };
+}
+
+function estimateRequestBodyTokens(messages) {
+  const serialized = JSON.stringify(buildRequestBody(messages));
+  return Math.ceil(serialized.length / charsPerToken);
 }
 
 function truncateToTokenBudget(text, maxTokens, suffix) {
@@ -323,10 +333,10 @@ function buildDimensionMessages({ prompt, pr, contextText, patchText, dimension,
     { role: "user", content: dimensionPrompt },
   ];
 
-  const estimatedTokens = estimateMessagesTokens(messages);
+  const estimatedTokens = estimateRequestBodyTokens(messages);
   if (estimatedTokens > scaledMaxTokens) {
     console.warn(
-      `Estimated request size (${estimatedTokens} tokens) still exceeds budget (${scaledMaxTokens}) for dimension "${dimension}".`
+      `Estimated request body (${estimatedTokens} tokens) exceeds budget (${scaledMaxTokens}) for dimension "${dimension}".`
     );
   }
 
@@ -340,12 +350,7 @@ async function callModel(messages) {
       Authorization: `Bearer ${modelToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: 0.1,
-      response_format: { type: "json_object" },
-    }),
+    body: JSON.stringify(buildRequestBody(messages)),
   });
 
   if (!response.ok) {
@@ -369,21 +374,39 @@ function isTokenLimitError(error) {
 }
 
 async function callModelForDimension(params, budgetScale = 1) {
-  const messages = buildDimensionMessages({ ...params, budgetScale });
+  let scale = budgetScale;
 
-  try {
-    return await callModel(messages);
-  } catch (error) {
-    if (budgetScale > 0.45 && isTokenLimitError(error)) {
-      const reducedScale = budgetScale * 0.6;
+  while (scale >= 0.35) {
+    const messages = buildDimensionMessages({ ...params, budgetScale: scale });
+    const requestTokens = estimateRequestBodyTokens(messages);
+
+    if (requestTokens > maxRequestTokens) {
       console.warn(
-        `Token limit reached for dimension "${params.dimension}" at scale ${budgetScale.toFixed(2)}; retrying at ${reducedScale.toFixed(2)}.`
+        `Preflight shrink for "${params.dimension}": ~${requestTokens} tokens > ${maxRequestTokens} at scale ${scale.toFixed(2)}.`
       );
-      return callModelForDimension(params, reducedScale);
+      scale *= 0.55;
+      continue;
     }
 
-    throw error;
+    try {
+      console.log(
+        `Calling model for "${params.dimension}" at scale ${scale.toFixed(2)} (~${requestTokens} est. tokens).`
+      );
+      return await callModel(messages);
+    } catch (error) {
+      if (isTokenLimitError(error)) {
+        console.warn(
+          `Token limit reached for "${params.dimension}" at scale ${scale.toFixed(2)}; shrinking payload.`
+        );
+        scale *= 0.55;
+        continue;
+      }
+
+      throw error;
+    }
   }
+
+  throw new Error(`Unable to fit "${params.dimension}" review request within model token limit.`);
 }
 
 function hasNearbyExistingComment(existingComments, path, line) {
