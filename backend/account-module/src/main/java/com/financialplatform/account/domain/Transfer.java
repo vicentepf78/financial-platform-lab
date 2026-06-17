@@ -7,6 +7,7 @@ import com.financialplatform.sharedkernel.domain.Money;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 public final class Transfer extends AggregateRoot {
 
@@ -53,14 +54,25 @@ public final class Transfer extends AggregateRoot {
             throw new InvalidAmountException(amount);
         }
 
-        return new Transfer(
-                Identifier.generate(),
+        Identifier transferId = Identifier.generate();
+        Transfer transfer = new Transfer(
+                transferId,
                 originAccountId,
                 destinationAccountId,
                 amount,
                 TransferStatus.COMPLETED,
                 correlationId,
                 createdAt);
+        transfer.registerEvent(new TransferExecuted(
+                UUID.randomUUID(),
+                transferId,
+                originAccountId,
+                destinationAccountId,
+                amount.amount(),
+                amount.currency().getCurrencyCode(),
+                correlationId,
+                createdAt));
+        return transfer;
     }
 
     public static Transfer reconstitute(
