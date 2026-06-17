@@ -17,6 +17,8 @@ public final class Transfer extends AggregateRoot {
     private final Money amount;
     private final TransferStatus status;
     private final String correlationId;
+    private final String idempotencyKey;
+    private final String createdBy;
     private final Instant createdAt;
 
     private Transfer(
@@ -26,6 +28,8 @@ public final class Transfer extends AggregateRoot {
             Money amount,
             TransferStatus status,
             String correlationId,
+            String idempotencyKey,
+            String createdBy,
             Instant createdAt) {
         this.id = Objects.requireNonNull(id, "Id is required");
         this.originAccountId = Objects.requireNonNull(originAccountId, "OriginAccountId is required");
@@ -33,6 +37,8 @@ public final class Transfer extends AggregateRoot {
         this.amount = Objects.requireNonNull(amount, "Amount is required");
         this.status = Objects.requireNonNull(status, "Status is required");
         this.correlationId = Objects.requireNonNull(correlationId, "CorrelationId is required");
+        this.idempotencyKey = idempotencyKey;
+        this.createdBy = createdBy;
         this.createdAt = Objects.requireNonNull(createdAt, "CreatedAt is required");
     }
 
@@ -62,6 +68,8 @@ public final class Transfer extends AggregateRoot {
                 amount,
                 TransferStatus.COMPLETED,
                 correlationId,
+                null,
+                null,
                 createdAt);
         transfer.registerEvent(new TransferExecuted(
                 UUID.randomUUID(),
@@ -83,7 +91,30 @@ public final class Transfer extends AggregateRoot {
             TransferStatus status,
             String correlationId,
             Instant createdAt) {
-        return new Transfer(id, originAccountId, destinationAccountId, amount, status, correlationId, createdAt);
+        return reconstitute(
+                id, originAccountId, destinationAccountId, amount, status, correlationId, null, null, createdAt);
+    }
+
+    public static Transfer reconstitute(
+            Identifier id,
+            Identifier originAccountId,
+            Identifier destinationAccountId,
+            Money amount,
+            TransferStatus status,
+            String correlationId,
+            String idempotencyKey,
+            String createdBy,
+            Instant createdAt) {
+        return new Transfer(
+                id,
+                originAccountId,
+                destinationAccountId,
+                amount,
+                status,
+                correlationId,
+                idempotencyKey,
+                createdBy,
+                createdAt);
     }
 
     public Identifier id() {
@@ -108,6 +139,14 @@ public final class Transfer extends AggregateRoot {
 
     public String correlationId() {
         return correlationId;
+    }
+
+    public String idempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public String createdBy() {
+        return createdBy;
     }
 
     public Instant createdAt() {
