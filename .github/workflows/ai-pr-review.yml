@@ -85,6 +85,6 @@ jobs:
           AI_REVIEW_COMMENT_MARKER: ${{ vars.AI_REVIEW_COMMENT_MARKER || 'ai-pr-review' }}
           AI_REVIEW_MAX_CONTEXT_CHARS: ${{ vars.AI_REVIEW_MAX_CONTEXT_CHARS || '12000' }}
           AI_REVIEW_MAX_PATCH_CHARS: ${{ vars.AI_REVIEW_MAX_PATCH_CHARS || '20000' }}
-          AI_REVIEW_MAX_REQUEST_TOKENS: ${{ vars.AI_REVIEW_MAX_REQUEST_TOKENS || '6000' }}
+          AI_REVIEW_MAX_REQUEST_TOKENS: ${{ vars.AI_REVIEW_MAX_REQUEST_TOKENS || '4500' }}
           AI_REVIEW_MAX_COMMENTS: ${{ vars.AI_REVIEW_MAX_COMMENTS || '40' }}
         run: node .github/scripts/ai-pr-review.mjs

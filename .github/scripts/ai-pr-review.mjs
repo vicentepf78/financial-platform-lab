@@ -13,8 +13,9 @@ const overlayPath = process.env.AI_REVIEW_OVERLAY_PATH || ".github/prompts/pr-re
 const commentMarker = process.env.AI_REVIEW_COMMENT_MARKER || "ai-pr-review";
 const maxContextChars = Number(process.env.AI_REVIEW_MAX_CONTEXT_CHARS || 12000);
 const maxPatchChars = Number(process.env.AI_REVIEW_MAX_PATCH_CHARS || 20000);
-const maxRequestTokens = Number(process.env.AI_REVIEW_MAX_REQUEST_TOKENS || 6000);
-const charsPerToken = Number(process.env.AI_REVIEW_CHARS_PER_TOKEN || 2.5);
+const maxRequestTokens = Number(process.env.AI_REVIEW_MAX_REQUEST_TOKENS || 4500);
+const charsPerToken = Number(process.env.AI_REVIEW_CHARS_PER_TOKEN || 2);
+const scriptVersion = "2026-06-17-base-tip-v4";
 const maxComments = Number(process.env.AI_REVIEW_MAX_COMMENTS || 40);
 
 const dimensions = (process.env.AI_REVIEW_DIMENSIONS || "security,requirements,tests,architecture,regression,performance")
@@ -540,11 +541,13 @@ async function main() {
   const addedLinesByFile = new Map(files.map((file) => [file.filename, parseAddedLines(file.patch)]));
 
   console.log(
-    `AI review payload limits: context=${maxContextChars} chars, patch=${maxPatchChars} chars, request=${maxRequestTokens} tokens.`
+    `AI review script ${scriptVersion}; limits: context=${maxContextChars} chars, patch=${maxPatchChars} chars, request=${maxRequestTokens} tokens, model=${model}.`
   );
 
-  const reviews = await Promise.all(
-    dimensions.map(async (dimension) => {
+  const reviews = [];
+
+  for (const dimension of dimensions) {
+    try {
       const result = await callModelForDimension({
         prompt,
         pr,
@@ -552,10 +555,26 @@ async function main() {
         patchText,
         dimension,
       });
+      reviews.push({ dimension, ...result });
+    } catch (error) {
+      console.error(`Dimension "${dimension}" failed:`, error);
+      reviews.push({
+        dimension,
+        highlights: [`${dimension} review failed: ${error.message}`],
+        findings: [],
+      });
+    }
+  }
 
-      return { dimension, ...result };
-    })
+  const failedDimensions = reviews.filter((review) =>
+    (review.highlights || []).some((highlight) => highlight.includes("review failed:"))
   );
+
+  if (failedDimensions.length === dimensions.length) {
+    throw new Error(
+      `All AI review dimensions failed. Script ${scriptVersion}; model ${model}; request budget ${maxRequestTokens} tokens.`
+    );
+  }
 
   const comments = dedupeFindings(
     reviews.flatMap((review) =>
