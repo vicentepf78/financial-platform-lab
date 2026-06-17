@@ -1,7 +1,7 @@
 # Architecture
 
 **Pattern:** Monorepo + Modular Monolith + Hexagonal Architecture + Vertical Slice Architecture + DDD Light
-**Status:** Sprint 1 parcial — `shared-kernel`, `customer-module`, `account-module` e `application` (jwt-auth) com vertical slices implementadas (`create-customer`, `query-customers`, `create-account`, `jwt-auth`). Demais módulos conforme roadmap.
+**Status:** Sprint 1 parcial — `shared-kernel`, `customer-module`, `account-module` e `application` (jwt-auth) com vertical slices implementadas (`create-customer`, `query-customers`, `update-customer`, `create-account`, `transfer-money`, `jwt-auth`). Demais módulos conforme roadmap.
 
 ## High-Level Structure
 
@@ -71,7 +71,7 @@ module/
 **Location:** Dentro de cada módulo, pasta `features/`
 **Purpose:** Isolar funcionalidades completas (controller → use case → test) por slice
 **Implementation:** Cada feature contém Controller, UseCase, Request/Response DTOs e Test na mesma pasta
-**Example:** `account-module/features/createaccount/CreateAccountUseCase.java`; `customer-module/features/querycustomers/QueryCustomersController.java` (GET list + by id); `application/features/auth/LoginController.java` (POST login)
+**Example:** `account-module/features/createaccount/CreateAccountUseCase.java`; `account-module/features/transfermoney/TransferMoneyUseCase.java`; `customer-module/features/querycustomers/QueryCustomersController.java` (GET list + by id); `application/features/auth/LoginController.java` (POST login)
 
 ### Stateless JWT Authentication (cross-cutting)
 
@@ -91,7 +91,7 @@ module/
 | Evento | Módulo origem | Gatilho | Status |
 |--------|---------------|---------|--------|
 | AccountCreated | account | Conta criada | ✅ Implementado (topic `account-created`) |
-| TransferExecuted | account | Transferência concluída | Planejado |
+| TransferExecuted | account | Transferência concluída | ✅ Implementado (topic `transfer-executed`) |
 | LedgerEntryCreated | ledger | Lançamento registrado | Planejado |
 | PixSent / PixReceived | pix | PIX enviado/recebido | Planejado |
 | ChargeCreated / ChargePaid | billing | Cobrança criada/liquidada | Planejado |

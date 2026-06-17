@@ -1,7 +1,7 @@
 # Transfer Money — Tasks
 
 **Design:** `.specs/features/transfer-money/design.md`
-**Status:** Draft
+**Status:** Done
 
 ---
 
@@ -42,9 +42,9 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] FK para accounts
-- [ ] UNIQUE idempotency_key nullable
-- [ ] ledger_entries_stub com entry_type DEBIT/CREDIT
+- [x] FK para accounts
+- [x] UNIQUE idempotency_key nullable
+- [x] ledger_entries_stub com entry_type DEBIT/CREDIT
 
 **Tests:** none | **Gate:** build
 
@@ -60,10 +60,10 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] Rejeita same account, amount <= 0
-- [ ] Rejeita inactive account
-- [ ] Gate: `mvn test -pl account-module`
-- [ ] Test count: ≥6 passam
+- [x] Rejeita same account, amount <= 0
+- [x] Rejeita inactive account
+- [x] Gate: `mvn test -pl account-module`
+- [x] Test count: ≥6 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -89,11 +89,11 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] recordTransfer atômico
-- [ ] Insufficient balance lança exceção
-- [ ] getBalanceProjection reflete transfer
-- [ ] Gate: `mvn test -pl ledger-module,account-module`
-- [ ] Test count: ≥5 passam
+- [x] recordTransfer atômico
+- [x] Insufficient balance lança exceção
+- [x] getBalanceProjection reflete transfer
+- [x] Gate: `mvn test -pl ledger-module,account-module`
+- [x] Test count: ≥5 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -108,9 +108,9 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] save, findByIdempotencyKey
-- [ ] Gate: `mvn verify -Pintegration -pl account-module`
-- [ ] Test count: ≥3 passam
+- [x] save, findByIdempotencyKey
+- [x] Gate: `mvn verify -Pintegration -pl account-module`
+- [x] Test count: ≥3 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -136,8 +136,8 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] Permite seed saldo em integration tests
-- [ ] Documentado como test/dev only
+- [x] Permite seed saldo em integration tests
+- [x] Documentado como test/dev only
 
 **Tests:** integration | **Gate:** full
 
@@ -152,11 +152,11 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] Happy path
-- [ ] Insufficient balance, closed account, not found, same account
-- [ ] Idempotency retorna existente
-- [ ] Gate: `mvn test -pl account-module`
-- [ ] Test count: ≥10 passam
+- [x] Happy path
+- [x] Insufficient balance, closed account, not found, same account
+- [x] Idempotency retorna existente
+- [x] Gate: `mvn test -pl account-module`
+- [x] Test count: ≥10 passam
 
 **Tests:** unit | **Gate:** quick
 
@@ -171,9 +171,9 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] Topic transfer-executed
-- [ ] Gate: `mvn verify -Pintegration -pl account-module`
-- [ ] Test count: ≥2 passam
+- [x] Topic transfer-executed
+- [x] Gate: `mvn verify -Pintegration -pl account-module`
+- [x] Test count: ≥2 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -188,9 +188,9 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] 201, 400, 404, 409, 422
-- [ ] Gate: `mvn verify -Pintegration -pl account-module`
-- [ ] Test count: ≥8 passam
+- [x] 201, 400, 404, 409, 422
+- [x] Gate: `mvn verify -Pintegration -pl account-module`
+- [x] Test count: ≥8 passam
 
 **Tests:** integration | **Gate:** full
 
@@ -204,8 +204,8 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] Endpoint registrado
-- [ ] Rollback em falha ledger verificado
+- [x] Endpoint registrado
+- [x] Rollback em falha ledger verificado
 
 **Tests:** none (covered T10) | **Gate:** full
 
@@ -219,9 +219,9 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] create customer → 2 accounts → credit → transfer → balances
-- [ ] Gate: `mvn verify -Pintegration`
-- [ ] Test count: ≥1 fluxo integrado passa
+- [x] create customer → 2 accounts → credit → transfer → balances
+- [x] Gate: `mvn verify -Pintegration`
+- [x] Test count: ≥1 fluxo integrado passa
 
 **Tests:** integration | **Gate:** full
 
@@ -245,10 +245,10 @@ T11 → T12 → T13
 
 **Done when**:
 
-- [ ] Feature Close Checklist (`.rules/workflow.md`) completo
-- [ ] spec.md `Status: Done`; design.md `Status: Implemented`; tasks.md `Status: Done`
-- [ ] INDEX.md, STATE.md, ROADMAP.md, ARCHITECTURE.md atualizados (transfer slice, evento `TransferExecuted`)
-- [ ] Gate: `mvn verify -Pintegration`
+- [x] Feature Close Checklist (`.rules/workflow.md`) completo
+- [x] spec.md `Status: Done`; design.md `Status: Implemented`; tasks.md `Status: Done`
+- [x] INDEX.md, STATE.md, ROADMAP.md, ARCHITECTURE.md atualizados (transfer slice, evento `TransferExecuted`)
+- [x] Gate: `mvn verify -Pintegration`
 
 **Tests:** none | **Gate:** full
 

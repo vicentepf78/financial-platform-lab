@@ -1,7 +1,7 @@
 # Transfer Money — Design
 
 **Spec:** `.specs/features/transfer-money/spec.md`
-**Status:** Draft
+**Status:** Implemented
 
 ---
 

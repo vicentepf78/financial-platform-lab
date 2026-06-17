@@ -3,6 +3,7 @@
 **Módulo:** `account-module`
 **Endpoint:** `POST /api/v1/transfers`
 **Sprint:** 1 — Core Banking
+**Status:** Done
 **Prioridade:** ⭐ MAIS IMPORTANTE DO SPRINT 1
 
 ---
@@ -13,13 +14,13 @@ A capacidade central de um core banking é movimentar valor entre contas de form
 
 ## Goals
 
-- [ ] Executar transferência entre conta origem e destino com valor positivo em BRL
-- [ ] Validar contas ACTIVE, distintas, existentes
-- [ ] Validar saldo suficiente na origem via projeção ledger
-- [ ] Registrar débito (origem) + crédito (destino) via `LedgerPort.recordTransfer`
-- [ ] Publicar evento `TransferExecuted` após sucesso transacional
-- [ ] Garantir idempotência via `idempotencyKey` opcional (P2)
-- [ ] Incluir `correlationId` para auditabilidade
+- [x] Executar transferência entre conta origem e destino com valor positivo em BRL
+- [x] Validar contas ACTIVE, distintas, existentes
+- [x] Validar saldo suficiente na origem via projeção ledger
+- [x] Registrar débito (origem) + crédito (destino) via `LedgerPort.recordTransfer`
+- [x] Publicar evento `TransferExecuted` após sucesso transacional
+- [x] Garantir idempotência via `idempotencyKey` opcional (P2)
+- [x] Incluir `correlationId` para auditabilidade
 
 ## Out of Scope
 
@@ -95,26 +96,26 @@ A capacidade central de um core banking é movimentar valor entre contas de form
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| XFER-01 | P1: POST transfer sucesso | Design | Pending |
-| XFER-02 | P1: Ledger débito+crédito | Design | Pending |
-| XFER-03 | P1: Event TransferExecuted | Design | Pending |
-| XFER-04 | P1: Contas distintas | Design | Pending |
-| XFER-05 | P1: Contas ACTIVE | Design | Pending |
-| XFER-06 | P2: Saldo insuficiente 422 | Design | Pending |
-| XFER-07 | P2: Sem efeito colateral | Design | Pending |
-| XFER-08 | P3: Conta CLOSED 409 | Design | Pending |
-| XFER-09 | P3: IdempotencyKey | Design | Pending |
-| XFER-10 | P3: Amount validation | Design | Pending |
-| XFER-11 | Audit: correlationId | Design | Pending |
+| XFER-01 | P1: POST transfer sucesso | Execute | Done |
+| XFER-02 | P1: Ledger débito+crédito | Execute | Done |
+| XFER-03 | P1: Event TransferExecuted | Execute | Done |
+| XFER-04 | P1: Contas distintas | Execute | Done |
+| XFER-05 | P1: Contas ACTIVE | Execute | Done |
+| XFER-06 | P2: Saldo insuficiente 422 | Execute | Done |
+| XFER-07 | P2: Sem efeito colateral | Execute | Done |
+| XFER-08 | P3: Conta CLOSED 409 | Execute | Done |
+| XFER-09 | P3: IdempotencyKey | Execute | Done |
+| XFER-10 | P3: Amount validation | Execute | Done |
+| XFER-11 | Audit: correlationId | Execute | Done |
 
-**Coverage:** 11 total, 0 mapped, 11 pending
+**Coverage:** 11 total, 11 mapped, 0 pending
 
 ---
 
 ## Success Criteria
 
-- [ ] Demo Sprint 1: create customer → create 2 accounts → credit stub → transfer → consult balances
-- [ ] Testes unitários use case cobrindo happy path e todos erros
-- [ ] Teste integração controller + DB + Kafka
-- [ ] Nenhum `setBalance` em codebase
-- [ ] Gate `mvn verify -Pintegration` verde para account-module
+- [x] Demo Sprint 1: create customer → create 2 accounts → credit stub → transfer → consult balances
+- [x] Testes unitários use case cobrindo happy path e todos erros
+- [x] Teste integração controller + DB + Kafka
+- [x] Nenhum `setBalance` em codebase
+- [x] Gate `mvn verify -Pintegration` verde para account-module

@@ -1,6 +1,6 @@
 # Codebase Index
 
-**Updated:** 2026-06-16  
+**Updated:** 2026-06-17  
 **Purpose:** Índice vivo do que está implementado. Agentes devem consultar este arquivo em vez de explorar o repositório quando `tasks.md` aponta padrões existentes.
 
 ---
@@ -11,8 +11,8 @@
 | ------ | ------ | -------- |
 | `shared-kernel` | ✅ Implemented | Money, Cpf, Cnpj, Identifier, AggregateRoot, AuditableEntity, DomainEvent |
 | `customer-module` | ✅ Implemented | create-customer, query-customers, update-customer |
-| `account-module` | ✅ Implemented | create-account |
-| `application` | ✅ Implemented | Flyway V1–V3, health, jwt-auth, module wiring smoke tests |
+| `account-module` | ✅ Implemented | create-account, transfer-money |
+| `application` | ✅ Implemented | Flyway V1–V6, health, jwt-auth, module wiring smoke tests, integrated transfer flow |
 
 ---
 
@@ -205,6 +205,76 @@ Use como padrão para novas vertical slices no `account-module` (ex.: `transfer-
 
 ---
 
+## Reference slice: transfer-money
+
+Use como padrão para transferências internas no `account-module` (ledger-first + evento `TransferExecuted`).
+
+| Layer | Path |
+| ----- | ---- |
+| Feature slice | `backend/account-module/src/main/java/com/financialplatform/account/features/transfermoney/` |
+| Use case | `.../TransferMoneyUseCase.java` |
+| Controller | `.../TransferMoneyController.java` |
+| Request/Response | `.../TransferMoneyRequest.java`, `TransferMoneyResponse.java` |
+| Command / result | `.../TransferMoneyCommand.java`, `TransferMoneyResult.java` |
+| Domain entity | `backend/account-module/src/main/java/.../domain/Transfer.java` |
+| Domain service | `backend/account-module/src/main/java/.../domain/TransferDomainService.java` |
+| Domain event | `backend/account-module/src/main/java/.../domain/TransferExecuted.java` |
+| Transfer status | `backend/account-module/src/main/java/.../domain/TransferStatus.java` |
+| Repository port | `backend/account-module/src/main/java/.../ports/TransferRepositoryPort.java` |
+| Ledger port | `backend/account-module/src/main/java/.../ports/LedgerPort.java` (`recordTransfer`) |
+| JPA adapter | `backend/account-module/src/main/java/.../adapters/persistence/JpaTransferRepository.java` |
+| Ledger stub | `backend/account-module/src/main/java/.../adapters/ledger/LedgerStubAdapter.java` |
+| Kafka adapter | `backend/account-module/src/main/java/.../adapters/messaging/KafkaEventPublisherAdapter.java` |
+| Event serializer | `.../adapters/messaging/TransferExecutedJsonSerializer.java` |
+| Transactional boundary | `backend/account-module/src/main/java/.../infrastructure/TransferMoneyTransactionalBoundary.java` |
+| Module config | `backend/account-module/src/main/java/.../infrastructure/AccountModuleConfig.java` |
+| Test helper (credit seed) | `backend/account-module/src/test/java/.../support/LedgerTestSupport.java` |
+
+### Tests (transfer-money)
+
+| Type | Path |
+| ---- | ---- |
+| Unit (domain) | `backend/account-module/src/test/java/.../domain/TransferTest.java`, `TransferDomainServiceTest.java` |
+| Unit (use case) | `backend/account-module/src/test/java/.../features/transfermoney/TransferMoneyUseCaseTest.java` |
+| Unit (ledger stub) | `backend/account-module/src/test/java/.../adapters/ledger/LedgerStubAdapterTest.java` |
+| Integration (repository) | `backend/account-module/src/test/java/.../adapters/persistence/JpaTransferRepositoryIntegrationTest.java` |
+| Integration (ledger) | `backend/account-module/src/test/java/.../adapters/ledger/LedgerStubAdapterIntegrationTest.java` |
+| Integration (messaging) | `backend/account-module/src/test/java/.../adapters/messaging/KafkaEventPublisherIntegrationTest.java` (incl. `TransferExecuted`) |
+| Integration (controller) | `backend/account-module/src/test/java/.../features/transfermoney/TransferMoneyControllerIntegrationTest.java` |
+| Integration (transaction) | `.../TransferMoneyTransactionalIntegrationTest.java`, `TransferMoneyLedgerFailureRollbackIntegrationTest.java` |
+| Integrated flow (app) | `backend/application/src/test/java/com/financialplatform/features/transfermoney/TransferMoneyIntegratedFlowIntegrationTest.java` |
+| IT base class | `backend/account-module/src/test/java/.../support/AbstractAccountWebIntegrationTest.java` |
+| Test application | `backend/account-module/src/test/java/.../support/AccountModuleTestApplication.java` |
+
+### Migrations (transfer-money)
+
+| Version | Path |
+| ------- | ---- |
+| V5 transfers | `backend/application/src/main/resources/db/migration/V5__transfers.sql` |
+| V6 ledger_entries_stub | `backend/application/src/main/resources/db/migration/V6__ledger_entries_stub.sql` |
+| Test copy | `backend/account-module/src/test/resources/db/migration/` |
+
+### API (transfer-money)
+
+- `POST /api/v1/transfers` — envelope `{ data, metadata }`, Problem Details em erros (400, 404, 409, 422)
+- Kafka topic: `transfer-executed`
+- Requer `Authorization: Bearer <token>` quando `security.jwt.enabled=true`
+
+**Verify (manual):**
+
+```bash
+TOKEN=$(curl -s -X POST http://localhost:8080/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"operator","password":"operator"}' | jq -r '.data.accessToken')
+
+curl -s -X POST http://localhost:8080/api/v1/transfers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"originAccountId":"...","destinationAccountId":"...","amount":"100.00","correlationId":"770e8400-e29b-41d4-a716-446655440002"}' | jq .
+```
+
+---
+
 ## Reference slice: jwt-auth
 
 Use como padrão para autenticação cross-cutting no módulo `application` (login + filtro JWT + Problem Details 401/403).
@@ -295,4 +365,4 @@ When implementing a feature whose `tasks.md` lists **Reuses** pointing here:
 
 1. Read only the listed reference files.
 2. Do not spawn exploration subagents for patterns already indexed above.
-3. For `transfer-money`: copy structure from `create-account`, adapt domain rules from `transfer-money/design.md`.
+3. For `get-account-balance` / `close-account`: copy structure from `transfer-money` or `create-account`, adapt domain rules from feature `design.md`.

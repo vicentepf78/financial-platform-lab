@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-06-16
-**Current Work:** Sprint 1 Execute — `update-customer` concluída (T1–T6); próxima: `transfer-money`
+**Last Updated:** 2026-06-17
+**Current Work:** Sprint 1 Execute — `transfer-money` concluída (T1–T13); próxima: `get-account-balance` ou `close-account`
 
 ---
 
@@ -82,6 +82,7 @@ _(Nenhum blocker ativo.)_
 | —   | Execute `query-customers` (T1–T7)    | 2026-06-15 | —      | ✅ Done |
 | —   | Execute `jwt-auth` (T1–T13)          | 2026-06-16 | —      | ✅ Done |
 | —   | Execute `update-customer` (T1–T6)  | 2026-06-16 | —      | ✅ Done |
+| —   | Execute `transfer-money` (T1–T13) | 2026-06-17 | —      | ✅ Done |
 
 ---
 
@@ -107,7 +108,8 @@ _(Nenhum blocker ativo.)_
 - [x] Especificar Sprint 1 — `jwt-auth` (spec + design + tasks, T1–T13)
 - [x] Executar Sprint 1 — `jwt-auth` (T1–T13)
 - [x] Executar Sprint 1 — `update-customer` (T1–T6)
-- [ ] Executar Sprint 1 — `transfer-money`
+- [x] Executar Sprint 1 — `transfer-money` (T1–T13)
+- [ ] Executar Sprint 1 — `get-account-balance` ou `close-account`
 
 ---
 
@@ -122,7 +124,7 @@ _(Nenhum blocker ativo.)_
 | Specify Sprints 2-7 | ✅ | 22 features |
 | Design Sprint 1 | ✅ | 7 design.md |
 | Tasks Sprint 1 | ✅ | 7 tasks.md |
-| **Execute (POC)** | ⏳ | `create-customer` ✅; `query-customers` ✅; `update-customer` ✅; `create-account` ✅; `jwt-auth` ✅; próxima: `transfer-money` |
+| **Execute (POC)** | ⏳ | `create-customer` ✅; `query-customers` ✅; `update-customer` ✅; `create-account` ✅; `jwt-auth` ✅; `transfer-money` ✅; próxima: `get-account-balance` / `close-account` |
 
 ---
 
