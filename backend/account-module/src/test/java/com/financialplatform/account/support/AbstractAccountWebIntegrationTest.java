@@ -8,31 +8,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
 @SpringBootTest(classes = AccountModuleTestApplication.class)
-@Testcontainers
 public abstract class AbstractAccountWebIntegrationTest {
-
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withDatabaseName("financial_platform")
-            .withUsername("financial")
-            .withPassword("financial");
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
+        PostgreSQLContainer<?> postgres = AccountPostgresTestContainer.get();
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "validate");
         registry.add("spring.flyway.enabled", () -> "true");
         registry.add("spring.flyway.locations", () -> "filesystem:src/test/resources/db/migration");
@@ -43,6 +35,7 @@ public abstract class AbstractAccountWebIntegrationTest {
 
     @BeforeEach
     void cleanData() {
+        jdbcTemplate.execute("DELETE FROM transfers");
         jdbcTemplate.execute("DELETE FROM accounts");
         jdbcTemplate.execute("DELETE FROM customers");
     }

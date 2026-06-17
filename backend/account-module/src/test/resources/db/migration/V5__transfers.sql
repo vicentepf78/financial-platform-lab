@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS transfers (
     origin_account_id        UUID         NOT NULL REFERENCES accounts (id),
     destination_account_id   UUID         NOT NULL REFERENCES accounts (id),
     amount                   NUMERIC(19, 2) NOT NULL,
-    currency                 CHAR(3)      NOT NULL DEFAULT 'BRL',
+    currency                 VARCHAR(3)   NOT NULL DEFAULT 'BRL',
     status                   VARCHAR(20)  NOT NULL,
     correlation_id           UUID         NOT NULL,
     idempotency_key          VARCHAR(100),

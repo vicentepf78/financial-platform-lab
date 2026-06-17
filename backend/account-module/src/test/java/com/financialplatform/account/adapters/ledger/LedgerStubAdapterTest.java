@@ -114,4 +114,13 @@ class LedgerStubAdapterTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("CorrelationId must not be blank");
     }
+
+    @Test
+    void shouldSeedBalanceViaCreditAccount() {
+        adapter.initializeAccount(ACCOUNT_ID);
+
+        adapter.creditAccount(ACCOUNT_ID, Money.brl("250.00"));
+
+        assertThat(adapter.getBalanceProjection(ACCOUNT_ID)).isEqualTo(Money.brl("250.00"));
+    }
 }

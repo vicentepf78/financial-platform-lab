@@ -67,12 +67,23 @@ public final class LedgerStubAdapter implements LedgerPort {
     }
 
     /**
-     * Test/dev helper to seed account balance via a credit entry (no matching debit).
+     * Test/dev-only helper to seed account balance via a credit entry (no matching debit).
+     * Not available on production {@link com.financialplatform.account.ports.LedgerPort}.
      */
-    void creditAccount(Identifier accountId, Money amount, String correlationId) {
+    public void creditAccount(Identifier accountId, Money amount) {
+        creditAccount(accountId, amount, "ledger-stub-test-seed");
+    }
+
+    /**
+     * Test/dev-only helper with explicit correlation id for traceability in integration tests.
+     */
+    public void creditAccount(Identifier accountId, Money amount, String correlationId) {
         Objects.requireNonNull(accountId, "AccountId is required");
         Objects.requireNonNull(amount, "Amount is required");
         Objects.requireNonNull(correlationId, "CorrelationId is required");
+        if (correlationId.isBlank()) {
+            throw new IllegalArgumentException("CorrelationId must not be blank");
+        }
 
         synchronized (mutationLock) {
             entries.add(new LedgerEntryStub(
