@@ -114,7 +114,7 @@ Para este projeto, uma configuração explícita recomendada é:
 AGENTS.md,.github/prompts/pr-review.overlay.md,.rules/**/*.md,.specs/codebase/*.md
 ```
 
-> **Limite do GitHub Models (`gpt-4o-mini`):** o corpo da requisição é limitado a ~8000 tokens. O script aplica truncamento por orçamento (com base no JSON serializado), faz shrink automático antes da chamada e retry em erro 413. O workflow faz checkout da **ponta atual** da branch base do PR (via API), não do snapshot congelado do evento — assim um *Re-run* após merge de correções em `main` usa o script atualizado. Para forçar nova execução após merge na base, também pode fazer push na branch do PR ou usar *workflow_dispatch*.
+> **Limite do GitHub Models (`gpt-4o-mini`):** o corpo da requisição é limitado a ~8000 tokens. O script aplica truncamento por orçamento (com base no JSON serializado), faz shrink automático antes da chamada e retry em erro 413. O workflow faz checkout da **ponta atual** da branch base do PR (`git/ref/heads/{base.ref}`), não de `pull.base.sha` (que pode ficar defasado quando o PR está behind). Para forçar nova execução, faça push na branch do PR ou use *workflow_dispatch*.
 
 ### Provider externo
 
