@@ -90,6 +90,12 @@ cd backend && mvn test
 cd backend && mvn verify -Pintegration
 ```
 
+## Fluxo de Pull Request
+
+O desenvolvimento deve seguir branch por feature: crie uma branch a partir da branch alvo do trabalho, faça commits atômicos por task e abra um PR/MR para a branch de integração combinada pelo time.
+
+PRs disparam a revisão consultiva por IA via GitHub Actions. Configuração e detalhes: [`docs/ai-pr-review.md`](docs/ai-pr-review.md).
+
 ## Regras Financeiras
 
 - **Ledger-first:** saldo nunca é alterado diretamente

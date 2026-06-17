@@ -1,0 +1,81 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to review
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  models: read
+
+concurrency:
+  group: ai-pr-review-${{ github.event.pull_request.number || inputs.pr_number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Run AI code review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+
+    steps:
+      - name: Resolve PR base SHA
+        id: pr_base
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "sha=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            sha="$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}" --jq .base.sha)"
+            echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout trusted base revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr_base.outputs.sha }}
+
+      - name: Check reviewer files on trusted base
+        id: reviewer_files
+        run: |
+          if [ -f ".github/scripts/ai-pr-review.mjs" ] && [ -f ".github/prompts/pr-review.md" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "AI PR review files are not present on the trusted base revision yet." >> "$GITHUB_STEP_SUMMARY"
+            echo "This is expected for the bootstrap PR that introduces the workflow." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Set up Node.js
+        if: steps.reviewer_files.outputs.available == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run AI PR review
+        if: steps.reviewer_files.outputs.available == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          AI_BASE_URL: ${{ vars.AI_REVIEW_BASE_URL || 'https://models.github.ai/inference' }}
+          AI_MODEL: ${{ vars.AI_REVIEW_MODEL || 'openai/gpt-4o-mini' }}
+          AI_API_KEY: ${{ secrets.AI_REVIEW_API_KEY || github.token }}
+          AI_REVIEW_PROMPT_PATH: ${{ vars.AI_REVIEW_PROMPT_PATH || '.github/prompts/pr-review.md' }}
+          AI_REVIEW_OVERLAY_PATH: ${{ vars.AI_REVIEW_OVERLAY_PATH || '.github/prompts/pr-review.overlay.md' }}
+          AI_REVIEW_CONTEXT_PATHS: ${{ vars.AI_REVIEW_CONTEXT_PATHS || '' }}
+          AI_REVIEW_DIMENSIONS: ${{ vars.AI_REVIEW_DIMENSIONS || 'security,requirements,tests,architecture,regression,performance' }}
+          AI_REVIEW_COMMENT_MARKER: ${{ vars.AI_REVIEW_COMMENT_MARKER || 'ai-pr-review' }}
+          AI_REVIEW_MAX_CONTEXT_CHARS: ${{ vars.AI_REVIEW_MAX_CONTEXT_CHARS || '30000' }}
+          AI_REVIEW_MAX_PATCH_CHARS: ${{ vars.AI_REVIEW_MAX_PATCH_CHARS || '60000' }}
+          AI_REVIEW_MAX_COMMENTS: ${{ vars.AI_REVIEW_MAX_COMMENTS || '40' }}
+        run: node .github/scripts/ai-pr-review.mjs

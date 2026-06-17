@@ -6,6 +6,17 @@ Spec-Driven Development, Clean Code, Refactoring, Evolutionary Architecture.
 
 Follow `tlc-spec-driven` for feature lifecycle: Specify → (Design) → (Tasks) → Execute.
 
+## Branch and PR workflow
+
+1. Start each feature from an updated target/integration branch, e.g. `develop`, `release/*`, `hotfix/*`, or `main` when that is the agreed target.
+2. Create one branch per feature or quick task, e.g. `feature/create-account` or `fix/customer-validation`.
+3. Keep commits atomic per task and focused on the reason for the change.
+4. Open a PR/MR back to the agreed target branch; do not use direct commits to protected integration branches as the normal workflow.
+5. Let GitHub Actions run the advisory AI PR review and required checks.
+6. Address relevant findings in the same branch before merge.
+
+AI PR review details: `docs/ai-pr-review.md`.
+
 ## Before implementing a feature
 
 1. Read `.specs/project/PROJECT.md`
