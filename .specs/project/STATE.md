@@ -63,7 +63,7 @@ _(Nenhum blocker ativo.)_
 
 - Subagents paralelos aceleram criação de ADRs e specs em massa sem perder coerência com PROJECT.md e AGENTS.md.
 - Sprint 1 `transfer-money` é a feature crítica — depende de `LedgerPort` (stub S1, implementação real Sprint 2).
-- Fechar feature exige atualizar **todos** os artefatos do Feature Close Checklist (`.rules/workflow.md`) — não apenas `tasks.md` e `STATE.md`; `INDEX.md` é crítico para agentes seguintes.
+- Fechar feature exige atualizar **todos** os artefatos do Feature Close Checklist (`AGENTS.md`) — não apenas `tasks.md` e `STATE.md`; `INDEX.md` é crítico para agentes seguintes.
 - Toda feature Execute deve incluir tarefa final **Documentação + feature close** (ex.: jwt-auth T13, update-customer T6) — omiti-la atrasa ROADMAP/STATE/INDEX mesmo com código pronto.
 
 ---

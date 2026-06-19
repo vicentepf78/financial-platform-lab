@@ -106,12 +106,12 @@ Configure em **Settings → Secrets and variables → Actions → Variables**:
 | `AI_REVIEW_MAX_REQUEST_TOKENS` | `6000` | Orçamento total estimado por chamada ao modelo (ajuste para limites do provider) |
 | `AI_REVIEW_MAX_COMMENTS` | `40` | Limite de comentários inline por execução |
 
-Quando `AI_REVIEW_CONTEXT_PATHS` não é informado, o script carrega apenas os arquivos essenciais do projeto (`AGENTS.md`, overlay de review, `.rules/*` principais e `.specs/codebase/*.md`), evitando enviar centenas de specs ao modelo.
+Quando `AI_REVIEW_CONTEXT_PATHS` não é informado, o script carrega apenas os arquivos essenciais do projeto (`AGENTS.md`, overlay de review e `.specs/codebase/*.md`), evitando enviar centenas de specs ao modelo.
 
 Para este projeto, uma configuração explícita recomendada é:
 
 ```text
-AGENTS.md,.github/prompts/pr-review.overlay.md,.rules/**/*.md,.specs/codebase/*.md
+AGENTS.md,.github/prompts/pr-review.overlay.md,.specs/codebase/*.md
 ```
 
 > **Limite do GitHub Models (`gpt-4o-mini`):** o corpo da requisição é limitado a ~8000 tokens. O script aplica truncamento por orçamento (com base no JSON serializado), faz shrink automático antes da chamada e retry em erro 413. O workflow faz checkout da **ponta atual** da branch base do PR (`git/ref/heads/{base.ref}`), não de `pull.base.sha` (que pode ficar defasado quando o PR está behind). Para forçar nova execução, faça push na branch do PR ou use *workflow_dispatch*.

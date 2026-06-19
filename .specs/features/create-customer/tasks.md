@@ -258,4 +258,4 @@ Esperado: HTTP 201 com `data.id` UUID; segundo POST com mesmo documento → HTTP
 
 ---
 
-> **Feature close:** This feature predates the mandatory doc-close task. Before marking Done, run the **Feature Close Checklist** in `.rules/workflow.md` (update `spec.md`, `design.md`, brownfield docs). Template for future features: jwt-auth T13.
+> **Feature close:** This feature predates the mandatory doc-close task. Before marking Done, run the **Feature Close Checklist** in `AGENTS.md` (update `spec.md`, `design.md`, brownfield docs). Template for future features: jwt-auth T13.

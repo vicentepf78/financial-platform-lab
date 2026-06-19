@@ -98,7 +98,7 @@ Sem JWT stateless e Problem Details padronizados para 401/403, o frontend não c
 
 **User Story:** Como desenvolvedor frontend, quero respostas de erro de autenticação/autorização no mesmo formato Problem Details das demais APIs para tratamento uniforme.
 
-**Why P4:** ADR-0005 e `.rules/rest.md` exigem interoperabilidade de erros.
+**Why P4:** ADR-0005 e `AGENTS.md` exigem interoperabilidade de erros.
 
 **Acceptance Criteria**:
 

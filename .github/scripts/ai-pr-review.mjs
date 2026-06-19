@@ -26,12 +26,6 @@ const dimensions = (process.env.AI_REVIEW_DIMENSIONS || "security,requirements,t
 const defaultContextPaths = [
   "AGENTS.md",
   ".github/prompts/pr-review.overlay.md",
-  ".rules/architecture.md",
-  ".rules/financial.md",
-  ".rules/testing.md",
-  ".rules/rest.md",
-  ".rules/database.md",
-  ".rules/kafka-events.md",
   ".specs/codebase/INDEX.md",
   ".specs/codebase/TESTING.md",
   ".specs/codebase/CONVENTIONS.md",

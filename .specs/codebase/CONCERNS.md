@@ -88,7 +88,7 @@
 **customer-module e account-module (referência):**
 
 - Status: `create-customer`, `query-customers`, `update-customer`, `create-account` e `transfer-money` implementados com testes unitários e integração — ver `.specs/codebase/INDEX.md`
-- Padrão: testes co-localizados por task + gate Maven (`.rules/testing.md`)
+- Padrão: testes co-localizados por task + gate Maven (`AGENTS.md` + `.specs/codebase/TESTING.md`)
 - `transfer-money`: domain + use-case unit tests, repository/ledger/messaging/controller integration tests, fluxo integrado em `application` (create customer → accounts → credit → transfer → balances)
 
 **application (jwt-auth):**

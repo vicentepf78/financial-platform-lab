@@ -100,14 +100,14 @@ T1 → T2 → T3 → T4 → T5 → T6
 
 ### T6: Documentação + feature close
 
-**What:** Run Feature Close Checklist (`.rules/workflow.md`)
+**What:** Run Feature Close Checklist (`AGENTS.md`)
 **Where:** `.specs/`, `.specs/codebase/INDEX.md`
 **Depends on:** T5 + code review fixes
 **Requirement:** CUST-16 a CUST-20
 
 **Done when**:
 
-- [x] Feature Close Checklist (`.rules/workflow.md`) completo
+- [x] Feature Close Checklist (`AGENTS.md`) completo
 - [x] spec.md Success Criteria marcados; design.md `Status: Implemented`
 - [x] INDEX.md, STATE.md, ROADMAP.md atualizados
 - [x] Gate: `mvn verify -Pintegration -pl customer-module`

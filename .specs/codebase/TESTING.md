@@ -134,7 +134,7 @@ Alinhado ao `tlc-spec-driven`. Por task em `tasks.md`:
 2. **Gate check** — comando Maven da task; exit code não-zero = parar e corrigir.
 3. **Commit atômico** por task.
 
-Não há ritual TDD obrigatório (red/green). O gate é o veredito. Detalhes: `.rules/testing.md`.
+Não há ritual TDD obrigatório (red/green). O gate é o veredito. Regras mandatórias: `AGENTS.md`.
 
 Nenhuma feature é considerada completa sem testes nas camadas exigidas pela matriz.
 

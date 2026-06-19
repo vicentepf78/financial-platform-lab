@@ -238,14 +238,14 @@ T11 → T12 → T13
 
 ### T13: Documentação + feature close
 
-**What:** Run Feature Close Checklist (`.rules/workflow.md`)
+**What:** Run Feature Close Checklist (`AGENTS.md`)
 **Where:** `.specs/`, `.specs/codebase/INDEX.md`, `.specs/codebase/ARCHITECTURE.md`
 **Depends on:** T12
 **Requirement:** XFER-01 a XFER-11
 
 **Done when**:
 
-- [x] Feature Close Checklist (`.rules/workflow.md`) completo
+- [x] Feature Close Checklist (`AGENTS.md`) completo
 - [x] spec.md `Status: Done`; design.md `Status: Implemented`; tasks.md `Status: Done`
 - [x] INDEX.md, STATE.md, ROADMAP.md, ARCHITECTURE.md atualizados (transfer slice, evento `TransferExecuted`)
 - [x] Gate: `mvn verify -Pintegration`
@@ -307,7 +307,7 @@ Phase 3: T11 → T12 → T13
 
 ## Test Co-location (por task)
 
-Alinhado ao `tlc-spec-driven` e `.rules/testing.md`:
+Alinhado ao `tlc-spec-driven`, `AGENTS.md` e `.specs/codebase/TESTING.md`:
 
 1. Código + testes na mesma task (tipo conforme coluna Tests).
 2. Gate check conforme coluna Gate.
