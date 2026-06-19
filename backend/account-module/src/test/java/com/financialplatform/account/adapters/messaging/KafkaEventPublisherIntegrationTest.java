@@ -2,6 +2,7 @@ package com.financialplatform.account.adapters.messaging;
 
 import com.financialplatform.account.domain.AccountCreated;
 import com.financialplatform.account.domain.AccountStatus;
+import com.financialplatform.account.domain.TransferExecuted;
 import com.financialplatform.account.ports.EventPublisherPort;
 import com.financialplatform.account.support.AccountMessagingTestApplication;
 import com.financialplatform.sharedkernel.domain.Identifier;
@@ -25,6 +26,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,7 +47,10 @@ class KafkaEventPublisherIntegrationTest {
     private EventPublisherPort eventPublisher;
 
     @Autowired
-    private AccountCreatedJsonSerializer serializer;
+    private AccountCreatedJsonSerializer accountCreatedSerializer;
+
+    @Autowired
+    private TransferExecutedJsonSerializer transferExecutedSerializer;
 
     @DynamicPropertySource
     static void configureKafka(DynamicPropertyRegistry registry) {
@@ -61,7 +66,9 @@ class KafkaEventPublisherIntegrationTest {
                 Map.of("bootstrap.servers", KAFKA.getBootstrapServers()))) {
             adminClient.createTopics(List.of(
                     new org.apache.kafka.clients.admin.NewTopic(
-                            KafkaEventPublisherAdapter.ACCOUNT_CREATED_TOPIC, 1, (short) 1)));
+                            KafkaEventPublisherAdapter.ACCOUNT_CREATED_TOPIC, 1, (short) 1),
+                    new org.apache.kafka.clients.admin.NewTopic(
+                            KafkaEventPublisherAdapter.TRANSFER_EXECUTED_TOPIC, 1, (short) 1)));
         }
     }
 
@@ -90,7 +97,7 @@ class KafkaEventPublisherIntegrationTest {
             assertThat(record.key()).isEqualTo(accountId.value().toString());
             assertThat(record.topic()).isEqualTo(KafkaEventPublisherAdapter.ACCOUNT_CREATED_TOPIC);
 
-            AccountCreated deserialized = serializer.deserialize(record.value());
+            AccountCreated deserialized = accountCreatedSerializer.deserialize(record.value());
             assertThat(deserialized.eventId()).isEqualTo(eventId);
             assertThat(deserialized.aggregateId()).isEqualTo(accountId);
             assertThat(deserialized.customerId()).isEqualTo(customerId);
@@ -114,7 +121,7 @@ class KafkaEventPublisherIntegrationTest {
                 NOW,
                 "operator");
 
-        String json = serializer.serialize(event);
+        String json = accountCreatedSerializer.serialize(event);
 
         assertThat(json)
                 .contains("\"eventId\":\"11111111-2222-3333-4444-555555555555\"")
@@ -124,6 +131,77 @@ class KafkaEventPublisherIntegrationTest {
                 .contains("\"status\":\"ACTIVE\"")
                 .contains("\"occurredAt\":\"2026-06-15T10:00:00Z\"")
                 .contains("\"createdBy\":\"operator\"");
+    }
+
+    @Test
+    void shouldPublishTransferExecutedEventToTransferExecutedTopic() {
+        UUID eventId = UUID.randomUUID();
+        Identifier transferId = Identifier.of("c3d4e5f6-a7b8-9012-cdef-123456789012");
+        Identifier originAccountId = Identifier.of("d4e5f6a7-b8c9-0123-def0-234567890123");
+        Identifier destinationAccountId = Identifier.of("e5f6a7b8-c9d0-1234-ef01-345678901234");
+        TransferExecuted event = new TransferExecuted(
+                eventId,
+                transferId,
+                originAccountId,
+                destinationAccountId,
+                new BigDecimal("150.75"),
+                "BRL",
+                "corr-abc-123",
+                NOW);
+
+        try (Consumer<String, String> consumer = createConsumer()) {
+            consumer.subscribe(List.of(KafkaEventPublisherAdapter.TRANSFER_EXECUTED_TOPIC));
+
+            eventPublisher.publish(event);
+
+            ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(10));
+            assertThat(records.count()).isEqualTo(1);
+
+            ConsumerRecord<String, String> record = records.iterator().next();
+            assertThat(record.key()).isEqualTo(transferId.value().toString());
+            assertThat(record.topic()).isEqualTo(KafkaEventPublisherAdapter.TRANSFER_EXECUTED_TOPIC);
+
+            TransferExecuted deserialized = transferExecutedSerializer.deserialize(record.value());
+            assertThat(deserialized.eventId()).isEqualTo(eventId);
+            assertThat(deserialized.aggregateId()).isEqualTo(transferId);
+            assertThat(deserialized.originAccountId()).isEqualTo(originAccountId);
+            assertThat(deserialized.destinationAccountId()).isEqualTo(destinationAccountId);
+            assertThat(deserialized.amount()).isEqualByComparingTo(new BigDecimal("150.75"));
+            assertThat(deserialized.currency()).isEqualTo("BRL");
+            assertThat(deserialized.correlationId()).isEqualTo("corr-abc-123");
+            assertThat(deserialized.occurredAt()).isEqualTo(NOW);
+            assertThat(deserialized.eventType()).isEqualTo("TransferExecuted");
+        }
+    }
+
+    @Test
+    void shouldSerializeTransferExecutedAsJsonWithExpectedFields() {
+        UUID eventId = UUID.fromString("22222222-3333-4444-5555-666666666666");
+        Identifier transferId = Identifier.of("11111111-2222-3333-4444-555555555555");
+        Identifier originAccountId = Identifier.of("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+        Identifier destinationAccountId = Identifier.of("ffffffff-1111-2222-3333-444444444444");
+        TransferExecuted event = new TransferExecuted(
+                eventId,
+                transferId,
+                originAccountId,
+                destinationAccountId,
+                new BigDecimal("99.99"),
+                "BRL",
+                "transfer-corr-001",
+                NOW);
+
+        String json = transferExecutedSerializer.serialize(event);
+
+        assertThat(json)
+                .contains("\"eventId\":\"22222222-3333-4444-5555-666666666666\"")
+                .contains("\"eventType\":\"TransferExecuted\"")
+                .contains("\"aggregateId\":\"11111111-2222-3333-4444-555555555555\"")
+                .contains("\"originAccountId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"")
+                .contains("\"destinationAccountId\":\"ffffffff-1111-2222-3333-444444444444\"")
+                .contains("\"amount\":99.99")
+                .contains("\"currency\":\"BRL\"")
+                .contains("\"correlationId\":\"transfer-corr-001\"")
+                .contains("\"occurredAt\":\"2026-06-15T10:00:00Z\"");
     }
 
     private Consumer<String, String> createConsumer() {

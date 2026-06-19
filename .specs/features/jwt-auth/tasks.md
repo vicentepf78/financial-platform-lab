@@ -270,7 +270,7 @@ T12 → T13
 **Done when**:
 
 - [x] Variáveis `JWT_*` e `SECURITY_JWT_ENABLED` documentadas
-- [x] Feature Close Checklist (`.rules/workflow.md`) completo
+- [x] Feature Close Checklist (`AGENTS.md`) completo
 - [x] spec.md Success Criteria marcados
 - [x] Gate: `mvn verify -Pintegration`
 

@@ -1,7 +1,7 @@
 # Code Conventions
 
-**Source:** `AGENTS.md` (regras mandatórias para IA) + `PROJECT.md`
-**Status:** Pré-implementação — convenções definidas; exemplos de código serão adicionados após primeira vertical slice.
+**Source:** `AGENTS.md` (regras mandatórias para IA) e `PROJECT.md`
+**Status:** Sprint 1 em execução — convenções definidas; exemplos implementados estão indexados em `INDEX.md`.
 
 ## Naming Conventions
 
@@ -10,7 +10,7 @@
 - Use cases: `{Verb}{Noun}UseCase.java` — ex: `CreateAccountUseCase.java`
 - Controllers: `{Verb}{Noun}Controller.java` — ex: `CreateAccountController.java`
 - Tests: `{ClassUnderTest}Test.java` — ex: `CreateAccountUseCaseTest.java`
-- Features: kebab-case em diretórios — ex: `features/create-account/`
+- Features: lowercase em package Java — ex: `features/createaccount/`; kebab-case apenas nos diretórios de planejamento `.specs/features/create-account/`
 - Migrations Flyway: `V{version}__{description}.sql`
 
 **Functions/Methods:**
@@ -29,16 +29,12 @@
 
 ## Code Organization
 
-**Import/Dependency Declaration:**
-
-- Domain: zero imports de Spring, JPA, Kafka
-- Application: imports de domain + ports apenas
-- Adapters: imports de ports + frameworks
+**Dependency boundaries:** ver `AGENTS.md`.
 
 **File Structure (por feature):**
 
 ```text
-features/create-account/
+features/createaccount/
 ├── CreateAccountController.java
 ├── CreateAccountUseCase.java
 ├── CreateAccountRequest.java
@@ -46,10 +42,7 @@ features/create-account/
 └── CreateAccountUseCaseTest.java
 ```
 
-**Class size limits:**
-
-- Máximo 200 linhas por classe
-- Máximo 30 linhas por método
+**Class size limits:** ver `AGENTS.md`.
 
 ## Type Safety/Documentation
 
@@ -58,16 +51,7 @@ features/create-account/
 
 ## Error Handling
 
-**Pattern:** Problem Details (RFC 9457) para erros REST
-**API Response envelope:**
-
-```json
-{
-  "data": {},
-  "metadata": {}
-}
-```
-
+**REST:** envelope e Problem Details ficam em `AGENTS.md`.
 **Domain:** Exceções de domínio específicas; sem lógica de negócio em exception handlers de framework
 
 ## Comments/Documentation
@@ -75,23 +59,16 @@ features/create-account/
 **Style:** Código autoexplicativo; comentários apenas para regras de negócio não óbvias
 **ADRs:** Obrigatório para decisões de arquitetura (banco, mensageria, observabilidade, segurança)
 
-## Architectural Rules (Golden Rules)
+## Canonical Rule References
 
-| Regra | Descrição |
-|-------|-----------|
-| Rule 1 | Regras de negócio apenas em Domain e Application — nunca em Controllers, Consumers ou Repositories |
-| Rule 2 | Toda feature deve ter testes |
-| Rule 3 | Nunca alterar saldo diretamente — sempre via ledger entries |
-| Rule 4 | Domain sem acoplamento a Spring, JPA, Kafka, HTTP |
-| Rule 5 | Composição sobre herança |
-| Rule 6 | Classes pequenas (≤200 linhas, métodos ≤30 linhas) |
-| Rule 7 | Favor imutabilidade |
+Este arquivo registra convenções de nomenclatura e organização. As regras mandatórias não devem ser duplicadas aqui:
+
+- Golden Rules, arquitetura, financeiro, REST, banco e eventos: `AGENTS.md`
+- Testes e gates detalhados: `AGENTS.md` e `.specs/codebase/TESTING.md`
 
 ## Development Workflow
 
-```text
-Spec → Testes → Implementação → Refatoração
-```
+Fluxo canônico: `AGENTS.md` → Spec-Driven Development.
 
 **Git:** Branch por feature a partir da branch alvo; commits atômicos por tarefa; mensagens focadas no "porquê"; merge via PR/MR para a branch de integração acordada.
 
@@ -99,6 +76,4 @@ Spec → Testes → Implementação → Refatoração
 
 ## REST Conventions
 
-- Verbos HTTP: GET, POST, PUT, PATCH, DELETE
-- Idempotência obrigatória em: PIX, webhooks, cobranças
-- Correlation ID em toda operação financeira para auditabilidade
+Ver `AGENTS.md` para contrato REST, idempotência e auditabilidade em operações financeiras.

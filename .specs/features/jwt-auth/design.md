@@ -85,7 +85,7 @@ graph TD
 
 | Component | Location | How to Use |
 | --------- | -------- | ---------- |
-| Problem Details pattern | `CustomerExceptionHandler`, `.rules/rest.md` | Mesmo `Content-Type: application/problem+json` e URI base |
+| Problem Details pattern | `CustomerExceptionHandler`, `AGENTS.md` | Mesmo `Content-Type: application/problem+json` e URI base |
 | Controller slice pattern | `customer-module/features/createcustomer/` | LoginController delega ao use case; sem lógica de negócio |
 | Integration test base | `AbstractCustomerIntegrationTest`, `AbstractAccountWebIntegrationTest` | Estender com `JwtTestSupport` para Bearer token |
 | Application wiring | `ApplicationWiringIntegrationTest` | Smoke com auth habilitada |

@@ -69,6 +69,10 @@ public final class Account extends AggregateRoot {
         return status;
     }
 
+    public boolean isActive() {
+        return status == AccountStatus.ACTIVE;
+    }
+
     public Instant createdAt() {
         return createdAt;
     }

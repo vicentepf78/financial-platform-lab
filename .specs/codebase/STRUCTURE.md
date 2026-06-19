@@ -1,7 +1,7 @@
 # Project Structure
 
 **Root:** `/home/vicente/Documentos/financial-platform-lab`
-**Status:** Sprint 1 em execução — backend com `shared-kernel`, `customer-module`, `account-module` e `application` (jwt-auth) implementados
+**Status:** Sprint 1 em execução — backend com `shared-kernel`, `customer-module`, `account-module` e `application` (jwt-auth, transfer-money) implementados
 
 ## Directory Tree (planejada)
 
@@ -73,7 +73,7 @@ financial-platform-lab/
 
 **Purpose:** Contas bancárias e transferências
 **Location:** `backend/account-module/`
-**Key features:** create-account ✅, close-account, transfer-money, get-balance, get-statement
+**Key features:** create-account ✅, transfer-money ✅, close-account, get-balance, get-statement
 
 ### ledger-module
 
@@ -127,7 +127,7 @@ financial-platform-lab/
 **Gestão de Contas:**
 
 - UI: `frontend/src/pages/accounts/` _(planejado)_
-- Business Logic: `backend/account-module/features/createaccount/`
+- Business Logic: `backend/account-module/features/createaccount/`, `backend/account-module/features/transfermoney/`
 - Cross-module ports: `CustomerLookupPort`, `LedgerPort`, `EventPublisherPort`
 - Data Access: `backend/account-module/adapters/persistence/`
 - Events: Kafka topic `account-created`

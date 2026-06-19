@@ -1,7 +1,7 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-06-16
-**Status:** Sprint 1 em execução — `customer-module` (`create-customer`, `query-customers`), `account-module` (`create-account`) e `application` (`jwt-auth`) implementados; demais módulos pendentes.
+**Analysis Date:** 2026-06-17
+**Status:** Sprint 1 em execução — `customer-module` (`create-customer`, `query-customers`, `update-customer`), `account-module` (`create-account`, `transfer-money`) e `application` (`jwt-auth`) implementados; demais módulos pendentes.
 
 ## Resolved (Sprint 1)
 
@@ -87,9 +87,9 @@
 
 **customer-module e account-module (referência):**
 
-- Status: `create-customer`, `query-customers` e `create-account` implementados com testes unitários e integração — ver `.specs/codebase/INDEX.md`
-- Padrão: testes co-localizados por task + gate Maven (`.rules/testing.md`)
-- `query-customers`: 2 use-case unit tests, 1 query-adapter integration test, 1 controller integration test; gate full `mvn verify -Pintegration -pl customer-module`
+- Status: `create-customer`, `query-customers`, `update-customer`, `create-account` e `transfer-money` implementados com testes unitários e integração — ver `.specs/codebase/INDEX.md`
+- Padrão: testes co-localizados por task + gate Maven (`AGENTS.md` + `.specs/codebase/TESTING.md`)
+- `transfer-money`: domain + use-case unit tests, repository/ledger/messaging/controller integration tests, fluxo integrado em `application` (create customer → accounts → credit → transfer → balances)
 
 **application (jwt-auth):**
 
@@ -99,7 +99,7 @@
 **Demais módulos:**
 
 - Issue: cobertura ainda baixa fora de customer/account; meta de 80% unitários não verificável globalmente
-- Fix approach: replicar slice de referência em `transfer-money` e features seguintes
+- Fix approach: replicar slice de referência (`transfer-money`) em features seguintes
 
 **Testcontainers dependency:**
 

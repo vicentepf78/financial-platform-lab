@@ -30,6 +30,9 @@ class AccountEntity {
     @Column(name = "updated_by", nullable = false, length = 100)
     private String updatedBy;
 
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
+
     protected AccountEntity() {
     }
 
@@ -39,13 +42,15 @@ class AccountEntity {
             Instant createdAt,
             String createdBy,
             Instant updatedAt,
-            String updatedBy) {
+            String updatedBy,
+            String status) {
         this.id = id;
         this.customerId = customerId;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
         this.updatedAt = updatedAt;
         this.updatedBy = updatedBy;
+        this.status = status;
     }
 
     UUID getId() {
@@ -70,5 +75,9 @@ class AccountEntity {
 
     String getUpdatedBy() {
         return updatedBy;
+    }
+
+    String getStatus() {
+        return status;
     }
 }

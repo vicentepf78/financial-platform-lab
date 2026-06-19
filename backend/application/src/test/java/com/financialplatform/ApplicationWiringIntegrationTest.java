@@ -1,7 +1,16 @@
 package com.financialplatform;
 
+import com.financialplatform.account.adapters.ledger.LedgerStubAdapter;
 import com.financialplatform.account.features.createaccount.CreateAccountController;
 import com.financialplatform.account.features.createaccount.CreateAccountUseCase;
+import com.financialplatform.account.features.transfermoney.TransferMoneyController;
+import com.financialplatform.account.features.transfermoney.TransferMoneyUseCase;
+import com.financialplatform.account.infrastructure.TransferMoneyTransactionalBoundary;
+import com.financialplatform.account.domain.Account;
+import com.financialplatform.account.ports.AccountRepositoryPort;
+import com.financialplatform.account.ports.LedgerPort;
+import com.financialplatform.sharedkernel.domain.Identifier;
+import com.financialplatform.sharedkernel.domain.Money;
 import com.financialplatform.customer.features.querycustomers.GetCustomerByIdUseCase;
 import com.financialplatform.customer.features.querycustomers.QueryCustomersController;
 import com.financialplatform.customer.features.querycustomers.QueryCustomersUseCase;
@@ -68,6 +77,21 @@ class ApplicationWiringIntegrationTest {
     private QueryCustomersController queryCustomersController;
 
     @Autowired
+    private TransferMoneyUseCase transferMoneyUseCase;
+
+    @Autowired
+    private TransferMoneyTransactionalBoundary transferMoneyTransactionalBoundary;
+
+    @Autowired
+    private TransferMoneyController transferMoneyController;
+
+    @Autowired
+    private AccountRepositoryPort accountRepository;
+
+    @Autowired
+    private LedgerPort ledgerPort;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @DynamicPropertySource
@@ -84,8 +108,16 @@ class ApplicationWiringIntegrationTest {
 
     @BeforeEach
     void cleanData() {
+        jdbcTemplate.execute("DELETE FROM transfers");
         jdbcTemplate.execute("DELETE FROM accounts");
         jdbcTemplate.execute("DELETE FROM customers");
+    }
+
+    @Test
+    void shouldLoadTransferMoneyBeans() {
+        assertThat(transferMoneyUseCase).isNotNull();
+        assertThat(transferMoneyTransactionalBoundary).isNotNull();
+        assertThat(transferMoneyController).isNotNull();
     }
 
     @Test
@@ -141,6 +173,37 @@ class ApplicationWiringIntegrationTest {
     }
 
     @Test
+    void shouldRegisterTransferMoneyEndpoint() throws Exception {
+        UUID customerId = seedCustomer();
+        String token = obtainOperatorToken(mockMvc);
+        Instant now = Instant.parse("2026-06-15T10:00:00Z");
+
+        Account origin = accountRepository.save(
+                com.financialplatform.account.domain.Account.open(Identifier.of(customerId), "system", now));
+        Account destination = accountRepository.save(
+                com.financialplatform.account.domain.Account.open(Identifier.of(customerId), "system", now));
+        ledgerPort.initializeAccount(origin.id());
+        ledgerPort.initializeAccount(destination.id());
+        requireLedgerStub(ledgerPort).creditAccount(origin.id(), Money.brl("500.00"));
+
+        mockMvc.perform(post("/api/v1/transfers")
+                        .with(bearerToken(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "originAccountId": "%s",
+                                  "destinationAccountId": "%s",
+                                  "amount": 100.00
+                                }
+                                """
+                                .formatted(origin.id().value(), destination.id().value())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.transferId").value(notNullValue()))
+                .andExpect(jsonPath("$.data.status").value("COMPLETED"))
+                .andExpect(jsonPath("$.metadata").exists());
+    }
+
+    @Test
     void shouldExecuteAuthenticatedFlowFromLoginThroughCustomersToAccountCreation() throws Exception {
         UUID customerId = seedCustomer();
 
@@ -183,5 +246,12 @@ class ApplicationWiringIntegrationTest {
                 Timestamp.from(now),
                 "system");
         return customerId;
+    }
+
+    private static LedgerStubAdapter requireLedgerStub(LedgerPort ledgerPort) {
+        if (ledgerPort instanceof LedgerStubAdapter stub) {
+            return stub;
+        }
+        throw new IllegalStateException("Expected LedgerStubAdapter in integration test context");
     }
 }

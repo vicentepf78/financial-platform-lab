@@ -1,7 +1,7 @@
 # Roadmap
 
 **Current Milestone:** Sprint 1 — Core Banking
-**Status:** Execute in progress — `create-customer` ✅ · `query-customers` ✅ · `update-customer` ✅ · `create-account` ✅ · `jwt-auth` ✅ · próxima: `transfer-money`
+**Status:** Execute in progress — `create-customer` ✅ · `query-customers` ✅ · `update-customer` ✅ · `create-account` ✅ · `jwt-auth` ✅ · `transfer-money` ✅ · próxima: `get-account-balance` / `close-account`
 
 > **Spec-driven:** 30 features em `.specs/features/` · 7 ADRs em `adr/` · Sprint 1 com 54 tarefas atômicas
 
@@ -34,7 +34,7 @@
 - Consulta de saldo (projeção)
 - Consulta de movimentações _(Sprint 2 — financial-statement)_
 
-**Transferências** - SPECIFIED → [transfer-money](../features/transfer-money/spec.md)
+**Transferências** - [transfer-money](../features/transfer-money/spec.md) ✅ DONE · SPECIFIED → [close-account](../features/close-account/spec.md), [get-account-balance](../features/get-account-balance/spec.md)
 
 - Transferência entre contas (origem, destino, valor)
 - Validação de saldo suficiente

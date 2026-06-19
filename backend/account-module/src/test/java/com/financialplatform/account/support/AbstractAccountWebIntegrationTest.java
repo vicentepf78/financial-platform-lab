@@ -1,5 +1,9 @@
 package com.financialplatform.account.support;
 
+import com.financialplatform.account.domain.Account;
+import com.financialplatform.account.domain.AccountStatus;
+import com.financialplatform.account.ports.AccountRepositoryPort;
+import com.financialplatform.account.ports.LedgerPort;
 import com.financialplatform.sharedkernel.domain.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,31 +12,29 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
 @SpringBootTest(classes = AccountModuleTestApplication.class)
-@Testcontainers
 public abstract class AbstractAccountWebIntegrationTest {
 
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withDatabaseName("financial_platform")
-            .withUsername("financial")
-            .withPassword("financial");
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    protected AccountRepositoryPort accountRepository;
+
+    @Autowired
+    protected LedgerPort ledgerPort;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
+        PostgreSQLContainer<?> postgres = AccountPostgresTestContainer.get();
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "validate");
         registry.add("spring.flyway.enabled", () -> "true");
         registry.add("spring.flyway.locations", () -> "filesystem:src/test/resources/db/migration");
@@ -43,6 +45,7 @@ public abstract class AbstractAccountWebIntegrationTest {
 
     @BeforeEach
     void cleanData() {
+        jdbcTemplate.execute("DELETE FROM transfers");
         jdbcTemplate.execute("DELETE FROM accounts");
         jdbcTemplate.execute("DELETE FROM customers");
     }
@@ -65,5 +68,21 @@ public abstract class AbstractAccountWebIntegrationTest {
                 Timestamp.from(now),
                 "system");
         return Identifier.of(customerId);
+    }
+
+    protected Account seedAccount(Identifier customerId) {
+        Instant now = Instant.parse("2026-06-15T10:00:00Z");
+        Account account = accountRepository.save(Account.open(customerId, "system", now));
+        ledgerPort.initializeAccount(account.id());
+        return account;
+    }
+
+    protected Account seedClosedAccount(Identifier customerId) {
+        Instant now = Instant.parse("2026-06-15T10:00:00Z");
+        Account account = Account.reconstitute(
+                Identifier.generate(), customerId, AccountStatus.CLOSED, now, "system");
+        account = accountRepository.save(account);
+        ledgerPort.initializeAccount(account.id());
+        return account;
     }
 }

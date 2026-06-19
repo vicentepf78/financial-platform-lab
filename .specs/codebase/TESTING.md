@@ -1,6 +1,6 @@
 # Testing Infrastructure
 
-**Status:** Parcialmente implementado — `customer-module`, `account-module` e `application` (jwt-auth) com testes unitários e integração (referência em `INDEX.md`). Demais módulos conforme roadmap.
+**Status:** Parcialmente implementado — `customer-module`, `account-module` e `application` (jwt-auth, transfer-money integrated flow) com testes unitários e integração (referência em `INDEX.md`). Demais módulos conforme roadmap.
 
 ## Test Frameworks
 
@@ -72,7 +72,7 @@ class CreateAccountUseCaseTest {
 | Atualização de cliente | Sprint 1 | ✅ `update-customer` |
 | Abertura de conta | Sprint 1 | ✅ `create-account` |
 | Login JWT + API autenticada | Sprint 1 | ✅ `jwt-auth` |
-| Transferência | Sprint 1-2 | Planejado |
+| Transferência | Sprint 1 | ✅ `transfer-money` |
 | PIX | Sprint 4 |
 | Cobrança | Sprint 3 |
 
@@ -134,7 +134,7 @@ Alinhado ao `tlc-spec-driven`. Por task em `tasks.md`:
 2. **Gate check** — comando Maven da task; exit code não-zero = parar e corrigir.
 3. **Commit atômico** por task.
 
-Não há ritual TDD obrigatório (red/green). O gate é o veredito. Detalhes: `.rules/testing.md`.
+Não há ritual TDD obrigatório (red/green). O gate é o veredito. Regras mandatórias: `AGENTS.md`.
 
 Nenhuma feature é considerada completa sem testes nas camadas exigidas pela matriz.
 
@@ -173,3 +173,20 @@ Nenhuma feature é considerada completa sem testes nas camadas exigidas pela mat
 | JWT filter | `backend/application/src/test/java/.../features/auth/JwtAuthenticationFilterIntegrationTest.java` | Full: `mvn verify -Pintegration -pl application` |
 | App wiring (E2E smoke) | `backend/application/src/test/java/com/financialplatform/ApplicationWiringIntegrationTest.java` | Full: `mvn verify -Pintegration` |
 | IT helper | `backend/application/src/test/java/com/financialplatform/support/JwtTestSupport.java` | Usado por customer/account ITs |
+
+## Feature: transfer-money
+
+**Module:** `account-module` (+ integrated flow in `application`) · **Requirements:** XFER-01–XFER-11
+
+| Layer | Test file | Gate |
+| ----- | --------- | ---- |
+| Domain (entity) | `backend/account-module/src/test/java/.../domain/TransferTest.java` | Quick: `mvn test -pl account-module` |
+| Domain (service) | `backend/account-module/src/test/java/.../domain/TransferDomainServiceTest.java` | Quick: `mvn test -pl account-module` |
+| Use case | `backend/account-module/src/test/java/.../features/transfermoney/TransferMoneyUseCaseTest.java` | Quick: `mvn test -pl account-module` |
+| Ledger stub | `backend/account-module/src/test/java/.../adapters/ledger/LedgerStubAdapterTest.java` | Quick: `mvn test -pl account-module` |
+| Repository | `backend/account-module/src/test/java/.../adapters/persistence/JpaTransferRepositoryIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
+| Ledger integration | `backend/account-module/src/test/java/.../adapters/ledger/LedgerStubAdapterIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
+| Kafka publisher | `backend/account-module/src/test/java/.../adapters/messaging/KafkaEventPublisherIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
+| Controller | `backend/account-module/src/test/java/.../features/transfermoney/TransferMoneyControllerIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
+| Transaction rollback | `.../TransferMoneyTransactionalIntegrationTest.java`, `TransferMoneyLedgerFailureRollbackIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
+| Integrated flow | `backend/application/src/test/java/com/financialplatform/features/transfermoney/TransferMoneyIntegratedFlowIntegrationTest.java` | Full: `mvn verify -Pintegration` |
