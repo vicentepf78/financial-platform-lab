@@ -45,6 +45,7 @@ public abstract class AbstractAccountWebIntegrationTest {
 
     @BeforeEach
     void cleanData() {
+        jdbcTemplate.execute("DELETE FROM ledger_entries_stub");
         jdbcTemplate.execute("DELETE FROM transfers");
         jdbcTemplate.execute("DELETE FROM accounts");
         jdbcTemplate.execute("DELETE FROM customers");

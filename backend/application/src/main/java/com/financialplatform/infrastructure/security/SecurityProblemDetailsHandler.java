@@ -49,9 +49,7 @@ public class SecurityProblemDetailsHandler implements AuthenticationEntryPoint, 
             HttpServletRequest request,
             HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException {
-        String detail = accessDeniedException.getMessage() != null
-                ? accessDeniedException.getMessage()
-                : "You do not have permission to access this resource";
+        String detail = "You do not have permission to access this resource";
         writeProblemDetail(request, response, HttpStatus.FORBIDDEN, "access-denied", "Access denied", detail);
     }
 
@@ -82,7 +80,7 @@ public class SecurityProblemDetailsHandler implements AuthenticationEntryPoint, 
     }
 
     private static String defaultDetail(Throwable exception, String fallback) {
-        return exception.getMessage() != null ? exception.getMessage() : fallback;
+        return fallback;
     }
 
     private void writeProblemDetail(

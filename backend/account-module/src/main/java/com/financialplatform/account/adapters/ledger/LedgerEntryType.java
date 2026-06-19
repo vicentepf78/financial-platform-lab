@@ -1,6 +1,6 @@
 package com.financialplatform.account.adapters.ledger;
 
-enum LedgerEntryType {
+public enum LedgerEntryType {
     DEBIT,
     CREDIT
 }

@@ -41,7 +41,7 @@ class SecurityProblemDetailsHandlerTest {
                 .isEqualTo(SecurityProblemDetailsHandler.PROBLEMS_BASE_URI + "invalid-token");
         assertThat(body.get("title").asText()).isEqualTo("Authentication required");
         assertThat(body.get("status").asInt()).isEqualTo(401);
-        assertThat(body.get("detail").asText()).isEqualTo("Full authentication is required");
+        assertThat(body.get("detail").asText()).isEqualTo("Authentication is required to access this resource");
         assertThat(body.get("instance").asText()).isEqualTo("/api/v1/accounts");
     }
 
@@ -60,7 +60,7 @@ class SecurityProblemDetailsHandlerTest {
                 .isEqualTo(SecurityProblemDetailsHandler.PROBLEMS_BASE_URI + "access-denied");
         assertThat(body.get("title").asText()).isEqualTo("Access denied");
         assertThat(body.get("status").asInt()).isEqualTo(403);
-        assertThat(body.get("detail").asText()).isEqualTo("Insufficient privileges");
+        assertThat(body.get("detail").asText()).isEqualTo("You do not have permission to access this resource");
         assertThat(body.get("instance").asText()).isEqualTo("/api/v1/transfers");
     }
 
@@ -77,5 +77,6 @@ class SecurityProblemDetailsHandlerTest {
                 .isEqualTo(SecurityProblemDetailsHandler.PROBLEMS_BASE_URI + "token-expired");
         assertThat(body.get("title").asText()).isEqualTo("Token expired");
         assertThat(body.get("status").asInt()).isEqualTo(401);
+        assertThat(body.get("detail").asText()).isEqualTo("Access token has expired");
     }
 }

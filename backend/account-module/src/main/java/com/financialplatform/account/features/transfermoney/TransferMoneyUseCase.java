@@ -2,6 +2,7 @@ package com.financialplatform.account.features.transfermoney;
 
 import com.financialplatform.account.domain.Account;
 import com.financialplatform.account.domain.AccountNotFoundException;
+import com.financialplatform.account.domain.IdempotencyKeyConflictException;
 import com.financialplatform.account.domain.InsufficientBalanceException;
 import com.financialplatform.account.domain.Transfer;
 import com.financialplatform.account.domain.TransferDomainService;
@@ -48,18 +49,21 @@ public class TransferMoneyUseCase {
 
     public TransferMoneyResult execute(TransferMoneyCommand command) {
         Objects.requireNonNull(command, "Command is required");
+        String idempotencyKey = normalizeIdempotencyKey(command.idempotencyKey());
+        String actor = resolveActor(command.actor());
 
-        if (hasIdempotencyKey(command.idempotencyKey())) {
+        if (idempotencyKey != null) {
             return transferRepository
-                    .findByIdempotencyKey(command.idempotencyKey())
-                    .map(TransferMoneyResult::from)
-                    .orElseGet(() -> executeTransfer(command));
+                    .findByIdempotencyKey(idempotencyKey)
+                    .map(existing -> replayOrReject(existing, command, actor, idempotencyKey))
+                    .orElseGet(() -> executeTransfer(command, idempotencyKey, actor));
         }
 
-        return executeTransfer(command);
+        return executeTransfer(command, null, actor);
     }
 
-    private TransferMoneyResult executeTransfer(TransferMoneyCommand command) {
+    private TransferMoneyResult executeTransfer(
+            TransferMoneyCommand command, String idempotencyKey, String actor) {
         Identifier originId = Identifier.of(command.originAccountId());
         Identifier destinationId = Identifier.of(command.destinationAccountId());
 
@@ -83,9 +87,6 @@ public class TransferMoneyUseCase {
         Transfer transfer = Transfer.execute(originId, destinationId, amount, correlationId, now);
         List<DomainEvent> events = transfer.pullDomainEvents();
 
-        ledgerPort.recordTransfer(
-                transfer.id(), originId, destinationId, amount, correlationId);
-
         Transfer toPersist = Transfer.reconstitute(
                 transfer.id(),
                 transfer.originAccountId(),
@@ -93,18 +94,39 @@ public class TransferMoneyUseCase {
                 transfer.amount(),
                 transfer.status(),
                 transfer.correlationId(),
-                command.idempotencyKey(),
-                resolveActor(command.actor()),
+                idempotencyKey,
+                actor,
                 transfer.createdAt());
 
         Transfer saved = transferRepository.save(toPersist);
+        ledgerPort.recordTransfer(
+                saved.id(), originId, destinationId, amount, correlationId);
         events.forEach(eventPublisher::publish);
 
         return TransferMoneyResult.from(saved);
     }
 
-    private boolean hasIdempotencyKey(String idempotencyKey) {
-        return idempotencyKey != null && !idempotencyKey.isBlank();
+    private TransferMoneyResult replayOrReject(
+            Transfer existing, TransferMoneyCommand command, String actor, String idempotencyKey) {
+        if (!matches(existing, command, actor)) {
+            throw new IdempotencyKeyConflictException(idempotencyKey);
+        }
+        return TransferMoneyResult.from(existing);
+    }
+
+    private boolean matches(Transfer existing, TransferMoneyCommand command, String actor) {
+        return existing.originAccountId().value().equals(command.originAccountId())
+                && existing.destinationAccountId().value().equals(command.destinationAccountId())
+                && existing.amount().equals(Money.brl(command.amount()))
+                && Objects.equals(existing.createdBy(), actor);
+    }
+
+    private String normalizeIdempotencyKey(String idempotencyKey) {
+        if (idempotencyKey == null) {
+            return null;
+        }
+        String trimmed = idempotencyKey.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     private String resolveCorrelationId(UUID correlationId) {

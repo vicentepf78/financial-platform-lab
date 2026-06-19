@@ -37,6 +37,7 @@ public class SecurityConfig {
             http.authorizeHttpRequests(auth -> auth
                             .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/webhooks/mercadopago").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/v1/transfers").hasAnyRole("OPERATOR", "ADMIN")
                             .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                             .requestMatchers(HttpMethod.GET, "/actuator/health/**").permitAll()
                             .anyRequest().authenticated())

@@ -28,7 +28,7 @@ public class AccountMessagingConfig {
             KafkaTemplate<String, String> kafkaTemplate,
             AccountCreatedJsonSerializer accountCreatedJsonSerializer,
             TransferExecutedJsonSerializer transferExecutedJsonSerializer) {
-        return new KafkaEventPublisherAdapter(
-                kafkaTemplate, accountCreatedJsonSerializer, transferExecutedJsonSerializer);
+        return new AfterCommitEventPublisherAdapter(new KafkaEventPublisherAdapter(
+                kafkaTemplate, accountCreatedJsonSerializer, transferExecutedJsonSerializer));
     }
 }

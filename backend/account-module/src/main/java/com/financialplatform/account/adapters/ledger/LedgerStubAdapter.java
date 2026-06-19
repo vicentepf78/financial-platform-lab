@@ -5,14 +5,20 @@ import com.financialplatform.account.ports.LedgerPort;
 import com.financialplatform.sharedkernel.domain.Identifier;
 import com.financialplatform.sharedkernel.domain.Money;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public final class LedgerStubAdapter implements LedgerPort {
 
-    private final List<LedgerEntryStub> entries = new ArrayList<>();
+    private final LedgerEntryStubStore store;
     private final Object mutationLock = new Object();
+
+    public LedgerStubAdapter() {
+        this(new InMemoryLedgerEntryStubStore());
+    }
+
+    public LedgerStubAdapter(LedgerEntryStubStore store) {
+        this.store = Objects.requireNonNull(store, "Ledger entry store is required");
+    }
 
     @Override
     public void initializeAccount(Identifier accountId) {
@@ -23,7 +29,7 @@ public final class LedgerStubAdapter implements LedgerPort {
     public Money getBalanceProjection(Identifier accountId) {
         Objects.requireNonNull(accountId, "AccountId is required");
         synchronized (mutationLock) {
-            return projectBalance(accountId);
+            return store.getBalanceProjection(accountId);
         }
     }
 
@@ -44,25 +50,13 @@ public final class LedgerStubAdapter implements LedgerPort {
         }
 
         synchronized (mutationLock) {
-            Money originBalance = projectBalance(originAccountId);
+            store.lockAccountForTransfer(originAccountId);
+            Money originBalance = store.getBalanceProjection(originAccountId);
             if (!originBalance.isGreaterThanOrEqual(amount)) {
                 throw new InsufficientBalanceException(originAccountId, amount, originBalance);
             }
 
-            entries.add(new LedgerEntryStub(
-                    Identifier.generate(),
-                    transferId,
-                    originAccountId,
-                    LedgerEntryType.DEBIT,
-                    amount,
-                    correlationId));
-            entries.add(new LedgerEntryStub(
-                    Identifier.generate(),
-                    transferId,
-                    destinationAccountId,
-                    LedgerEntryType.CREDIT,
-                    amount,
-                    correlationId));
+            store.recordTransfer(transferId, originAccountId, destinationAccountId, amount, correlationId);
         }
     }
 
@@ -86,27 +80,7 @@ public final class LedgerStubAdapter implements LedgerPort {
         }
 
         synchronized (mutationLock) {
-            entries.add(new LedgerEntryStub(
-                    Identifier.generate(),
-                    null,
-                    accountId,
-                    LedgerEntryType.CREDIT,
-                    amount,
-                    correlationId));
+            store.creditAccount(accountId, amount, correlationId);
         }
-    }
-
-    private Money projectBalance(Identifier accountId) {
-        Money balance = Money.zero();
-        for (LedgerEntryStub entry : entries) {
-            if (!entry.accountId().equals(accountId)) {
-                continue;
-            }
-            balance = switch (entry.entryType()) {
-                case CREDIT -> balance.add(entry.amount());
-                case DEBIT -> balance.subtract(entry.amount());
-            };
-        }
-        return balance;
     }
 }

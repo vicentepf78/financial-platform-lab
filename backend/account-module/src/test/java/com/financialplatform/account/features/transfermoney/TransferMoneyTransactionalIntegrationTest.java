@@ -40,11 +40,17 @@ class TransferMoneyTransactionalIntegrationTest extends AbstractAccountWebIntegr
                 .hasMessageContaining("Insufficient balance");
 
         assertThat(countTransfers()).isZero();
+        assertThat(countLedgerEntries()).isZero();
         assertThat(ledgerPort.getBalanceProjection(origin.id())).isEqualTo(Money.zero());
     }
 
     private int countTransfers() {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM transfers", Integer.class);
+        return count == null ? 0 : count;
+    }
+
+    private int countLedgerEntries() {
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM ledger_entries_stub", Integer.class);
         return count == null ? 0 : count;
     }
 }

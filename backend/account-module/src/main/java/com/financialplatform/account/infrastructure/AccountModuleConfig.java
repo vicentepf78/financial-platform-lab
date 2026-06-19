@@ -1,12 +1,14 @@
 package com.financialplatform.account.infrastructure;
 
 import com.financialplatform.account.adapters.customer.CustomerLookupConfig;
+import com.financialplatform.account.adapters.ledger.LedgerEntryStubStore;
 import com.financialplatform.account.adapters.ledger.LedgerStubAdapter;
 import com.financialplatform.account.adapters.persistence.AccountPersistenceConfig;
 import com.financialplatform.account.domain.TransferDomainService;
 import com.financialplatform.account.features.createaccount.CreateAccountUseCase;
 import com.financialplatform.account.features.transfermoney.TransferMoneyUseCase;
 import com.financialplatform.account.ports.AccountRepositoryPort;
+import com.financialplatform.account.ports.AuthenticatedActorPort;
 import com.financialplatform.account.ports.CustomerLookupPort;
 import com.financialplatform.account.ports.EventPublisherPort;
 import com.financialplatform.account.ports.LedgerPort;
@@ -38,14 +40,20 @@ public class AccountModuleConfig {
     }
 
     @Bean
-    LedgerPort ledgerPort() {
-        return new LedgerStubAdapter();
+    LedgerPort ledgerPort(LedgerEntryStubStore ledgerEntryStubStore) {
+        return new LedgerStubAdapter(ledgerEntryStubStore);
     }
 
     @Bean
     @ConditionalOnMissingBean(EventPublisherPort.class)
     EventPublisherPort noOpEventPublisher() {
         return event -> {};
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(AuthenticatedActorPort.class)
+    AuthenticatedActorPort authenticatedActorPort() {
+        return new SystemAuthenticatedActorAdapter();
     }
 
     @Bean
