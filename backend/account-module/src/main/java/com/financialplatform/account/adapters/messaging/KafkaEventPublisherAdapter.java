@@ -10,8 +10,8 @@ import java.util.Objects;
 
 public final class KafkaEventPublisherAdapter implements EventPublisherPort {
 
-    static final String ACCOUNT_CREATED_TOPIC = "account-created";
-    static final String TRANSFER_EXECUTED_TOPIC = "transfer-executed";
+    public static final String ACCOUNT_CREATED_TOPIC = "account-created";
+    public static final String TRANSFER_EXECUTED_TOPIC = "transfer-executed";
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final AccountCreatedJsonSerializer accountCreatedSerializer;

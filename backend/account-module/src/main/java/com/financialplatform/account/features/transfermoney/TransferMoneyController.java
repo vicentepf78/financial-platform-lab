@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.financialplatform.account.infrastructure.TransferMoneyTransactionalBoundary;
+import com.financialplatform.account.ports.AuthenticatedActorPort;
 
 import java.util.Map;
 
@@ -17,9 +18,13 @@ import java.util.Map;
 public class TransferMoneyController {
 
     private final TransferMoneyTransactionalBoundary transferMoneyTransactionalBoundary;
+    private final AuthenticatedActorPort authenticatedActorPort;
 
-    public TransferMoneyController(TransferMoneyTransactionalBoundary transferMoneyTransactionalBoundary) {
+    public TransferMoneyController(
+            TransferMoneyTransactionalBoundary transferMoneyTransactionalBoundary,
+            AuthenticatedActorPort authenticatedActorPort) {
         this.transferMoneyTransactionalBoundary = transferMoneyTransactionalBoundary;
+        this.authenticatedActorPort = authenticatedActorPort;
     }
 
     @PostMapping
@@ -30,7 +35,7 @@ public class TransferMoneyController {
                 request.amount(),
                 request.correlationId(),
                 request.idempotencyKey(),
-                null);
+                authenticatedActorPort.currentActor());
 
         TransferMoneyResult result = transferMoneyTransactionalBoundary.execute(command);
         TransferMoneyResponse response = TransferMoneyResponse.from(result);

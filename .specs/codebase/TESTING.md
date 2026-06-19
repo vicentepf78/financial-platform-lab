@@ -65,16 +65,16 @@ class CreateAccountUseCaseTest {
 **Location:** `e2e/` na raiz
 **Flows planejados:**
 
-| Fluxo | Sprint |
-|-------|--------|
+| Fluxo | Sprint | Status |
+| ----- | ------ | ------ |
 | Cadastro de cliente | Sprint 1 | ✅ `create-customer` |
 | Consulta de clientes | Sprint 1 | ✅ `query-customers` |
 | Atualização de cliente | Sprint 1 | ✅ `update-customer` |
 | Abertura de conta | Sprint 1 | ✅ `create-account` |
 | Login JWT + API autenticada | Sprint 1 | ✅ `jwt-auth` |
-| Transferência | Sprint 1 | ✅ `transfer-money` |
-| PIX | Sprint 4 |
-| Cobrança | Sprint 3 |
+| Transferência | Sprint 1 | ✅ integração API `transfer-money`; 🔲 Playwright E2E pendente |
+| PIX | Sprint 4 | Planejado |
+| Cobrança | Sprint 3 | Planejado |
 
 ## Test Execution
 
@@ -189,4 +189,4 @@ Nenhuma feature é considerada completa sem testes nas camadas exigidas pela mat
 | Kafka publisher | `backend/account-module/src/test/java/.../adapters/messaging/KafkaEventPublisherIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
 | Controller | `backend/account-module/src/test/java/.../features/transfermoney/TransferMoneyControllerIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
 | Transaction rollback | `.../TransferMoneyTransactionalIntegrationTest.java`, `TransferMoneyLedgerFailureRollbackIntegrationTest.java` | Full: `mvn verify -Pintegration -pl account-module` |
-| Integrated flow | `backend/application/src/test/java/com/financialplatform/features/transfermoney/TransferMoneyIntegratedFlowIntegrationTest.java` | Full: `mvn verify -Pintegration` |
+| Integrated flow + Kafka event | `backend/application/src/test/java/com/financialplatform/features/transfermoney/TransferMoneyIntegratedFlowIntegrationTest.java` | Full: `mvn verify -Pintegration` |

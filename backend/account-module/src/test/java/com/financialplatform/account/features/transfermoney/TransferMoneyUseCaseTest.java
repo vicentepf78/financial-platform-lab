@@ -3,6 +3,7 @@ package com.financialplatform.account.features.transfermoney;
 import com.financialplatform.account.domain.Account;
 import com.financialplatform.account.domain.AccountNotFoundException;
 import com.financialplatform.account.domain.AccountStatus;
+import com.financialplatform.account.domain.IdempotencyKeyConflictException;
 import com.financialplatform.account.domain.InactiveAccountException;
 import com.financialplatform.account.domain.InsufficientBalanceException;
 import com.financialplatform.account.domain.InvalidAmountException;
@@ -270,6 +271,62 @@ class TransferMoneyUseCaseTest {
         ArgumentCaptor<Transfer> transferCaptor = ArgumentCaptor.forClass(Transfer.class);
         verify(transferRepository).save(transferCaptor.capture());
         assertThat(transferCaptor.getValue().idempotencyKey()).isEqualTo(IDEMPOTENCY_KEY);
+    }
+
+    @Test
+    void shouldTreatBlankIdempotencyKeyAsAbsent() {
+        Account origin = activeAccount(ORIGIN_ID);
+        Account destination = activeAccount(DESTINATION_ID);
+        when(accountRepository.findById(Identifier.of(ORIGIN_ID))).thenReturn(Optional.of(origin));
+        when(accountRepository.findById(Identifier.of(DESTINATION_ID))).thenReturn(Optional.of(destination));
+        when(ledgerPort.getBalanceProjection(Identifier.of(ORIGIN_ID))).thenReturn(Money.brl("500.00"));
+        when(transferRepository.save(any(Transfer.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute(validCommand("   ", null));
+
+        ArgumentCaptor<Transfer> transferCaptor = ArgumentCaptor.forClass(Transfer.class);
+        verify(transferRepository).save(transferCaptor.capture());
+        assertThat(transferCaptor.getValue().idempotencyKey()).isNull();
+        verify(transferRepository, never()).findByIdempotencyKey(any());
+    }
+
+    @Test
+    void shouldTrimIdempotencyKeyBeforeLookupAndPersist() {
+        Account origin = activeAccount(ORIGIN_ID);
+        Account destination = activeAccount(DESTINATION_ID);
+        when(accountRepository.findById(Identifier.of(ORIGIN_ID))).thenReturn(Optional.of(origin));
+        when(accountRepository.findById(Identifier.of(DESTINATION_ID))).thenReturn(Optional.of(destination));
+        when(ledgerPort.getBalanceProjection(Identifier.of(ORIGIN_ID))).thenReturn(Money.brl("500.00"));
+        when(transferRepository.findByIdempotencyKey(IDEMPOTENCY_KEY)).thenReturn(Optional.empty());
+        when(transferRepository.save(any(Transfer.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        useCase.execute(validCommand("  " + IDEMPOTENCY_KEY + "  ", null));
+
+        ArgumentCaptor<Transfer> transferCaptor = ArgumentCaptor.forClass(Transfer.class);
+        verify(transferRepository).findByIdempotencyKey(IDEMPOTENCY_KEY);
+        verify(transferRepository).save(transferCaptor.capture());
+        assertThat(transferCaptor.getValue().idempotencyKey()).isEqualTo(IDEMPOTENCY_KEY);
+    }
+
+    @Test
+    void shouldThrowConflictWhenIdempotencyKeyAlreadyExistsForDifferentPayload() {
+        Transfer existing = Transfer.reconstitute(
+                Identifier.of("880e8400-e29b-41d4-a716-446655440003"),
+                Identifier.of(ORIGIN_ID),
+                Identifier.of(DESTINATION_ID),
+                Money.brl("99.00"),
+                TransferStatus.COMPLETED,
+                CORRELATION_ID.toString(),
+                IDEMPOTENCY_KEY,
+                "system",
+                FIXED_TIME);
+        when(transferRepository.findByIdempotencyKey(IDEMPOTENCY_KEY)).thenReturn(Optional.of(existing));
+
+        assertThatThrownBy(() -> useCase.execute(validCommand(IDEMPOTENCY_KEY, null)))
+                .isInstanceOf(IdempotencyKeyConflictException.class);
+
+        verifyNoInteractions(accountRepository, ledgerPort, eventPublisher);
+        verify(transferRepository, never()).save(any());
     }
 
     @Test

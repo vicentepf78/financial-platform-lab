@@ -1,6 +1,6 @@
 # Codebase Index
 
-**Updated:** 2026-06-17  
+**Updated:** 2026-06-17
 **Purpose:** Índice vivo do que está implementado. Agentes devem consultar este arquivo em vez de explorar o repositório quando `tasks.md` aponta padrões existentes.
 
 ---

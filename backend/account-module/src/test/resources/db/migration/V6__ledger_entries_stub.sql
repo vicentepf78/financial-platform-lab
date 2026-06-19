@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS ledger_entries_stub (
     account_id     UUID         NOT NULL REFERENCES accounts (id),
     entry_type     VARCHAR(10)  NOT NULL,
     amount         NUMERIC(19, 2) NOT NULL,
-    currency       CHAR(3)      NOT NULL,
+    currency       VARCHAR(3)   NOT NULL,
     correlation_id UUID         NOT NULL,
     created_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     CONSTRAINT chk_ledger_entries_stub_entry_type CHECK (entry_type IN ('DEBIT', 'CREDIT'))
